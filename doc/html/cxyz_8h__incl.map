@@ -1,0 +1,9 @@
+<map id="include/cxyz.h" name="include/cxyz.h">
+<area shape="rect" id="node2" href="$config__debug_8h.html" title="config_debug.h" alt="" coords="5,80,116,107"/>
+<area shape="rect" id="node5" href="$tmatrix_8h.html" title="msmvtl/tmatrix.h" alt="" coords="386,80,506,107"/>
+<area shape="rect" id="node15" href="$tvmath_8h.html" title="msmvtl/tvmath.h" alt="" coords="242,80,362,107"/>
+<area shape="rect" id="node16" href="$atom__symbol_8h.html" title="atom_symbol.h" alt="" coords="537,155,648,181"/>
+<area shape="rect" id="node17" href="$atom__color_8h.html" title="atom_color.h" alt="" coords="581,80,679,107"/>
+<area shape="rect" id="node6" href="$tvector_8h.html" title="msmvtl/tvector.h" alt="" coords="386,155,506,181"/>
+<area shape="rect" id="node7" href="$libdef_8h.html" title="msmvtl/libdef.h" alt="" coords="300,229,411,256"/>
+</map>

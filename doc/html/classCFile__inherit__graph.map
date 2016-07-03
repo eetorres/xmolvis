@@ -1,0 +1,3 @@
+<map id="CFile" name="CFile">
+<area shape="rect" id="node2" href="$classCTopmol.html" title="{CTopmol\n|&#45; __if_topmol\l&#45; __if_complete_topology\l&#45; __number_of_topologies\l&#45; __total_atoms\l&#45; __new_topology\l&#45; v_topology_list\l&#45; v_topology_names\l&#45; __filename\l&#45; __dir\l|+ CTopmol()\l+ ~CTopmol()\l+ topmol_filename()\l+ topmol_dir()\l+ set_topmol_filename()\l+ if_topmol()\l+ read_topmol()\l+ clear_topmol()\l+ save_topmol()\l+ is_name()\land 22 more...\l&#45; display_topology_summary()\l&#45; if_topology()\l&#45; get_next()\l}" alt="" coords="5,5,201,391"/>
+</map>

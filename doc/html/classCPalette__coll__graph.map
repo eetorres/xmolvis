@@ -1,0 +1,5 @@
+<map id="CPalette" name="CPalette">
+<area shape="rect" id="node2" href="$structui__rgb.html" title="{ui_rgb\n|+ r\l+ g\l+ b\l|}" alt="" coords="5,189,63,295"/>
+<area shape="rect" id="node3" href="$structgm__rgb.html" title="{gm_rgb\n|+ r\l+ g\l+ b\l|}" alt="" coords="87,189,152,295"/>
+<area shape="rect" id="node4" href="$classTMatrix.html" title="{TMatrix\&lt; real \&gt;\n|&#45; u_rr\l&#45; u_cc\l&#45; i_rows\l&#45; i_cols\l&#45; i_rows_capacity\l&#45; i_precision\l&#45; i_width\l&#45; _buff\l&#45; c_ch\l&#45; matrix_name\l&#45; m_data\l|+ TMatrix()\l+ TMatrix()\l+ TMatrix()\l+ TMatrix()\l+ TMatrix()\l+ init()\l+ read_file()\l+ read_file()\l+ write_file()\l+ write_file()\land 48 more...\l&#45; set()\l&#45; reset()\l&#45; isnrow()\l&#45; isncol()\l&#45; read_file_rows()\l&#45; read_file_cols()\l&#45; read_()\l}" alt="" coords="176,5,300,479"/>
+</map>

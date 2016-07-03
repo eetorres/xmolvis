@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['r',['r',['../structgm__rgb.html#a5d4652a422f72c01ec63554be7427143',1,'gm_rgb::r()'],['../structui__rgb.html#a91abb779032afea66542e97b91a05688',1,'ui_rgb::r()'],['../structrgb.html#a21b25ad0e790113b47e6f902eafa009c',1,'rgb::r()']]],
+  ['r_5fangle1',['r_angle1',['../classFl__Gl__Mol__View.html#a9608c4526f346ab5604f8bd693c5848d',1,'Fl_Gl_Mol_View']]],
+  ['r_5fangle2',['r_angle2',['../classFl__Gl__Mol__View.html#a6034624b2adab246e46f575a46ad2706',1,'Fl_Gl_Mol_View']]],
+  ['r_5faxes_5fposition',['r_axes_position',['../classFl__Gl__Atom.html#a314b43b8366b72f290e3757ac93b65bf',1,'Fl_Gl_Atom']]],
+  ['r_5fcut_5fradius',['r_cut_radius',['../classFl__Gl__Atom.html#a5cbf2eab9cbac838a43fa4856000ea98',1,'Fl_Gl_Atom']]],
+  ['r_5fcut_5fradius_5f2',['r_cut_radius_2',['../classFl__Gl__Atom.html#a9f32b51dac3b957882643227a74da613',1,'Fl_Gl_Atom']]],
+  ['r_5fdihedral',['r_dihedral',['../classFl__Gl__Mol__View.html#a75cf3c16dfbc8e25f29dcd620d836148',1,'Fl_Gl_Mol_View']]],
+  ['r_5fdistance1',['r_distance1',['../classFl__Gl__Mol__View.html#adc8c123c15ba6639cb517ea11ea14c6e',1,'Fl_Gl_Mol_View']]],
+  ['r_5fdistance2',['r_distance2',['../classFl__Gl__Mol__View.html#a788cf05338fd8980e6eeb518613939c5',1,'Fl_Gl_Mol_View']]],
+  ['r_5fdistance3',['r_distance3',['../classFl__Gl__Mol__View.html#a645d65843c2be30a0b6ffa351f6d1cf5',1,'Fl_Gl_Mol_View']]],
+  ['rad_5fdeg',['RAD_DEG',['../const_8h.html#a20db7970b2e9a80df4ee757e020b3168',1,'const.h']]],
+  ['reload_5ffile_5fbutton',['reload_file_button',['../classfl__xmol__view.html#a25b3523f715aebeb1368ca5cfa3e6e6b',1,'fl_xmol_view']]],
+  ['render_5fmode',['render_mode',['../fl__gl__mol__view_8cxx.html#a094bcb0af6307d0c5988eff6168302a1',1,'fl_gl_mol_view.cxx']]],
+  ['resizing',['resizing',['../classCTable.html#a250d33f1970f784b0e13877502b64321',1,'CTable']]],
+  ['revision',['REVISION',['../namespaceAutoVersion.html#ae2d1fcdc67a4319c421677ebe1ef4d09',1,'AutoVersion']]],
+  ['rgb',['rgb',['../classCPalette.html#a62c35aee4b22277dd68c14516abbb51f',1,'CPalette']]],
+  ['rightcol',['rightCol',['../classCTable.html#a502b3929822b26d510889e9816e27a7a',1,'CTable']]],
+  ['rot_5fmatrix',['rot_matrix',['../classFl__Gl__Atom.html#a5fc5494442d7ae49ccee286deadede6b',1,'Fl_Gl_Atom']]],
+  ['row',['Row',['../classCTable.html#a16a47c0be4fbb8433475235f79b4d6f6',1,'CTable']]],
+  ['rowheight',['rowHeight',['../classCTable.html#a76df746ca6b654a112db100d6aa5fe6d',1,'CTable']]]
+];
