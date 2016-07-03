@@ -173,6 +173,7 @@ private:
   CPdb    file_pdb;
   CDlp    file_dlp;
 
+  TVector<CFragment> v_fragments;
   //bool is_potcar(void);
   TVector<std::string> v_atomic_symbol_table;
   TVector<uint> v_atomic_composition_table;
