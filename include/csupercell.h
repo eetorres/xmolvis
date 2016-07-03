@@ -24,8 +24,8 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-#ifndef _CFRAGMOL_H_
-#define _CFRAGMOL_H_
+#ifndef _CSUPERCELL_H_
+#define _CSUPERCELL_H_
 
 #include<config_debug.h>
 #include<cfragment.h>

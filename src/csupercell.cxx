@@ -2,7 +2,7 @@
 // FILE: csupercell.cxx -> csupercell
 //
 // Abstraction layer of the supercell and fragments.
-// The manipulation to individual fragaments is hidden.
+// The manipulation of individual fragments is hidden.
 //
 // Copyright 2011-2015 by Edmanuel Torres
 // email:   eetorres@gmail.com
@@ -40,7 +40,7 @@ CSupercell::~CSupercell(void){
 
 void CSupercell::clear(void){
   __number_of_fragments=0;
-  __total_atoms=0;
+  //gsf.get_total_atoms()=0;
   __is_potmol=false;
   __active_fragment=0;
 }
@@ -59,17 +59,17 @@ bool CSupercell::read_input_file(void){
   // Read the input structure file
   res = gsf.read_input_file();
   if(res){
-    __total_atoms=gsf.get_total_atoms();
-    __atomic_species=gsf.get_atomic_species();
-    __is_direct=gsf.get_is_direct();
-    __is_periodic=gsf.get_is_periodic();
-    __input_format=gsf.get_input_format();
+    //gsf.get_total_atoms()=gsf.get_total_atoms();
+    //gsf.get_atomic_species()=gsf.get_atomic_species();
+    //gsf.get_is_direct()=gsf.get_is_direct();
+    //gsf.get_is_periodic()=gsf.get_is_periodic();
+    //gsf.get_input_format()=gsf.get_input_format();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: total atoms = "<<__total_atoms<<std::endl;
-    std::cout<<" FRAGMOL: total species = "<<__atomic_species<<std::endl;
-    std::cout<<" FRAGMOL: is direct? "<<__is_direct<<std::endl;
-    std::cout<<" FRAGMOL: is periodic? "<<__is_periodic<<std::endl;
-    std::cout<<" FRAGMOL: input format = "<<__input_format<<std::endl;
+    std::cout<<" FRAGMOL: total atoms = "<<gsf.get_total_atoms()<<std::endl;
+    std::cout<<" FRAGMOL: total species = "<<gsf.get_atomic_species()<<std::endl;
+    std::cout<<" FRAGMOL: is direct? "<<gsf.get_is_direct()<<std::endl;
+    std::cout<<" FRAGMOL: is periodic? "<<gsf.get_is_periodic()<<std::endl;
+    std::cout<<" FRAGMOL: input format = "<<gsf.get_input_format()<<std::endl;
 #endif
     //
     v_atomic_composition_table=gsf.get_atomic_composition_table();
@@ -79,10 +79,10 @@ bool CSupercell::read_input_file(void){
     v_atomic_labels=gsf.get_atomic_labels();
     v_atomic_symbols=gsf.get_atomic_symbols();
     v_atomic_numbers=gsf.get_atomic_numbers();
-    if(__input_format==2 || __input_format==4){
+    if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
       v_fragment_table=gsf.get_fragment_table();
     }
-    v_atom_cell_table.resize(__total_atoms);
+    v_atom_cell_table.resize(gsf.get_total_atoms());
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
     std::cout<<" FRAGMOL: Z-Number Table ="<<v_atomic_number_table;
@@ -114,8 +114,8 @@ bool CSupercell::delete_atom(uint u){
   //clear();
   //
   /*
-  __total_atoms=gsf.get_total_atoms();
-  __atomic_species=gsf.get_atomic_species();
+  gsf.get_total_atoms()=gsf.get_total_atoms();
+  gsf.get_atomic_species()=gsf.get_atomic_species();
   //
   v_atomic_composition_table=gsf.get_atomic_composition_table();
   v_atomic_number_table=gsf.get_atomic_number_table();
@@ -125,7 +125,7 @@ bool CSupercell::delete_atom(uint u){
   v_atomic_symbols=gsf.get_atomic_symbols();
   v_atomic_numbers=gsf.get_atomic_numbers();
   v_fragment_table=gsf.get_fragment_table();
-  v_atom_cell_table.resize(__total_atoms);
+  v_atom_cell_table.resize(gsf.get_total_atoms());
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: atomic symbols="<<v_atomic_symbols;
   std::cout<<" FRAGMOL: atomic labels="<<v_atomic_labels;
@@ -208,7 +208,7 @@ void CSupercell::eval_initial_fragments(void){
       v_fragments[i].set_atomic_label(j,v_atomic_labels[(v_l[j])]);
       v_fragments[i].set_atomic_symbol(j,v_atomic_symbols[(v_l[j])]);
       v_fragments[i].set_atomic_number(j,v_atomic_numbers[(v_l[j])]);
-      v_fragments[i].is_pbc(__is_periodic);
+      v_fragments[i].is_pbc(gsf.get_is_periodic());
     }
   }
   // (1) direct, (0) cartesian
@@ -232,13 +232,13 @@ void CSupercell::initialize_fragments(void){
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
 #endif
   clear_fragments();
-  __total_atoms=get_total_atoms();
+  //gsf.get_total_atoms()=get_total_atoms();
   if(!gsf.if_topmol()){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGCAR: !!! No TOPCAR fragment file to load !!!"<<std::endl;
     std::cout<<" FRAGCAR: Build the best topology for the system"<<std::endl;
 #endif
-    if(__input_format==2 || __input_format==4){
+    if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
       std::cout<<" FRAGCAR: Topology based on the fragment numbers"<<std::endl;
 #endif
@@ -248,21 +248,21 @@ void CSupercell::initialize_fragments(void){
       std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
       std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
 #endif
-      gsf.set_topmol_single_topology(__total_atoms);
+      gsf.set_topmol_single_topology(gsf.get_total_atoms());
     }
-  }else if(__total_atoms > gsf.get_total_topology_atoms()){
+  }else if(gsf.get_total_atoms() > gsf.get_total_topology_atoms()){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGCAR: !!! Fragments not for all atoms !!!"<<std::endl;
     std::cout<<" FRAGCAR: Build a fragment with remaining atoms"<<std::endl;
 #endif
-    gsf.set_complete_topology(__total_atoms);
+    gsf.set_complete_topology(gsf.get_total_atoms());
   }
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   else{
     std::cout<<" FRAGCAR: !!! All atoms in fragments !!!"<<std::endl;
   }
 #endif
-  v_fragment_table.resize(__total_atoms);
+  v_fragment_table.resize(gsf.get_total_atoms());
   create_initial_fragments();
   eval_initial_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
@@ -875,15 +875,15 @@ real CSupercell::get_fragmol_axis_precession(void){
 }
 
 bool CSupercell::is_direct(void){
-  return __is_direct;
+  return gsf.get_is_direct();
 }
 
 bool CSupercell::is_periodic(void){
-  return __is_periodic;
+  return gsf.get_is_periodic();
 }
 
 void CSupercell::is_periodic(bool b){
-  __is_periodic = b;
+  gsf.set_is_periodic(b);
 }
 
 bool CSupercell::is_potmol(void){
@@ -923,7 +923,7 @@ uint CSupercell::get_fragment_atomic_number(uint i,uint j){
 }
 
 uint CSupercell::get_fragmol_total_atoms(void){
-  return __total_atoms;
+  return gsf.get_total_atoms();
 }
 
 TVector<real> CSupercell::get_fragmol_axis_angles(void){
@@ -978,15 +978,15 @@ TMatrix<real> CSupercell::get_fragment_centered_cartesian(uint i){
 // STRUCTURE
 
 uint CSupercell::get_species(void){
-  return __atomic_species;
+  return gsf.get_atomic_species();
 }
 
 uint CSupercell::get_total_atoms(void){
-  return __total_atoms;
+  return gsf.get_total_atoms();
 }
 
 uint CSupercell::get_input_file_format(void){
-  return __input_format;
+  return gsf.get_input_format();
 }
 
 uint CSupercell::get_output_file_type(void){

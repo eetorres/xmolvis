@@ -101,6 +101,7 @@ public:
   void set_numbers(bool b);
   void set_fragments(bool b);
   void set_modified(bool b);
+  void set_is_periodic(bool b){ is_periodic=b;}
   //
   void set_xyz(TMatrix<real> m);
   void set_xyz_cells(int x, int y, int z, int t);

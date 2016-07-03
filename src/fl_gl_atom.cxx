@@ -724,7 +724,7 @@ void Fl_Gl_Atom::eval_linked_list(void){
 //
 // !!!This Bug was fixed!!!
 // Sun Oct 21 15:04:24 MDT 2012
-// bond to the last atom somtimes is missing
+// bond to the last atom sometimes is missing
 // !!!This Bug was fixed!!!
 void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_

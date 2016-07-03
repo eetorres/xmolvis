@@ -29,8 +29,8 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-#ifndef _CPalette_H_
-#define _CPalette_H_
+#ifndef _CPALETTE_H_
+#define _CPALETTE_H_
 
 #include <msmvtl/tmatrix.h>
 #include <msmvtl/tmmath.h>
