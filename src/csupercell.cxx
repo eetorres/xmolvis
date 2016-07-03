@@ -1116,39 +1116,4 @@ TMatrix<real> CSupercell::get_direct(void){
   return m_uvw;
 }
 
-/* Deprecated
-bool CSupercell::eval_vdw_fragment(uint u){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-#endif
-  bool is_new_frag=true;
-  // Use the atom number
-  is_new_frag=eval_scaled_fragment(u,true,1.1);
-  /////////////////////////set_map_active_fragment(__active_fragment);
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  /////////////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-  return is_new_frag;
-}
-  Deprecated
-bool CSupercell::eval_atom_fragment(uint u){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-#endif
-  bool new_frag=true;
-  new_frag=eval_scaled_fragment(u,true,0.1);
-  /////////////////////////set_map_active_fragment(__active_fragment);
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  /////////////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-  return new_frag;
-}
-*/
-
-// FRAGMOL END
+// SUPERCELL END

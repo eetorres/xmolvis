@@ -1016,14 +1016,14 @@ void Fl_Gl_Mol_View::draw_scene(void){
   glLoadIdentity();
   // draw the pie menu
   //if(is_draw_pie_menu && render_mode!=MODE_SELECT){
-  if(is_draw_pie_menu){
-    draw_pie_menu(cursorX,cursorY, 792,base_view/4.0,100);
-  }
+  //if(is_draw_pie_menu){
+    //draw_pie_menu(cursorX,cursorY, 792,base_view/4.0,100);
+  //}
   // draw the subpie
   //if(is_draw_pie_submenu && render_mode!=MODE_SELECT){
-  if(is_draw_pie_submenu){
-    draw_pie_submenu(792,base_view/4.0,100);
-  }
+  //if(is_draw_pie_submenu){
+    //draw_pie_submenu(792,base_view/4.0,100);
+  //}
   if(is_draw_tools_ && render_mode!=MODE_SELECT){
     draw_tools(790);
     draw_selected_numbers();
@@ -1118,14 +1118,14 @@ void Fl_Gl_Mol_View::draw(){
     render_mode=MODE_RENDER;
     glClearColor(bgred,bggreen,bgblue,1.0);   // Background Color
     draw();
-    if(is_handle_atom_){
-      handle_atom_menu();
-      is_handle_atom_=false;
-    }
-    if(is_handle_main_){
-      handle_main_menu();
-      is_handle_main_=false;
-    }
+    //if(is_handle_atom_){
+      //handle_atom_menu();
+      //is_handle_atom_=false;
+    //}
+    //if(is_handle_main_){
+      //handle_main_menu();
+      //is_handle_main_=false;
+    //}
     draw();
   }else{
     redraw();
@@ -1178,8 +1178,8 @@ int Fl_Gl_Mol_View::handle(int event){
     render_mode=MODE_SELECT;
     if(Fl::event_button()==FL_RIGHT_MOUSE){
       //menu_mode=MODE_MENU;
-      if(!is_draw_pie_menu)
-        is_draw_pie_menu=true;
+      //if(!is_draw_pie_menu)
+        //is_draw_pie_menu=true;
       is_menu_position=true;
       is_draw_line=false;
       is_draw_point=false;
@@ -1705,316 +1705,6 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
   }
 }
 
-// handle funtions on the main menu
-void Fl_Gl_Mol_View::handle_main_menu(void){
-  //uint _af;
-  switch(u_menu_index){
-    case MAIN_MODE_SUBMENU:
-        switch(u_submenu_index){
-          case MODE_PBC_BUTTON:
-            redraw();
-            break;
-          case MODE_SYMMETRY_BUTTON:
-            redraw();
-            break;
-          case MODE_FRAGMENTS_BUTTON:
-            is_mode_atom=false;
-            is_highlight_fragment(true);
-            redraw();
-            break;
-          case MODE_ATOMS_BUTTON:
-            is_mode_atom=true;
-            is_highlight_fragment(false);
-            redraw();
-            break;
-          case MODE_BLANK_BUTTON:
-            //is_highlight_fragment(true);
-            //redraw();
-            //break;
-          default:
-            break;
-    }
-    break;
-    case MAIN_VIEW_SUBMENU:
-        switch(u_submenu_index){
-          case VIEW_XY_BUTTON:
-            set_view_xy_front();
-            break;
-          case VIEW_YZ_BUTTON:
-            set_view_yz_front();
-            break;
-          case VIEW_ZX_BUTTON:
-            set_view_zx_front();
-            break;
-          case VIEW_YX_BUTTON:
-            set_view_xy_back();
-            break;
-          case VIEW_ZY_BUTTON:
-            set_view_yz_back();
-            break;
-          case VIEW_XZ_BUTTON:
-            set_view_zx_back();
-            break;
-          default:
-            break;
-    }
-    redraw();
-    break;
-    // view submenu
-    case MAIN_SHOW_SUBMENU:
-      switch(u_submenu_index){
-          case SHOW_LABELS_BUTTON:
-            is_draw_labels(!is_draw_labels_);
-            redraw();
-            break;
-          case SHOW_BOX_BUTTON:
-            is_draw_bbox(!is_draw_bbox_);
-            redraw();
-            break;
-          case SHOW_SYMBOLS_BUTTON:
-            is_draw_symbols(!is_draw_symbols_);
-            redraw();
-            break;
-          case SHOW_BONDS_BUTTON:
-            is_draw_bonds(!is_draw_bonds_);
-            redraw();
-            break;
-          case SHOW_NUMBERS_BUTTON:
-            is_draw_numbers(!is_draw_numbers_);
-            break;
-          default:
-            //is_lock_dragging=false;
-            break;
-      }
-      break;
-    case MAIN_TOOLS_SUBMENU:
-      switch(u_submenu_index){
-          case TOOLS_MESURE_BUTTON:
-            is_draw_tools(!is_draw_tools_);
-            redraw();
-            break;
-          case TOOLS_BOX_BUTTON:
-            is_draw_bbox(!is_draw_bbox_);
-            redraw();
-            break;
-          case TOOLS_AXES_BUTTON:
-            is_draw_world_axes(!is_draw_world_axes_);
-            redraw();
-            break;
-          case TOOLS_FRAGMENT_BUTTON:
-            //update_coordinates=true;
-            //update_data();
-            is_draw_processing=true;
-            render_mode=MODE_RENDER;
-            redraw();
-            //is_draw_processing=true;
-            //redraw();
-            //Fl::wait(0.1);
-            compute_vdw_fragments();
-            //set_update_coordinates(true);
-            //set_active_fragment_index(1);
-            set_update_active_fragment(); // the same as zero above.
-            //update_data();
-            is_draw_processing=false;
-            // switch to fragment mode
-            if(is_mode_atom){
-              is_mode_atom=false;
-              is_highlight_fragment(true);
-            }
-            // switch to fragment mode
-            render_mode=MODE_RENDER;
-            redraw();
-            break;
-          case TOOLS_ATOMS_BUTTON:
-            is_draw_processing=true;
-            render_mode=MODE_RENDER;
-            redraw();
-            compute_atom_fragments();
-            set_update_active_fragment(); // the same as zero above.
-            is_draw_processing=false;
-            // switch to fragment mode
-            if(is_mode_atom){
-              is_mode_atom=false;
-              is_highlight_fragment(true);
-            }
-            render_mode=MODE_RENDER;
-            redraw();
-            break;
-          default:
-            //is_lock_dragging=false;
-            break;
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-// handle operation on the picked atom
-void Fl_Gl_Mol_View::handle_atom_menu(void){
-  //uint _af;
-  switch(u_menu_index){
-    /*case ATOM_ELEMENT_SUBMENU:
-      set_active_fragment(__highlight_atom);
-      //_af= v_fragment_table_gl[__highlight_atom];
-      //set_map_active_fragment(_af-1);
-      //set_update_active_fragment(_af);
-      //update_coordinates=true;
-      //
-      compute_vdw_fragment(__highlight_atom);
-      //set_atom_fragment(__highlight_atom);
-      //set_update_coordinates(true);
-      //set_map_active_fragment(_af-1);
-      //set_update_active_fragment(_af); // the same as zero above.
-      //
-      set_update_active_fragment();
-      //render_mode=MODE_RENDER;
-      //is_draw_processing=true;
-      //redraw();
-      //Fl::wait(0.1);
-      //set_update_coordinates(true);
-      //set_map_active_fragment(_af-1);
-      //set_update_active_fragment(_af); // the same as zero above.
-      //is_draw_processing=false;
-      // switch to fragment mode
-      if(is_mode_atom){
-        is_mode_atom=false;
-        is_highlight_fragment(true);
-      }
-      // switch to fragment mode
-      render_mode=MODE_RENDER;
-      redraw();
-      break;*/
-    case ATOM_AXIS_SUBMENU:
-      switch(u_submenu_index){
-          case AXIS_SHOW_BUTTON:
-            is_draw_molecular_axis(!is_draw_molecular_axis_);
-            redraw();
-            break;
-          case AXIS_HEAD_BUTTON:
-            //set_fragment_axis(__highlight_atom);
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            //redraw();
-            supercell.set_fragment_axis(0,__highlight_atom);
-            supercell.set_fragment_axis(2,__highlight_atom);
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            render_mode=MODE_RENDER;
-            redraw();
-            //is_draw_processing=false;
-            break;
-          case AXIS_TAIL_BUTTON:
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            supercell.set_fragment_axis(1,__highlight_atom);
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            render_mode=MODE_RENDER;
-            redraw();
-            //is_draw_processing=false;
-            break;
-          case AXIS_PLANE_BUTTON:
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            supercell.set_fragment_axis(3,__highlight_atom);
-            set_active_fragment(__highlight_atom);
-            set_update_active_fragment();
-            render_mode=MODE_RENDER;
-            redraw();
-            //is_draw_processing=false;
-            break;
-          default:
-            //is_lock_dragging=false;
-            break;
-      }
-      break;
-    //case ATOM_ACTIVE_SUBMENU:
-      //switch(u_submenu_index){
-    case ATOM_ACTIVE_SUBMENU:
-      set_active_fragment(__highlight_atom);
-      //_af= v_fragment_table_gl[__highlight_atom];
-      //set_map_active_fragment(_af-1);
-      //set_update_active_fragment(_af);
-      //update_coordinates=true;
-      //update_data();
-      set_update_active_fragment();
-      render_mode=MODE_RENDER;
-      //is_mode_atom=false;
-      redraw();
-      break;
-    case ATOM_DELETE_SUBMENU:
-      //is_draw_pie_submenu=false;
-      break;
-    case ATOM_FRAGMENT_SUBMENU:
-      switch(u_submenu_index){
-        case ATOM_FRAGMENT_VDW_BUTTON:
-          set_active_fragment(__highlight_atom);
-          compute_vdw_fragment(__highlight_atom);
-          set_update_active_fragment();
-          // switch to fragment mode
-          if(is_mode_atom){
-            is_mode_atom=false;
-            is_highlight_fragment(true);
-          }
-          // switch to fragment mode
-          render_mode=MODE_RENDER;
-          redraw();
-          break;
-        case ATOM_FRAGMENT_ATOM_BUTTON:
-          set_active_fragment(__highlight_atom);
-          compute_atom_fragment(__highlight_atom);
-          set_update_active_fragment();
-          //is_draw_processing=true;
-          //is_draw_processing=false;
-          // switch to fragment mode
-          if(is_mode_atom){
-            is_mode_atom=false;
-            is_highlight_fragment(true);
-          }
-          // switch to fragment mode
-          render_mode=MODE_RENDER;
-          redraw();
-          break;
-        case ATOM_FRAGMENT_RADIAL_BUTTON:
-          if ( r_distance1 > 0.0 ){
-            set_active_fragment(__highlight_atom);
-            compute_radial_fragment(__highlight_atom,1.1*r_distance1);
-            set_update_active_fragment();
-            //is_draw_processing=true;
-            //is_draw_processing=false;
-            // switch to fragment mode
-            if(is_mode_atom){
-              is_mode_atom=false;
-              is_highlight_fragment(true);
-            }
-            // switch to fragment mode
-            render_mode=MODE_RENDER;
-            redraw();
-          }
-          break;
-        case ATOM_FRAGMENT_MERGE_BUTTON:
-          //cell.eval_merge_fragment(__highlight_atom,false);
-          compute_merge_fragments(__highlight_atom);
-          set_update_active_fragment();
-          // switch to fragment mode
-          if(is_mode_atom){
-            is_mode_atom=false;
-            is_highlight_fragment(true);
-          }
-          render_mode=MODE_RENDER;
-          redraw();
-          break;
-        default:
-          //is_lock_dragging=false;
-          break;
-      }
-      break;
-    case ATOM_ELEMENT_SUBMENU:
-    default:
-      break;
-  }
-}
 // GL_Toolkit /////////////////////////////////////////////////////////////////
 
 // control box
@@ -2185,13 +1875,6 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
   sprintf(buff,"%s","Tools");
   glRasterPos3f(x_pos, y_pos,z);
   gl_draw(buff, strlen(buff));
-  //glColor4f(0.8,0.8,0.8,1.0);
-  //glBegin(GL_LINE_LOOP);
-  //glVertex3f( x_pos,     y_pos, z_pos);
-  //glVertex3f( x_pos_end, y_pos, z_pos);
-  //glVertex3f( x_pos_end, (y_pos+y_hight), z);
-  //glVertex3f( x_pos,     (y_pos+y_hight), z);
-  //glEnd();
   // widgets
   // text output 1
   GLfloat y_delta = 0.04*base_view;
@@ -2237,13 +1920,6 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glNormal3f(0,0,1);
   glColor4f(0.3,0.3,0.3,1.0);
-  // background for the tool box
-  //glBegin(GL_POLYGON); /draw in triangle strips
-  //glVertex3f( x_pos,     y_pos, z);
-  //glVertex3f( x_pos_end, y_pos, z);
-  //glVertex3f( x_pos_end, (y_pos+y_hight), z);
-  //glVertex3f( x_pos,     (y_pos+y_hight), z);
-  //glEnd();
   // draw the tool box
   // solid border for the control menu
   //gl_font(FL_COURIER,font_size_panel_label); // text font
@@ -2259,13 +1935,6 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   sprintf(buff,"%s","Settings");
   glRasterPos3f(x_pos, y_pos,z);
   gl_draw(buff, strlen(buff));
-  //glColor4f(0.8,0.8,0.8,1.0);
-  //glBegin(GL_LINE_LOOP);
-  //glVertex3f( x_pos,     y_pos, z_pos);
-  //glVertex3f( x_pos_end, y_pos, z_pos);
-  //glVertex3f( x_pos_end, (y_pos+y_hight), z);
-  //glVertex3f( x_pos,     (y_pos+y_hight), z);
-  //glEnd();
   // widgets
   // text output 1
   GLfloat y_delta = 0.04*base_view;
@@ -2319,13 +1988,6 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glNormal3f(0,0,1);
   glColor4f(0.3,0.3,0.3,0.7);
-  // background for the tool box
-  //glBegin(GL_POLYGON); /draw in triangle strips
-  //glVertex3f( x_pos,     y_pos, z);
-  //glVertex3f( x_pos_end, y_pos, z);
-  //glVertex3f( x_pos_end, (y_pos+y_hight), z);
-  //glVertex3f( x_pos,     (y_pos+y_hight), z);
-  //glEnd();
   // draw the tool box
   // solid border for the control menu
 #if defined (BUILD_FOR_MACOS)
@@ -2340,15 +2002,6 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   sprintf(buff,"%s","Information");
   glRasterPos3f(x_pos, y_pos,z);
   gl_draw(buff, strlen(buff));
-  //glColor4f(0.8,0.8,0.8,1.0);
-  //glBegin(GL_LINE_LOOP);
-  //glVertex3f( x_pos,     y_pos, z_pos);
-  //glVertex3f( x_pos_end, y_pos, z_pos);
-  //glVertex3f( x_pos_end, (y_pos+y_hight), z);
-  //glVertex3f( x_pos,     (y_pos+y_hight), z);
-  //glEnd();
-  // widgets
-  // text output 1
   GLfloat y_delta = 0.04*base_view;
   x_pos+=y_delta;
   y_pos-=1.5*y_delta;
@@ -2357,27 +2010,6 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   widget_int_output(x_pos, y_pos, y_pos_end, z, __fragment_total, (char*)"Fragments:");
   y_pos-=y_delta;
   widget_vector_output(x_pos, y_pos, y_pos_end, z, v_bbox, (char*)"Box:");
-  //widget_float_output(x_pos, y_pos, y_pos_end, z, f_bond_radius_scale, (char*)"Bond Radius:");
-  //y_pos-=y_delta;
-  //widget_float_output(x_pos, y_pos, y_pos_end, z, f_atom_brightness/f_atom_brightness_max, (char*)"Brightness:");
-  //y_pos-=y_delta;
-  //widget_float_output(x_pos, y_pos, y_pos_end, z, f_select_brightness/f_select_brightness_max, (char*)"Selection:");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z,  is_radio_active[0],(char*)"Axes:    <A>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[2], (char*)"Symbols: <S>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[4], (char*)"Numbers: <N>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[6], (char*)"Labels:  <L>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[1], (char*)"Bonds:   <B>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[3], (char*)"Volume:  <V>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[5], (char*)"Tools:   <T>");
-  //y_pos-=y_delta;
-  //draw_switch_output(x_pos, y_pos, y_pos_end, z, is_radio_active[7], (char*)"Axis:    <J>");
 }
 
 // slider widget
@@ -2635,467 +2267,6 @@ void Fl_Gl_Mol_View::widget_vector_output(GLfloat x1, GLfloat y1, GLfloat y2, GL
   char buff[60];
   sprintf(buff,"%10.6f %10.6f %10.6f",v[0],v[1],v[2]);
   widget_text_output(x1, y1, y2, z, buff, l);
-}
-
-// pie menu interaction/handle
-void Fl_Gl_Mol_View::draw_pie_menu(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, GLint num_segments){
-  GLdouble winX, winY; //, winZ;
-  //GLdouble posX=0, posY=0, posZ=0;
-  GLdouble posZ=0;
-  float delta_ang, x1, y1;
-  float theta;
-  char buff[10];
-  delta_ang = 2.0f * 3.1415926f / float(num_segments); //get the angle step
-  //
-  glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-  glGetDoublev( GL_PROJECTION_MATRIX, projection );
-  glGetIntegerv( GL_VIEWPORT, viewport );
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glNormal3f(0,0,1);
-  //
-  // Did you account for the inverted Y coordinate? Most window systems (Microsoft Windows, X Windows,
-  // others?) usually return mouse coordinates to your program with Y=0 at the top of the window, while
-  // OpenGL assumes Y=0 is at the bottom of the window. Assuming you're using a default viewport,
-  // transform the Y value from window system coordinates to OpenGL coordinates as (windowHeight-y).
-  if(is_menu_position){
-    menu_pos_cx=cx;
-    menu_pos_cy=cy;
-    winX = menu_pos_cx;
-    winY = viewport[3]-menu_pos_cy;
-    //glReadPixels( winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-    //GLbyte color[4];
-    //GLfloat depth;
-    //GLdouble pX, pY, pZ;
-    //GLuint index;
-    //glReadPixels(winX, int(winY), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
-    //glReadPixels(winX, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
-    //glReadPixels(winX, int(winY), 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
-    //printf("Clicked on pixel %d, %d, color %02hhx%02hhx%02hhx%02hhx, depth %f, stencil index %u\n", winX, winY, color[0], color[1], color[2], color[3], depth, index);
-    //printf("Clicked on pixel %d, %d, color %x %x %x %x, depth %f, stencil index %u\n", x, y, color[0], color[1], color[2], color[3], depth, index);
-    //printf("Clicked on pixel %d, %d, depth %f, stencil index %u\n", x, y, depth, index);
-    //
-    //gluUnProject( winX, winY, (int)depth, modelview, projection, viewport, &pX, &pY, &pZ);
-    //printf("Window coordinates %f, %f, %f\n", pX, pY, pZ);
-    // How do I use gluProject() and gluUnProject()?
-    // Both routines take a ModelView matrix, Projection matrix, and OpenGL Viewport as parameters.
-    // gluProject() also takes an XYZ-object space coordinate. It returns the transformed XYZ window
-    // (or device) coordinate equivalent.
-    // gluUnProject() does the opposite. It takes an XYZ window coordinate and returns the
-    // back-transformed XYZ object coordinate equivalent.
-    // The concept of window space Z is often confusing. It's the depth buffer value expressed as a
-    // GLdouble in the range 0.0 to 1.0. Assuming a default glDepthRange(), a window coordinate with
-    // a Z value of 0.0 corresponds to an eye coordinate located on the zNear clipping plane.
-    // Similarly, a window space Z value of 1.0 corresponds to an eye space coordinate located on the
-    // zFar plane. You can obtain any window space Z value by reading the depth buffer with glReadPixels().
-    //
-    //gluUnProject( winX, winY, winZ, modelview, projection, viewport, &menu_pos_x, &menu_pos_y, &menu_pos_z);
-#if defined (BUILD_FOR_MACOS)
-    //std::cout<<"Mac OS X code here"<<std::endl;
-    gluUnProject( winX, winY, 1, modelview, projection, viewport, &menu_pos_x, &menu_pos_y, &menu_pos_z);
-#else
-    gluUnProject( winX, winY, 1, modelview, projection, viewport, &menu_pos_x, &menu_pos_y, &menu_pos_z);
-#endif
-    //is_menu_position=false;
-  }
-  //
-
-  if(is_atom_picked){
-    // clicked point position
-    winX = cx;
-    winY = viewport[3]-cy;
-    //glReadPixels( cx, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-    //gluProject( winX, winY, 800, modelview, projection, viewport, &tmpX, &tmpY, &tmpZ);
-    //gluUnProject( winX, winY, winZ, modelview, projection, viewport, &click_pos_x, &click_pos_y, &posZ);
-
-#if defined (BUILD_FOR_MACOS)
-    //std::cout<<"Mac OS X code here"<<std::endl;
-    gluUnProject( winX, winY, 1, modelview, projection, viewport, &click_pos_x, &click_pos_y, &posZ);
-#else
-    gluUnProject( winX, winY, 1, modelview, projection, viewport, &click_pos_x, &click_pos_y, &posZ);
-#endif
-    GLfloat dist=(click_pos_x-menu_pos_x)*(click_pos_x-menu_pos_x)+(click_pos_y-menu_pos_y)*(click_pos_y-menu_pos_y);
-    if(dist > r){
-      //std::cout<<" distance :"<<dist<<std::endl;
-      //glColor3f(0.0,0.0,1.0);
-      GLdouble delta_x = menu_pos_x-click_pos_x;
-      GLdouble delta_y = menu_pos_y-click_pos_y;
-      GLdouble ang = atan2(delta_y,delta_x)+ C_PI;
-      //
-      side_pos_x = r * cosf(ang);          //calculate the x component
-      side_pos_y = r * sinf(ang);          //calculate the y component
-      is_draw_line=true;
-    }else{
-      is_draw_line=false;
-    }
-  }
-  // draw the connection line
-  //if((is_menu_pie_picked || is_atom_picked) && is_draw_line){
-  if(is_draw_line){
-    glColor3f(0.0,1.0,0.0);
-    glBegin(GL_LINES);
-    glVertex3f(menu_pos_x+side_pos_x,menu_pos_y+side_pos_y,z);
-    glVertex3f(click_pos_x,click_pos_y,z);
-    glEnd();
-  }
-  // current atom point
-  //if((is_menu_pie_picked || is_atom_picked) && is_draw_point){
-  if(is_draw_point){
-    glColor3f(0.0F,1.0F,0.0F);
-    glBegin(GL_POLYGON);
-    for(int ii = 0; ii < num_segments+1; ii++){
-      theta = delta_ang * float(ii);        //get the current angle
-      x1 = 0.05*r * cosf(theta);            //calculate the x component
-      y1 = 0.05*r * sinf(theta);            //calculate the y component
-      glVertex3f(x1 + click_pos_x, y1 + click_pos_y,z); //output vertex
-    }
-    glEnd();
-  }
-  // May 32, 2014: Becuase a bug on the Mac this lines are required
-  //for(int i=0; i<6; i++)
-    //legends[i] = l0[i];
-  // May 32, 2014: Becuase a bug on the Mac this lines are required
-  if(!is_menu_pie_picked){
-    switch(u_active_menu){
-      case MAIN_MENU:
-#ifdef _SHOW_INFO_
-        std::cout<<" backgroud legends"<<std::endl;
-#endif
-        label = " "; // blank label
-        for(int i=0; i<6; i++)
-          legends[i] = l0[i];
-        break;
-      case CONTROL_MENU:
-#ifdef _SHOW_INFO_
-        std::cout<<" menu legends"<<std::endl;
-#endif
-        label = " "; // blank label
-        for(int i=0; i<6; i++)
-          legends[i] = l1[i];
-      break;
-      case ATOM_MENU:
-//#ifdef _SHOW_INFO_
-//        std::cout<<" atom legends"<<std::endl;
-//#endif
-        // set the label to the picked atom
-        sprintf(buff,"%i-%s",__highlight_atom+1,v_atom_symbols[__highlight_atom].c_str());
-        label=buff;
-        for(int i=0; i<6; i++)
-          legends[i] = l2[i];
-      break;
-    }
-  }
-  draw_pie(menu_pos_cx,menu_pos_cy,z,legends,6,r,num_segments);
-  is_atom_picked=false;
-  is_menu_picked=false;
-  is_menu_pie_picked=false;
-  is_menu_position=false;
-  is_background_picked=false;
-  //u_active_menu=NOT_MENU;
-}
-
-void Fl_Gl_Mol_View::draw_pie_submenu(GLfloat z, GLfloat r, GLint num_segments){
-  // blank label
-  switch(u_active_menu){
-    case MAIN_MENU:
-      switch(u_menu_index){
-        case MAIN_MODE_SUBMENU:
-          set_pie_labels(sl_mode,"mode");
-          break;
-        case MAIN_VIEW_SUBMENU:
-          set_pie_labels(sl_view,"view");
-          break;
-        case MAIN_SHOW_SUBMENU:
-          set_pie_labels(sl_show,"show");
-          break;
-        case MAIN_TOOLS_SUBMENU:
-          set_pie_labels(sl_tools,"show");
-          break;
-        default:
-          set_pie_labels(lblank,"");
-          break;
-      }
-    break;
-    case CONTROL_MENU:
-      switch(u_menu_index){
-        default:
-          set_pie_labels(lblank,"");
-        break;
-      }
-    break;
-    case ATOM_MENU:
-      switch(u_menu_index){
-        //case FRAGMENT_AXIS_BUTTON:
-          //set_pie_labels(l_frag,"frag.");
-          //break;
-        case ATOM_AXIS_SUBMENU:
-          set_pie_labels(l_axis,"axis");
-          break;
-        case ATOM_FRAGMENT_SUBMENU:
-          set_pie_labels(l_frag,"Frags");
-          break;
-        default:
-          set_pie_labels(lblank,"");
-        break;
-      }
-    break;
-  }
-  draw_sub_pie(submenu_pos_cx,submenu_pos_cy,z,legends,6,r,num_segments);
-}
-
-void Fl_Gl_Mol_View::set_pie_labels(const std::string s[], std::string l){
-  sub_label = l;
-  for(int i=0; i<6; i++)
-    sub_legends[i] = s[i];
-}
-
-// pie menu interaction/handle
-void Fl_Gl_Mol_View::draw_sub_pie(GLfloat cx, GLfloat cy, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n){
-  float delta_ang, x1, x2, y1, y2;
-  float theta;
-  // draw the buttons only
-  if(render_mode==MODE_SELECT){
-    glNormal3f(0,0,1);
-    glColor4f(0.3,0.2,0.6,0.5);
-    delta_ang = 2.0f * 3.1415926f / float(nl);//get the current angle
-    for(int ii = 0; ii < 6; ii++){
-      //glPushName(ii+7); // the first 7 names are reseverd for the main menu
-      ui_rgb color;
-      color = index_palette.get_index(ii+6);
-      glColor3ub(color.r,color.g,color.b);
-      glBegin(GL_QUADS);
-      theta = delta_ang * float(ii);                   //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x1 + submenu_pos_x, y1 + submenu_pos_y, z+4);//output vertex
-      glVertex3f(x2 + submenu_pos_x, y2 + submenu_pos_y, z+4);//output vertex
-      theta = delta_ang * float(ii+1);                 //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x2 + submenu_pos_x, y2 + submenu_pos_y, z+4);//output vertex
-      glVertex3f(x1 + submenu_pos_x, y1 + submenu_pos_y, z+4);//output vertex
-      glEnd();
-      //glPopName();
-    }
-  }else{
-    // draw the pie disk
-    draw_pie_disk(submenu_pos_x,submenu_pos_y,z+2,r,n);
-    // draw the labels
-    draw_pie_labels(submenu_pos_cx,submenu_pos_cy,z+2,r,sub_legends,sub_label,nl);
-  }
-  //is_menu_pie_picked=false;
-}
-
-// pie menu widget handle
-void Fl_Gl_Mol_View::draw_pie(GLfloat cx, GLfloat cy, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n){
-  float delta_ang, x1, x2, y1, y2;
-  float theta;
-  // draw the buttons
-  if(render_mode==MODE_SELECT){
-    glNormal3f(0,0,1);
-    //glColor4f(0.5,0.3,0.1,0.5);
-    delta_ang = 2.0f * 3.1415926f / float(nl);//get the current angle
-    for(int ii = 0; ii < 6; ii++){
-      ui_rgb color;
-      color = index_palette.get_index(ii);
-      glColor3ub(color.r,color.g,color.b);
-      //glPushName(ii+1); // the first 100 names are reseverd for the menues
-      glBegin(GL_QUADS);
-      theta = delta_ang * float(ii);                   //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x1 + menu_pos_x, y1 + menu_pos_y, z+2);//output vertex
-      glVertex3f(x2 + menu_pos_x, y2 + menu_pos_y, z+2);//output vertex
-      theta = delta_ang * float(ii+1);                 //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x2 + menu_pos_x, y2 + menu_pos_y, z+2);//output vertex
-      glVertex3f(x1 + menu_pos_x, y1 + menu_pos_y, z+2);//output vertex
-      glEnd();
-      //glPopName();
-    }
-  }else{
-    // draw the pie disk
-    draw_pie_disk(menu_pos_x,menu_pos_y,z,r,n);
-    // draw the labels
-    draw_pie_labels(menu_pos_cx,menu_pos_cy,z+1,r,legends,label,nl);
-  }
-}
-
-// pie disk
-void Fl_Gl_Mol_View::draw_pie_disk(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLint n){
-  GLdouble winX, winY, winZ;
-  float delta_ang, x1, x2, y1, y2;
-  float theta;
-  delta_ang = 2.0f * 3.1415926f / float(n);//get the current angle
-  glNormal3f(0,0,1);
-  glColor4f(0.0,0.0,0.0,0.9);
-  glBegin(GL_QUAD_STRIP);
-  //glBegin(GL_POLYGON);
-  for(int ii=0; ii < n+1; ii++){
-    theta = delta_ang * float(ii); //get the current angle
-    x1 = 0.2*r * cosf(theta);      //calculate the x component
-    y1 = 0.2*r * sinf(theta);      //calculate the y component
-    x2 = r * cosf(theta);          //calculate the x component
-    y2 = r * sinf(theta);          //calculate the y component
-    glVertex3f(x1 + x, y1 + y, z); //output vertex
-    glVertex3f(x2 + x, y2 + y, z); //output vertex
-  }
-  glEnd();
-  //glDisable (GL_BLEND);
-  // draw the iner circle
-  //glColor3f(0.3,0.3,0.3);
-  glColor3f(0.8,0.8,0.8);
-  glBegin(GL_LINE_LOOP);
-  for(int ii = 0; ii < n+1; ii++){
-    theta = delta_ang * float(ii); //get the current angle
-    x1 = 0.2*r * cosf(theta);      //calculate the x component
-    y1 = 0.2*r * sinf(theta);      //calculate the y component
-    glVertex3f(x1 + x, y1 + y, z); //output vertex
-  }
-  glEnd();
-  // draw the outer circle
-  glBegin(GL_LINE_LOOP);
-  for(int ii = 0; ii < n+1; ii++){
-    theta = delta_ang * float(ii); //get the current angle
-    x2 = r * cosf(theta);          //calculate the x component
-    y2 = r * sinf(theta);          //calculate the y component
-    glVertex3f(x2 + x, y2 + y, z); //output vertex
-  }
-  glEnd();
-  // menu divisions
-  //glColor3f(0.7,0.7,0.7);
-  glColor3f(0.8,0.8,0.8);
-  delta_ang = 2.0f * 3.1415926f / float(6);          //get the angle step
-  glBegin(GL_LINES);
-  for(int ii = 0; ii < 6; ii++){
-    theta = delta_ang * float(ii);                   //get the current angle
-    x1 = 0.3*r * cosf(theta);                        //calculate the x component
-    y1 = 0.3*r * sinf(theta);                        //calculate the y component
-    x2 = 0.9*r * cosf(theta);                        //calculate the x component
-    y2 = 0.9*r * sinf(theta);                        //calculate the y component
-    glVertex3f(x1 + x, y1 + y, z);//output vertex
-    glVertex3f(x2 + x, y2 + y, z);//output vertex
-  }
-  glEnd();
-  /*
-  if(render_mode==MODE_SELECT){
-    //glNormal3f(0,0,1);
-    glColor4f(0.0,0.0,0.0,0.0);
-    //delta_ang = 2.0f * 3.1415926f / float(n);//get the current angle
-    for(int ii = 0; ii < 6; ii++){
-      glPushName(ii+1); // the first 100 names are reseverd for the menues
-      glBegin(GL_QUADS);
-      theta = delta_ang * float(ii);                   //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x1 + x, y1 + y, z+2);//output vertex
-      glVertex3f(x2 + x, y2 + y, z+2);//output vertex
-      theta = delta_ang * float(ii+1);                 //get the current angle
-      x1 = 0.2*r * cosf(theta);                        //calculate the x component
-      y1 = 0.2*r * sinf(theta);                        //calculate the y component
-      x2 = 1.2*r * cosf(theta);                        //calculate the x component
-      y2 = 1.2*r * sinf(theta);                        //calculate the y component
-      glVertex3f(x2 + x, y2 + y, z+2);//output vertex
-      glVertex3f(x1 + x, y1 + y, z+2);//output vertex
-      glEnd();
-      glPopName();
-    }
-  }
-  */
-  // compute the coordinates for the pie subumenu
-  if(is_menu_pie_picked){
-    //
-    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-    glGetDoublev( GL_PROJECTION_MATRIX, projection );
-    glGetIntegerv( GL_VIEWPORT, viewport );
-    //
-    delta_ang = 2.0f * 3.1415926f / float(360);
-    theta = delta_ang * float(u_menu_index*60+30); //get the current angle
-    x1 = 0.5*r * cosf(theta);                             //calculate the x component
-    y1 = 0.5*r * sinf(theta);                             //calculate the y component
-    submenu_pos_x=x+x1;
-    submenu_pos_y=y+y1;
-    winX = submenu_pos_x;
-    //winY = viewport[3]-submenu_pos_cy;
-    winY = submenu_pos_y;
-    //glReadPixels( int(winX), int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-#if defined (BUILD_FOR_MACOS)
-    gluProject( winX, winY, z+2, modelview, projection, viewport, &submenu_pos_cx, &submenu_pos_cy, &winZ);
-    //std::cout<<"Mac OS X code here"<<std::endl;
-#else
-    gluProject( winX, winY, z+2, modelview, projection, viewport, &submenu_pos_cx, &submenu_pos_cy, &winZ);
-#endif
-    submenu_pos_cy = viewport[3]-submenu_pos_cy;
-  }
-}
-
-void Fl_Gl_Mol_View::draw_pie_labels(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, std::string l[6], std::string m, GLint nl){
-  GLdouble winX, winY, winZ=791;
-  GLdouble posX, posY, posZ;
-  float delta_ang, x1, y1;
-  float theta, str_width;
-  char buff[10];
-  int str_length;
-  winX = cx;
-  winY = viewport[3]-cy;
-  delta_ang = 2.0f * 3.1415926f / float(360);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glNormal3f(0,0,1);
-  glColor3f(1.0F,1.0F,1.0F); // text color
-  //gl_font(FL_COURIER,14); // text font
-  //gl_font(FL_COURIER,14); // text font
-  //glColor4f(0.0,1.0,0.0,1.0); // text color
-  //gl_font(FL_ZAPF_DINGBATS,12); // text font
-#ifdef PLATFORM_MAC
-  gl_font(FL_HELVETICA,font_size_pie_label); // text font
-#endif
-  for(int i=0; i<nl; i++){
-    //theta = delta_ang * float(90+i*60); //get the current angle
-    theta = delta_ang * float(i*60+30); //get the current angle
-    x1 = 0.7*r * cosf(theta);           //calculate the x component
-    y1 = 0.7*r * sinf(theta);           //calculate the y component
-    sprintf(buff,"%s",l[i].c_str());
-    str_length = strlen(buff);
-    str_width = gl_width(buff);
-    winX = cx-0.5*str_width;
-#if defined (BUILD_FOR_MACOS)
-    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-    //std::cout<<"Mac OS X code here"<<std::endl;
-#else
-    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-#endif
-    glRasterPos3f(posX+x1,posY+y1,z);
-    gl_draw(buff, str_length);
-  }
-  // set the label
-  //if(is_atom_picked){
-  //if(render_mode!=MODE_SELECT){
-    glColor3f(1.0F,1.0F,0.0F); // text color
-    //gl_font(FL_COURIER,12);  // text font
-    sprintf(buff,"%s",m.c_str());
-    str_length = strlen(buff);
-    str_width = gl_width(buff);
-    //winX = menu_pos_cx-0.5*str_width;
-    winX = cx-0.5*str_width;
-#if defined (BUILD_FOR_MACOS)
-    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-    //std::cout<<"Mac OS X code here"<<std::endl;
-#else
-    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-#endif
-    glRasterPos3f(posX,posY+0.4*r,z);
-    gl_draw(buff, str_length);
-  //}
 }
 
 //////////////////////////////UTILS///////////////////////////////

@@ -453,10 +453,10 @@ private:
   void widget_vector_output(GLfloat x1, GLfloat y1, GLfloat y2, GLfloat z, TVector<real> v, char* l);
   //void draw_pie_submenu(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, GLint num_segments);
   //void draw_pie_sub_menu(GLfloat,GLfloat,GLfloat,GLint);
-  void draw_pie(GLfloat x1, GLfloat y1, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n);
-  void draw_sub_pie(GLfloat x1, GLfloat y1, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n);
-  void draw_pie_disk(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLint n);
-  void draw_pie_labels(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, std::string l[], std::string m, GLint nl);
+  //void draw_pie(GLfloat x1, GLfloat y1, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n);
+  //void draw_sub_pie(GLfloat x1, GLfloat y1, GLfloat z, std::string l[], GLint nl, GLfloat r, GLint n);
+  //void draw_pie_disk(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLint n);
+  //void draw_pie_labels(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, std::string l[], std::string m, GLint nl);
   //
   // GUI
   // begin sphere
