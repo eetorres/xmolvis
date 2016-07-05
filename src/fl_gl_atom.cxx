@@ -1069,26 +1069,26 @@ void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
 
 void Fl_Gl_Atom::compute_atom_fragment(const uint _u){
   //supercell.eval_atom_fragment(_u);
-  supercell.eval_scaled_fragment(_u,0.1);
+  //supercell.eval_scaled_fragment(_u,0.1);
   // Use fragment table
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_radial_fragment(const uint _u, const real _r){
-  supercell.eval_radial_fragment(_u,true,_r);
+  //supercell.eval_radial_fragment(_u,true,_r);
   // Use fragment table
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_vdw_fragment(const uint _u){
   //supercell.eval_vdw_fragment(_u);
-  supercell.eval_scaled_fragment(_u,1.1);
+  //supercell.eval_scaled_fragment(_u,1.1);
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_atom_fragments(void){
   //unsigned int _n;
-  supercell.eval_scaled_fragments(0.1);
+  //supercell.eval_scaled_fragments(0.1);
   // Use fragment number
   update_fragments(1,false);
   //set_fragment_total(get_view_total_fragments());
@@ -1100,7 +1100,7 @@ void Fl_Gl_Atom::compute_atom_fragments(void){
 
 void Fl_Gl_Atom::compute_vdw_fragments(void){
   //unsigned int _n;
-  supercell.eval_scaled_fragments(1.1);
+  //supercell.eval_scaled_fragments(1.1);
   // Use fragment number
   update_fragments(1,false);
   //set_fragment_total(get_view_total_fragments());
@@ -1112,7 +1112,7 @@ void Fl_Gl_Atom::compute_vdw_fragments(void){
 
 void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
   //supercell.eval_atom_fragment(_u);
-  supercell.eval_merge_fragment(_u,false);
+  //supercell.eval_merge_fragment(_u,false);
   // Use fragment table
   update_fragments(_u,true);
 }

@@ -214,7 +214,7 @@ private:
   TVector<uint> v_atomic_composition_table;
   TVector<uint> v_atomic_number_table;
   TVector<uint> v_atomic_numbers;
-  TVector<uint> v_fragment_table;
+  //TVector<uint> v_fragment_table;
   TVector<uint> v_atom_type_table;
   TVector<uint> v_atom_cell_table;
   TVector<std::string> v_atomic_labels;

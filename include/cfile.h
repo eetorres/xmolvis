@@ -29,6 +29,7 @@
 #include <config_debug.h>
 #include <global.h>
 #include <ctopmol.h>
+#include <cfragment.h>
 #include <cpotcar.h>
 #include <cposcar.h>
 #include <cxyz.h>
@@ -100,6 +101,8 @@ public:
   void set_labels(bool b);
   void set_numbers(bool b);
   void set_fragments(bool b);
+  void set_fragment_table(uint u){v_fragment_table.resize(u);};
+  void set_fragment_table(uint u, uint v){v_fragment_table[u]=v;};
   void set_modified(bool b);
   void set_is_periodic(bool b){ is_periodic=b;}
   //
@@ -123,6 +126,16 @@ public:
   TVector<std::string> get_atomic_labels(void){ return v_atomic_labels;}
   TVector<std::string> get_atomic_symbols(void){ return v_atomic_symbols;}
   TVector<std::string> get_atomic_symbol_table(void){ return v_atomic_symbol_table;}
+  //  
+  uint get_atomic_composition(uint u){ return v_atomic_composition_table[u];}
+  uint get_atomic_number_table(uint u){ return v_atomic_number_table[u];}
+  uint get_atomic_number(uint u){ return v_atomic_numbers[u];}
+  uint get_atom_table(uint u){ return v_atom_table[u];}
+  strg get_atomic_symbol(uint u){ return v_atomic_symbols[u];}
+  strg get_atomic_label(uint u){ return v_atomic_labels[u];}
+  strg get_atomic_symbol_table(uint u){ return v_atomic_symbol_table[u];}
+  
+  
   //
   bool get_is_direct(void){ return is_direct;}
   bool get_is_periodic(void){ return is_periodic;}
@@ -159,12 +172,12 @@ private:
   uint u_total_atoms;
   uint u_total_fragments;
   uint u_atomic_species;
-
+  //
   std::string inputfile;
   std::string output_filename;
   std::string potcarfile;
   std::string s_actual_dir;
-
+  //
   CPotcar file_potcar;
   CPoscar file_poscar;
   CXyz    file_xyz;
@@ -172,9 +185,9 @@ private:
   CZmat   file_zmt;
   CPdb    file_pdb;
   CDlp    file_dlp;
-
+  //
   TVector<CFragment> v_fragments;
-  //bool is_potcar(void);
+  //
   TVector<std::string> v_atomic_symbol_table;
   TVector<uint> v_atomic_composition_table;
   TVector<uint> v_atomic_number_table;

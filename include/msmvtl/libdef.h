@@ -94,6 +94,10 @@ typedef long double lreal;
 typedef unsigned int uint;
 #endif
 
+#ifndef strg
+typedef std::string strg;
+#endif
+
 enum runtime_error { END=0, EXIT=-1 };
 
 #ifndef real

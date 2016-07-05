@@ -1,16 +1,16 @@
-//========================================================================
-// FILE: csupercell.cxx -> csupercell
-//
-// Abstraction layer of the supercell and fragments.
-// The manipulation of individual fragments is hidden.
-//
-// Copyright 2011-2015 by Edmanuel Torres
-// email:   eetorres@gmail.com
-//
-// Comment: change this class/file names to CSupercell/csupercell
-//
-// Lastest update: Tue Jul 14 16:22:34 EDT 2015
-//========================================================================
+//======================================================================//
+// FILE: csupercell.cxx -> csupercell                                   //
+//                                                                      //
+// Abstraction layer of the supercell and fragments.                    //
+// The manipulation of individual fragments is hidden.                  //
+//                                                                      //
+// Copyright 2011-2015 by Edmanuel Torres                               //
+// email:   eetorres@gmail.com                                          //
+//                                                                      //
+// Comment: change this class/file names to CSupercell/csupercell       //
+//                                                                      //
+// Lastest update: Tue Jul 14 16:22:34 EDT 2015                         //
+//======================================================================//
 //  This file is part of xmolview                                       //
 //                                                                      //
 //  xmolview is free software: you can redistribute it and/or modify    //
@@ -79,9 +79,9 @@ bool CSupercell::read_input_file(void){
     v_atomic_labels=gsf.get_atomic_labels();
     v_atomic_symbols=gsf.get_atomic_symbols();
     v_atomic_numbers=gsf.get_atomic_numbers();
-    if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
-      v_fragment_table=gsf.get_fragment_table();
-    }
+    //if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
+      //v_fragment_table=gsf.get_fragment_table();
+    //}
     v_atom_cell_table.resize(gsf.get_total_atoms());
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
@@ -111,31 +111,6 @@ bool CSupercell::read_input_file(void){
 
 bool CSupercell::delete_atom(uint u){
   bool res=false;
-  //clear();
-  //
-  /*
-  gsf.get_total_atoms()=gsf.get_total_atoms();
-  gsf.get_atomic_species()=gsf.get_atomic_species();
-  //
-  v_atomic_composition_table=gsf.get_atomic_composition_table();
-  v_atomic_number_table=gsf.get_atomic_number_table();
-  v_atomic_symbol_table=gsf.get_atomic_symbol_table();
-  v_atom_type_table=gsf.get_atom_table();
-  v_atomic_labels=gsf.get_atomic_labels();
-  v_atomic_symbols=gsf.get_atomic_symbols();
-  v_atomic_numbers=gsf.get_atomic_numbers();
-  v_fragment_table=gsf.get_fragment_table();
-  v_atom_cell_table.resize(gsf.get_total_atoms());
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGMOL: atomic symbols="<<v_atomic_symbols;
-  std::cout<<" FRAGMOL: atomic labels="<<v_atomic_labels;
-#endif
-  //
-  m_xyz=gsf.get_xyz();
-  m_uvw=gsf.get_uvw();
-  m_uvw_to_xyz_u=gsf.get_uvw_to_xyz_u();
-  m_uvw_to_xyz=gsf.get_uvw_to_xyz();
-  */
   return res;
 }
 
@@ -145,8 +120,8 @@ void CSupercell::save_input_file(void){
 }
 
 void CSupercell::save_as_file(std::string _f, bool _l, bool _n,TMatrix<real> m, int xc, int yc, int zc, int tc, bool _bb){
-  if(__output_format == OUTPUT_FORMAT_ATM_FRG || __output_format == OUTPUT_FORMAT_NAT_FRG )
-    gsf.set_fragment_table(v_fragment_table,__number_of_fragments);
+  //if(__output_format == OUTPUT_FORMAT_ATM_FRG || __output_format == OUTPUT_FORMAT_NAT_FRG )
+    //gsf.set_fragment_table(v_fragment_table,__number_of_fragments);
   gsf.set_bounding_box(_bb);
   gsf.set_labels(_l);
   gsf.set_numbers(_n);
@@ -156,8 +131,8 @@ void CSupercell::save_as_file(std::string _f, bool _l, bool _n,TMatrix<real> m, 
 }
 
 void CSupercell::save_as_file(std::string _p, std::string _f, bool _l, bool _n, TMatrix<real> m, int xc, int yc, int zc, int tc, bool _bb){
-  if(__output_format == OUTPUT_FORMAT_ATM_FRG || __output_format == OUTPUT_FORMAT_NAT_FRG )
-    gsf.set_fragment_table(v_fragment_table,__number_of_fragments);
+  //if(__output_format == OUTPUT_FORMAT_ATM_FRG || __output_format == OUTPUT_FORMAT_NAT_FRG )
+    //gsf.set_fragment_table(v_fragment_table,__number_of_fragments);
   gsf.set_bounding_box(_bb);
   gsf.set_labels(_l);
   gsf.set_numbers(_n);
@@ -204,14 +179,16 @@ void CSupercell::eval_initial_fragments(void){
         _v = get_cartesian(v_l[j]);
         v_fragments[i].set_position_cartesian(j,_v);
       }
-      v_fragment_table[v_l[j]]=i+1;
-      v_fragments[i].set_atomic_label(j,v_atomic_labels[(v_l[j])]);
-      v_fragments[i].set_atomic_symbol(j,v_atomic_symbols[(v_l[j])]);
-      v_fragments[i].set_atomic_number(j,v_atomic_numbers[(v_l[j])]);
+      //v_fragment_table[v_l[j]]=i+1;
+      gsf.set_fragment_table(v_l[j],i+1);
+      v_fragments[i].set_atomic_label(j,gsf.get_atomic_label(v_l[j]));
+      v_fragments[i].set_atomic_symbol(j,gsf.get_atomic_symbol(v_l[j]));
+      v_fragments[i].set_atomic_number(j,gsf.get_atomic_number(v_l[j]));
       v_fragments[i].is_pbc(gsf.get_is_periodic());
     }
   }
   // (1) direct, (0) cartesian
+  // ******************************************************************
   if(is_direct()){
     compute_fragmol_all_cartesian();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
@@ -232,37 +209,13 @@ void CSupercell::initialize_fragments(void){
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
 #endif
   clear_fragments();
-  //gsf.get_total_atoms()=get_total_atoms();
-  if(!gsf.if_topmol()){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGCAR: !!! No TOPCAR fragment file to load !!!"<<std::endl;
-    std::cout<<" FRAGCAR: Build the best topology for the system"<<std::endl;
+  std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
+  std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
 #endif
-    if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-      std::cout<<" FRAGCAR: Topology based on the fragment numbers"<<std::endl;
-#endif
-      gsf.set_topmol_multi_topology(v_fragment_table);
-    }else{
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-      std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
-      std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
-#endif
-      gsf.set_topmol_single_topology(gsf.get_total_atoms());
-    }
-  }else if(gsf.get_total_atoms() > gsf.get_total_topology_atoms()){
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGCAR: !!! Fragments not for all atoms !!!"<<std::endl;
-    std::cout<<" FRAGCAR: Build a fragment with remaining atoms"<<std::endl;
-#endif
-    gsf.set_complete_topology(gsf.get_total_atoms());
-  }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  else{
-    std::cout<<" FRAGCAR: !!! All atoms in fragments !!!"<<std::endl;
-  }
-#endif
-  v_fragment_table.resize(gsf.get_total_atoms());
+  gsf.set_topmol_single_topology(gsf.get_total_atoms());
+  //v_fragment_table.resize(gsf.get_total_atoms());
+  gsf.set_fragment_table(gsf.get_total_atoms());
   create_initial_fragments();
   eval_initial_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
@@ -288,282 +241,6 @@ void CSupercell::eval_cell_table(void){
 
 void CSupercell::eval_connections(const TMatrix<uint>& _m, uint u){
   gsf.eval_connections(_m,u);
-}
-
-// Construct a new fragment give a list of atoms
-bool CSupercell::eval_new_fragment(const TVector<uint>& _iv){
-  bool res=false;
-  TVector<uint> new_topology_atoms, v_l, v_i;;
-  CFragment new_frag;
-  CTopology new_top;
-  TVector<uint> new_fragment_atoms = _iv;
-  // sort the atom list
-  new_fragment_atoms.sort_max();
-  // if the new atom list is smaller than the active fragment, create a new fragment
-  if( (new_fragment_atoms.size() > 0) &&  (new_fragment_atoms.size() < v_fragments[__active_fragment].size()) ){
-    new_topology_atoms=gsf.get_topmol_atoms(new_fragment_atoms,__active_fragment);
-    // it works now
-    gsf.eval_topmol_delete_atoms(new_topology_atoms,__active_fragment);
-    new_top.v_atoms = new_topology_atoms;
-    new_top.type=2;
-    __number_of_fragments++;
-    gsf.add_topmol_topology(new_top);
-    //
-    new_frag.size(new_topology_atoms.size());
-    // BUG BELOW ???
-    v_fragments[__active_fragment].move(new_frag,new_fragment_atoms);
-    //new_frag.show_information();
-    v_fragments.push_back(new_frag);
-    //v_fragments[__active_fragment].show_information();
-    // update the fragment table
-    v_l = gsf.get_topology_atoms(__number_of_fragments-1);
-    for(uint j=0;j<v_fragments[__number_of_fragments-1].size();j++){
-      v_fragment_table[v_l[j]]=__number_of_fragments;
-    }
-    v_i = gsf.get_topology_axis(__number_of_fragments-1);
-    v_fragments[__number_of_fragments-1].set_axis_index(v_i);
-    // the new fragmented part should be updated
-    // there is a bug when an initially structure ???
-    // is moved and then fragmented ???
-    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
-    res = true;
-  }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  else{
-    std::cout<<" FRAGMOL: !!! No more atoms can be fragmented !!!"<<std::endl;;
-  }
-#endif
-  //std::cout<<" ******************************************"<<std::endl;
-  return res;
-}
-
-// param u: initial selected atom
-// param sw: atom list switch
-// param _s: distance scaling factor
-bool CSupercell::eval_scaled_fragment(uint _u, bool _sw, real _scale){
-  bool res=false;
-  TVector<uint> new_fragment_atoms;
-  uint atom_seed;
-  if(_sw) // the atom number given by the fragment table
-    atom_seed=v_atom_cell_table[_u];
-  else   // the atom number in the fragment
-    atom_seed=_u;
-  // check if the structure is splited due PBC
-  v_fragments[__active_fragment].eval_scaled_bond_integrity(atom_seed,_scale);
-  // get the linked list of atoms
-  new_fragment_atoms=v_fragments[__active_fragment].compute_vdw_fragment(atom_seed,_scale);
-  // Create the new fragment
-  res = eval_new_fragment(new_fragment_atoms); //<--------------------------
-  // (1) direct, (0) cartesian
-  if(is_direct()){
-    //compute_fragmol_all_cartesian();
-    compute_fragmol_cartesian(__active_fragment);
-    compute_fragmol_cartesian(__number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
-#endif
-  }else{
-    // It is needed when the input structure is given in cartesian coordinates
-    compute_fragmol_direct(__active_fragment);
-    compute_fragmol_direct(__number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
-#endif
-  }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  new_fragment_atoms=gsf.get_topology_atoms(__active_fragment);
-  std::cout<<" FRAGMOL: new active topology atoms = "<<new_fragment_atoms;
-#endif
-  return res;
-}
-
-// param u: initial selected atom
-// param sw: atom list switch
-// param _s: distance scaling factor
-bool CSupercell::eval_radial_fragment(uint _u, bool _sw, real _scale){
-  bool res=false;
-  TVector<uint> new_fragment_atoms;
-  uint atom_seed;
-  if(_sw) // the atom number given by the fragment table
-    atom_seed=v_atom_cell_table[_u];
-  else   // the atom number in the fragment
-    atom_seed=_u;
-  // check if the structure is splited due PBC
-  v_fragments[__active_fragment].eval_radial_integrity(atom_seed,_scale);
-  // get the linked list of atoms
-  new_fragment_atoms=v_fragments[__active_fragment].compute_radial_fragment(atom_seed,_scale);
-  // Create the new fragment
-  res = eval_new_fragment(new_fragment_atoms); //<--------------------------
-  // (1) direct, (0) cartesian
-  if(is_direct()){
-    //compute_fragmol_all_cartesian();
-    compute_fragmol_cartesian(__active_fragment);
-    compute_fragmol_cartesian(__number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
-#endif
-  }else{
-    // It is needed when the input structure is given in cartesian coordinates
-    compute_fragmol_direct(__active_fragment);
-    compute_fragmol_direct(__number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
-#endif
-  }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  new_fragment_atoms=gsf.get_topology_atoms(__active_fragment);
-  std::cout<<" FRAGMOL: new active topology atoms = "<<new_fragment_atoms;
-#endif
-  return res;
-}
-
-bool CSupercell::eval_scaled_fragment(uint u, real _s){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-#endif
-  bool is_new_frag=true;
-  // Use the atom number
-  is_new_frag=eval_scaled_fragment(u,true,_s);
-  /////////////////////////set_map_active_fragment(__active_fragment);
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  /////////////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-  return is_new_frag;
-}
-
-// auto search for fragments separated by van der Waals radius distances
-void CSupercell::eval_scaled_fragments(real _s){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-  std::cout<<" FRAGMOL: number of fragmesnt = "<<__number_of_fragments<<std::endl;
-#endif
-  bool is_new_frag=true;
-  while(is_new_frag){
-    // the new fragmented part should be updated
-    // there is a bug if the initial structure
-    // is moved and then fragmented
-    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
-    // Use the atom number inside the fragment
-    is_new_frag=eval_scaled_fragment(0,false,_s);
-    ////////////////set_map_active_fragment(__active_fragment);
-    v_fragments[__active_fragment].is_initialized(false);
-    v_fragments[__number_of_fragments-1].eval_initial_position();
-    v_fragments[__number_of_fragments-1].eval_initial_orientation();
-    v_fragments[__number_of_fragments-1].compute_origin_cartesian();
-  }
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  //////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-}
-
-// auto search for fragments separated by van der Waals radius distances
-void CSupercell::eval_vdw_fragments(void){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-  std::cout<<" FRAGMOL: number of fragmesnt = "<<__number_of_fragments<<std::endl;
-#endif
-  bool new_frag=true;
-  while(new_frag){
-    // the new fragmented part should be updated
-    // there is a bug if the initial structure
-    // is moved and then fragmented
-    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
-    // Use the atom number inside the fragment
-    new_frag=eval_scaled_fragment(0,false,1.1);
-    ////////////////set_map_active_fragment(__active_fragment);
-    v_fragments[__active_fragment].is_initialized(false);
-    v_fragments[__number_of_fragments-1].eval_initial_position();
-    v_fragments[__number_of_fragments-1].eval_initial_orientation();
-    v_fragments[__number_of_fragments-1].compute_origin_cartesian();
-  }
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  //////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-}
-
-void CSupercell::eval_atom_fragments(void){
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-#ifdef _FRAGMOL_DATA_MESSAGES_
-  v_fragments[__active_fragment].show_information();
-  std::cout<<" FRAGMOL: number of fragmesnt = "<<__number_of_fragments<<std::endl;
-#endif
-  bool new_frag=true;
-  while(new_frag){
-    // the new fragmented part should be updated
-    // there is a bug if the initial structure
-    // is moved and then fragmented
-    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
-    // Use the atom number inside the fragment
-    new_frag=eval_scaled_fragment(0,false,1.1);
-    ////////////////set_map_active_fragment(__active_fragment);
-    v_fragments[__active_fragment].is_initialized(false);
-    v_fragments[__number_of_fragments-1].eval_initial_position();
-    v_fragments[__number_of_fragments-1].eval_initial_orientation();
-    v_fragments[__number_of_fragments-1].compute_origin_cartesian();
-  }
-  eval_cell_table();
-  update_fragmol_cartesian();
-  update_fragmol_direct();
-  //////////////initialize_map();
-  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
-}
-
-// merge the fragment with the atom (u) with the active fragment
-bool CSupercell::eval_merge_fragment(uint u, bool sw){
-  TVector<uint> fragment_atoms;
-  uint atom_seed, atom_fragment;
-  if(sw)
-    atom_seed=v_atom_cell_table[u]; // atom number inside the fracment
-  else
-    atom_seed=u; // atom number from the atom table
-  // get the fragment number for a given atom from the table
-  atom_fragment=v_fragment_table[atom_seed]-1;
-  #ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" selected atom = "<<u<<std::endl;
-  std::cout<<" atom seed = "<<atom_seed<<std::endl;
-  std::cout<<" atom fragment = "<<atom_fragment<<std::endl;
-#endif
-  if( atom_fragment != __active_fragment ){
-    fragment_atoms=gsf.get_topology_atoms(atom_fragment);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: actual fragment table = "<<v_fragment_table;
-    std::cout<<" FRAGMOL: fragment atoms = "<<fragment_atoms;
-#endif
-    // Update the cartesian coordinates
-    set_cartesian();
-    // Add the list of merged atom to the active topology
-    gsf.add_topmol_atoms(fragment_atoms,__active_fragment);
-    v_fragments[__active_fragment].size(gsf.get_topology_size(__active_fragment));
-    // Decreae the fragment list by one.
-    __number_of_fragments--;
-    // Remove the merged frament and topology
-    v_fragments.remove(atom_fragment);
-    gsf.remove_topmol_topology(atom_fragment);
-    // re-evaluate the fragments using the new topologies
-    eval_initial_fragments();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: new number of fragments = "<<get_fragmol_number_of_fragments()<<std::endl;;
-#endif
-    // Set the active fragment to the fragment containing the merged atom
-    if( __active_fragment >= __number_of_fragments )
-      __active_fragment=atom_fragment;
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    fragment_atoms=gsf.get_topology_atoms(__active_fragment);
-    std::cout<<" FRAGMOL: new active topology atoms = "<<fragment_atoms;
-#endif
-    return true;
-  }else{
-    return false;
-  }
 }
 
 void CSupercell::compute_fragmol_cartesian(uint u){
@@ -1076,24 +753,28 @@ real CSupercell::get_dihedral(uint i, uint j, uint k, uint l){
 
 //////
 TVector<std::string> CSupercell::get_fragmol_atomic_symbol_table(void){
-  return v_atomic_symbol_table;
+  //return v_atomic_symbol_table;
+  return gsf.get_atomic_symbol_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atomic_composition_table(void){
-  return v_atomic_composition_table;
+  //return v_atomic_composition_table;
+  return gsf.get_atomic_composition_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atomic_number_table(void){
-  return v_atomic_number_table;
+  //return v_atomic_number_table;
+  return gsf.get_atomic_number_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atom_table(void){
-  return v_atom_type_table;
+  //return v_atom_type_table;
+  return gsf.get_atom_table();
 }
 //////
 
 TVector<uint> CSupercell::get_fragmol_fragment_table(void){
-  return v_fragment_table;
+  return gsf.get_fragment_table();
 }
 
 TMatrix<real> CSupercell::get_unit_uvw_to_xyz(void){
