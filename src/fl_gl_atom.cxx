@@ -648,7 +648,6 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
             }
           }
           /////////////////////////////////////////////////////////////////////////////////
-          //if(use_pbc){
           u_icell = iVLinear(v_neighbor_cell,v_cell_side);    // head atom index in the the cell
           if(u_icell>=0 && u_icell < (int)u_cell_number){          // inside of a cells
             j = v_cell_head[u_icell];                         // head atom in the actual cell
@@ -659,7 +658,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
             if(j<0) break;                                    // stop searching in the cell
             //if(_m!=0 || j>i){                               // avoid self-interaction
             if((j>i) && (v_ft[j] == v_ft[i])){                // avoid self-interaction and double bond
-            //if(j>i){                // avoid self-interaction and double bond
+            //if(j>i){                                        // avoid self-interaction and double bond
 #ifdef _ATOM_DEBUG_BONDS_
               std::cout<<" FL_GL_ATOM: test bond for [i-j]="<<i<<","<<j<<std::endl;
 #endif
