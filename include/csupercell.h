@@ -55,10 +55,6 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   // Compute functions
   /////////////////////////////////////////////////////////////////////////////////
-  void compute_fragmol_cartesian(uint);
-  void compute_fragmol_direct(uint);
-  void compute_fragmol_all_cartesian(void);
-  void compute_fragmol_all_direct(void);
   void compute_fragmol_direct(void);
   void compute_fragmol_position_cartesian(void);
   //

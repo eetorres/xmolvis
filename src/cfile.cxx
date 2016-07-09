@@ -46,7 +46,7 @@ void CFile::clear(void){
   //clear_potcar();
   //__number_of_fragments=0;
   //__total_atoms=0;
-  is_periodic=false;
+  b_periodic=false;
   is_potcar=false;
   is_bounding_box=false;
   is_labels=false;
@@ -126,6 +126,7 @@ bool CFile::read_input_file(void){
   else
     std::cout<<" FILE: Correct file format"<<std::endl;
 #endif
+  v_atom_cell_table.resize(get_total_atoms());
   return res;
 }
 
@@ -225,8 +226,8 @@ bool CFile::read_poscar(void){
       }
     }
     v_atomic_labels=v_atomic_symbols;
-    is_direct=file_poscar.get_format();
-    is_periodic=file_poscar.is_periodic();
+    b_direct=file_poscar.get_format();
+    b_periodic=file_poscar.is_periodic();
     //
     m_file_input=file_poscar.get_xyz_input();
     m_xyz=file_poscar.get_cartesian();
@@ -273,7 +274,7 @@ bool CFile::read_xyz(void){
     std::cout<<" READ: atomic numbers: "<<v_atomic_numbers<<std::endl;
     std::cout<<" READ: atomic number table: "<<v_atomic_number_table<<std::endl;
 #endif
-    is_direct=file_xyz.is_direct();
+    b_direct=file_xyz.is_direct();
     if(file_xyz.is_charges()){
       is_charges=true;
       v_atomic_charges=file_xyz.get_charges();
@@ -283,7 +284,7 @@ bool CFile::read_xyz(void){
     //if(file_xyz.is_fragments()){
     //v_fragment_table=file_xyz.get_fragment_table();
     //}
-    is_periodic=file_xyz.is_periodic();
+    b_periodic=file_xyz.is_periodic();
     //// adding format autodetection
     u_input_format=file_xyz.get_format();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -319,8 +320,8 @@ bool CFile::read_gau(void){
     v_atomic_symbols=file_gau.get_atomic_symbols();
     v_atomic_labels=v_atomic_symbols;
     v_atomic_numbers=file_gau.get_atomic_numbers();
-    is_direct=file_gau.is_direct();
-    is_periodic=file_gau.is_periodic();
+    b_direct=file_gau.is_direct();
+    b_periodic=file_gau.is_periodic();
     //// adding format autodetection
     u_input_format=file_gau.get_format();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -351,8 +352,8 @@ bool CFile::read_zmt(void){
     v_atomic_symbols=file_zmt.get_atomic_symbols();
     v_atomic_labels=v_atomic_symbols;
     v_atomic_numbers=file_zmt.get_atomic_numbers();
-    is_direct=file_zmt.is_direct();
-    is_periodic=file_zmt.is_periodic();
+    b_direct=file_zmt.is_direct();
+    b_periodic=file_zmt.is_periodic();
     //// adding format autodetection
     u_input_format=file_zmt.get_format();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -392,14 +393,14 @@ bool CFile::read_pdb(void){
     std::cout<<" READ: atomic number table: "<<v_atomic_number_table<<std::endl;
 #endif
     //
-    is_direct=file_pdb.is_direct();
+    b_direct=file_pdb.is_direct();
     if(file_pdb.is_charges()){
 	  is_charges=true;
 	  v_atomic_charges=file_pdb.get_charges();
 	}else{
 	  is_charges=false;
 	}
-    is_periodic=file_pdb.is_periodic();
+    b_periodic=file_pdb.is_periodic();
     //// adding format autodetection
     u_input_format=file_pdb.get_format();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -430,8 +431,8 @@ bool CFile::read_dlp(void){
     v_atomic_symbols=file_dlp.get_atomic_symbols();
     v_atomic_labels=file_dlp.get_atomic_labels();
     v_atomic_numbers=file_dlp.get_atomic_numbers();
-    is_direct=file_dlp.is_direct();
-    is_periodic=file_dlp.is_periodic();
+    b_direct=file_dlp.is_direct();
+    b_periodic=file_dlp.is_periodic();
     //// adding format autodetection
     u_input_format=file_dlp.get_format();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -622,6 +623,150 @@ void CFile::eval_connections(const TMatrix<uint>& _m, uint nb){
   //std::cout<<" done "<<std::endl;
 }
 
+void CFile::init_fragments(void){
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
+#endif
+  clear_fragments();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
+  std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
+#endif
+  set_topmol_single_topology(get_total_atoms());
+  set_fragment_table(get_total_atoms());
+  cast_fragments();
+  eval_fragments();
+//#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  //std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<st
+//#endif
+
+}
+
+void CFile::clear_fragments(void){
+  for(unsigned int i=0; i<v_fragments.size(); i++)
+    v_fragments[i].clear();
+  v_fragments.clear();
+}
+
+void CFile::cast_fragments(void){
+  // making space for the fragments
+  u_number_of_fragments = get_number_of_topologies();
+  v_fragments.resize(u_number_of_fragments);
+  for(uint i=0;i<u_number_of_fragments;i++){
+    v_fragments[i].size(get_topology_size(i));
+  }
+}
+
+void CFile::eval_fragments(void){
+  uint _s=0;//, _c=0;
+  TVector<uint> v_l, v_n, v_i;
+  TVector<std::string> v_s;
+  TVector<real> _v;
+  for(uint i=0;i<u_number_of_fragments;i++){
+    _s=v_fragments[i].size();
+    v_l = get_topology_atoms(i);
+    v_i = get_topology_axis(i);
+    v_fragments[i].set_axis_index(v_i);
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    if(is_direct())
+      std::cout<<" FRAGMOL: set direct"<<std::endl;
+    else
+      std::cout<<" FRAGMOL: set cartesian"<<std::endl;
+#endif
+    // the posmol indicates the coordinate input format
+    // (1) direct, (0) cartesian
+    for(uint j=0;j<_s;j++){
+      // store the position of the current atom inside the fragment as a table
+      v_atom_cell_table[v_l[j]]=j;
+      if(is_direct()){
+        _v = m_uvw[v_l[j]];
+        v_fragments[i].set_position_direct(j,_v);
+      }else{
+        _v = m_xyz[v_l[j]];
+        v_fragments[i].set_position_cartesian(j,_v);
+      }
+      set_fragment_table(v_l[j],i+1);
+      v_fragments[i].set_atomic_label(j,get_atomic_label(v_l[j]));
+      v_fragments[i].set_atomic_symbol(j,get_atomic_symbol(v_l[j]));
+      v_fragments[i].set_atomic_number(j,get_atomic_number(v_l[j]));
+      v_fragments[i].is_pbc(is_periodic());
+    }
+  }
+  // (1) direct, (0) cartesian
+  if(is_direct()){
+    comp_all_cartesian();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
+#endif
+  }else{
+    // It is needed when the input is in cartesian coordinates
+    comp_all_direct();
+    //compute_direct();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
+#endif
+  }
+}
+
+void CFile::comp_all_cartesian(void){
+  //TMatrix<real> _U = get_uvw_to_xyz_u();
+  //TMatrix<real> _T = get_uvw_to_xyz();
+  for(uint i=0;i<u_number_of_fragments;i++){
+    comp_cartesian(i);     // this funtion may be declared static
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" -----------------------------------------"<<std::endl;
+    std::cout<<" FRAGMOL: eval cartesian for fragment "<<i<<" [begin]"<<std::endl;
+    std::cout<<" FRAGMOL: cartesian for fragment "<<i<<" [end]"<<std::endl;
+    std::cout<<" -----------------------------------------"<<std::endl;
+#endif
+  }
+}
+
+void CFile::comp_cartesian(uint u){
+  TMatrix<real> _U = get_uvw_to_xyz_u();
+  TMatrix<real> _T = get_uvw_to_xyz();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" -----------------------------------------"<<std::endl;
+  std::cout<<" FRAGMOL: eval cartesian for fragment "<<u<<" [begin]"<<std::endl;
+#endif
+  v_fragments[u].set_unit_uvw_to_xyz(_U);
+  v_fragments[u].set_uvw_to_xyz(_T);
+  v_fragments[u].compute_origin_cartesian();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGMOL: eval cartesian for fragment "<<u<<" [end]"<<std::endl;
+  std::cout<<" -----------------------------------------"<<std::endl;
+#endif
+}
+
+void CFile::comp_all_direct(void){
+  for(uint i=0;i<u_number_of_fragments;i++){
+    comp_direct(i);  // this function may be declared static
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" -----------------------------------------"<<std::endl;
+    std::cout<<" FRAGMOL: eval direct for fragment "<<i<<" [begin]"<<std::endl;
+    std::cout<<" FRAGMOL: direct for fragment "<<i<<" [end]"<<std::endl;
+    std::cout<<" -----------------------------------------"<<std::endl;
+#endif
+  }
+}
+
+void CFile::comp_direct(uint u){
+  TMatrix<real> _U = get_uvw_to_xyz_u();
+  TMatrix<real> _T = get_uvw_to_xyz();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" -----------------------------------------"<<std::endl;
+    std::cout<<" FRAGMOL: eval direct for fragment "<<u<<" [begin]"<<std::endl;
+#endif
+    v_fragments[u].set_unit_uvw_to_xyz(_U);
+    v_fragments[u].set_uvw_to_xyz(_T);
+    v_fragments[u].compute_origin_direct();
+    v_fragments[u].compute_origin_cartesian();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGMOL: eval direct for fragment "<<u<<" [end]"<<std::endl;
+    std::cout<<" -----------------------------------------"<<std::endl;
+#endif
+}
+
 void CFile::set_input_file(std::string s){
   inputfile=s;
 }
@@ -697,5 +842,6 @@ void CFile::set_xyz_cells(int x, int y, int z, int t){
   z_cells=z;
   total_cells=t;
 }
+
 
 // END

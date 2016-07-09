@@ -45,6 +45,8 @@ public:
 
   CFile();
   ~CFile(){};
+  // NOTE: public members while debuging
+  TVector<CFragment> v_fragments;
   //
   void clear(void);
   void clear_xyz(void);
@@ -81,6 +83,14 @@ public:
   void save_zmt_as(std::string,std::string,uint);
   //
   void eval_connections(const TMatrix<uint>&,uint);
+  void init_fragments(void);
+  void clear_fragments(void);
+  void cast_fragments(void);
+  void eval_fragments(void);
+  void comp_all_cartesian(void);
+  void comp_cartesian(uint);
+  void comp_all_direct(void);
+  void comp_direct(uint);
   //
   void set_input_file(std::string s);
   void set_output_file_name(std::string s);
@@ -104,7 +114,7 @@ public:
   void set_fragment_table(uint u){v_fragment_table.resize(u);};
   void set_fragment_table(uint u, uint v){v_fragment_table[u]=v;};
   void set_modified(bool b);
-  void set_is_periodic(bool b){ is_periodic=b;}
+  void set_is_periodic(bool b){ b_periodic=b;}
   //
   void set_xyz(TMatrix<real> m);
   void set_xyz_cells(int x, int y, int z, int t);
@@ -116,6 +126,7 @@ public:
   uint get_input_format(void){ return u_input_format;}
   uint get_output_file_format(void){ return u_output_file_format;}
   uint get_output_file_type(void){ return u_output_file_type;}
+  uint get_number_of_fragments(void){ return u_number_of_fragments;}
   //
   TVector<uint> get_atomic_composition_table(void){ return v_atomic_composition_table;}
   TVector<uint> get_atomic_numbers(void){ return v_atomic_numbers;}
@@ -134,11 +145,14 @@ public:
   strg get_atomic_symbol(uint u){ return v_atomic_symbols[u];}
   strg get_atomic_label(uint u){ return v_atomic_labels[u];}
   strg get_atomic_symbol_table(uint u){ return v_atomic_symbol_table[u];}
-  
-  
   //
-  bool get_is_direct(void){ return is_direct;}
-  bool get_is_periodic(void){ return is_periodic;}
+  void is_direct(bool b){ b_direct=b;}
+  bool is_direct(void){ return b_direct;}
+  void is_periodic(bool b){ b_periodic=b;}
+  bool is_periodic(void){ return b_periodic;}
+  
+  bool get_is_direct(void){ return b_direct;}
+  bool get_is_periodic(void){ return b_periodic;}
   //
   TMatrix<real> get_xyz(void){ return m_xyz;}
   TMatrix<real> get_uvw(void){ return m_uvw;}
@@ -147,8 +161,8 @@ public:
 
 private:
 
-  bool is_direct;
-  bool is_periodic;
+  bool b_direct;
+  bool b_periodic;
   bool is_potcar;
   //bool is_input_fragment;
   bool is_bounding_box;
@@ -172,6 +186,7 @@ private:
   uint u_total_atoms;
   uint u_total_fragments;
   uint u_atomic_species;
+  uint u_number_of_fragments;
   //
   std::string inputfile;
   std::string output_filename;
@@ -186,7 +201,7 @@ private:
   CPdb    file_pdb;
   CDlp    file_dlp;
   //
-  TVector<CFragment> v_fragments;
+  // TVector<CFragment> v_fragments;
   //
   TVector<std::string> v_atomic_symbol_table;
   TVector<uint> v_atomic_composition_table;
@@ -194,8 +209,9 @@ private:
   TVector<uint> v_fragment_table;
   TVector<uint> v_atom_table;
   TVector<uint> v_atomic_numbers;
+  TVector<uint> v_atom_cell_table;
   TVector<real> v_atomic_charges;
-  TVector<int> v_connections;
+  TVector<int>  v_connections;
   //
   TVector<std::string> v_atomic_symbols;
   TVector<std::string> v_atomic_labels;

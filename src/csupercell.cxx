@@ -96,8 +96,8 @@ bool CSupercell::read_input_file(void){
     //m_xyz_centered=gsf.get_xyz();
     m_xyz=gsf.get_xyz();
     m_uvw=gsf.get_uvw();
-    m_uvw_to_xyz_u=gsf.get_uvw_to_xyz_u();
-    m_uvw_to_xyz=gsf.get_uvw_to_xyz();
+    //m_uvw_to_xyz_u=gsf.get_uvw_to_xyz_u();
+    //m_uvw_to_xyz=gsf.get_uvw_to_xyz();
 #ifdef _FRAGMOL_DATA_MESSAGES_
     std::cout<<" FRAGMOL: XYZ = "<<m_xyz;
     std::cout<<" FRAGMOL: UVW = "<<m_uvw;
@@ -141,86 +141,39 @@ void CSupercell::save_as_file(std::string _p, std::string _f, bool _l, bool _n, 
   gsf.save_as_file(_p,_f);
 }
 
+void CSupercell::initialize_fragments(void){
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
+#endif
+  //clear_fragments();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
+  std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
+#endif
+  //gsf.set_topmol_single_topology(gsf.get_total_atoms());
+  //v_fragment_table.resize(gsf.get_total_atoms());
+  //gsf.set_fragment_table(gsf.get_total_atoms());
+  gsf.init_fragments();
+  //create_initial_fragments();
+  //eval_initial_fragments();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<std::endl;
+#endif
+}
+
 // create fragments from the input topology
 void CSupercell::create_initial_fragments(void){
+/*
   // making space for the fragments
   __number_of_fragments = gsf.get_number_of_topologies();
   v_fragments.resize(get_fragmol_number_of_fragments());
   for(uint i=0;i<__number_of_fragments;i++){
     v_fragments[i].size(gsf.get_topology_size(i));
   }
+*/
 }
 
 void CSupercell::eval_initial_fragments(void){
-  uint _s=0;//, _c=0;
-  TVector<uint> v_l, v_n, v_i;
-  TVector<std::string> v_s;
-  TVector<real> _v;
-  for(uint i=0;i<get_fragmol_number_of_fragments();i++){
-    _s=v_fragments[i].size();
-    v_l = gsf.get_topology_atoms(i);
-    v_i = gsf.get_topology_axis(i);
-    v_fragments[i].set_axis_index(v_i);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    if(is_direct())
-      std::cout<<" FRAGMOL: set direct"<<std::endl;
-    else
-      std::cout<<" FRAGMOL: set cartesian"<<std::endl;
-#endif
-    // the posmol indicates the coordinate input format
-    // (1) direct, (0) cartesian
-    for(uint j=0;j<_s;j++){
-      // store the position of the current atom inside the fragment as a table
-      v_atom_cell_table[v_l[j]]=j;
-      if(is_direct()){
-        _v = get_direct(v_l[j]);
-        v_fragments[i].set_position_direct(j,_v);
-      }else{
-        _v = get_cartesian(v_l[j]);
-        v_fragments[i].set_position_cartesian(j,_v);
-      }
-      //v_fragment_table[v_l[j]]=i+1;
-      gsf.set_fragment_table(v_l[j],i+1);
-      v_fragments[i].set_atomic_label(j,gsf.get_atomic_label(v_l[j]));
-      v_fragments[i].set_atomic_symbol(j,gsf.get_atomic_symbol(v_l[j]));
-      v_fragments[i].set_atomic_number(j,gsf.get_atomic_number(v_l[j]));
-      v_fragments[i].is_pbc(gsf.get_is_periodic());
-    }
-  }
-  // (1) direct, (0) cartesian
-  // ******************************************************************
-  if(is_direct()){
-    compute_fragmol_all_cartesian();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
-#endif
-  }else{
-    // It is needed when the input is in cartesian coordinates
-    compute_fragmol_all_direct();
-    //compute_direct();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
-#endif
-  }
-}
-
-void CSupercell::initialize_fragments(void){
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
-#endif
-  clear_fragments();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
-  std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
-#endif
-  gsf.set_topmol_single_topology(gsf.get_total_atoms());
-  //v_fragment_table.resize(gsf.get_total_atoms());
-  gsf.set_fragment_table(gsf.get_total_atoms());
-  create_initial_fragments();
-  eval_initial_fragments();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<std::endl;
-#endif
 }
 
 void CSupercell::eval_cell_table(void){
@@ -243,98 +196,18 @@ void CSupercell::eval_connections(const TMatrix<uint>& _m, uint u){
   gsf.eval_connections(_m,u);
 }
 
-void CSupercell::compute_fragmol_cartesian(uint u){
-  TMatrix<real> _U = get_unit_uvw_to_xyz();
-  TMatrix<real> _T = get_uvw_to_xyz();
-  //for(uint i=0;i<__number_of_fragments;i++){
-    // this funtion should be declared static
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" -----------------------------------------"<<std::endl;
-    std::cout<<" FRAGMOL: eval cartesian for fragment "<<u<<" [begin]"<<std::endl;
-#endif
-    v_fragments[u].set_unit_uvw_to_xyz(_U);
-    v_fragments[u].set_uvw_to_xyz(_T);
-    v_fragments[u].compute_origin_cartesian();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: eval cartesian for fragment "<<u<<" [end]"<<std::endl;
-    std::cout<<" -----------------------------------------"<<std::endl;
-#endif
-  //}
-}
-
-void CSupercell::compute_fragmol_direct(uint u){
-  TMatrix<real> _U = get_unit_uvw_to_xyz();
-  TMatrix<real> _T = get_uvw_to_xyz();
-  //for(uint i=0;i<__number_of_fragments;i++){
-    // this function should be declared static
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" -----------------------------------------"<<std::endl;
-    std::cout<<" FRAGMOL: eval direct for fragment "<<u<<" [begin]"<<std::endl;
-#endif
-    v_fragments[u].set_unit_uvw_to_xyz(_U);
-    v_fragments[u].set_uvw_to_xyz(_T);
-    v_fragments[u].compute_origin_direct();
-    v_fragments[u].compute_origin_cartesian();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: eval direct for fragment "<<u<<" [end]"<<std::endl;
-    std::cout<<" -----------------------------------------"<<std::endl;
-#endif
-  //}
-}
-
-void CSupercell::compute_fragmol_all_cartesian(void){
-  TMatrix<real> _U = get_unit_uvw_to_xyz();
-  TMatrix<real> _T = get_uvw_to_xyz();
-  for(uint i=0;i<__number_of_fragments;i++){
-    // this funtion should be declared static
-    compute_fragmol_cartesian(i);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" -----------------------------------------"<<std::endl;
-    std::cout<<" FRAGMOL: eval cartesian for fragment "<<i<<" [begin]"<<std::endl;
-#endif
-//    v_fragments[i].set_unit_uvw_to_xyz(_U);
-//    v_fragments[i].set_uvw_to_xyz(_T);
-//    v_fragments[i].compute_origin_cartesian();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: cartesian for fragment "<<i<<" [end]"<<std::endl;
-    std::cout<<" -----------------------------------------"<<std::endl;
-#endif
-  }
-}
-
-void CSupercell::compute_fragmol_all_direct(void){
-  TMatrix<real> _U = get_unit_uvw_to_xyz();
-  TMatrix<real> _T = get_uvw_to_xyz();
-  for(uint i=0;i<__number_of_fragments;i++){
-    // this function should be declared static
-    compute_fragmol_direct(i);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" -----------------------------------------"<<std::endl;
-    std::cout<<" FRAGMOL: eval direct for fragment "<<i<<" [begin]"<<std::endl;
-#endif
-//    v_fragments[i].set_unit_uvw_to_xyz(_U);
-//    v_fragments[i].set_uvw_to_xyz(_T);
-//    v_fragments[i].compute_origin_direct();
-//    v_fragments[i].compute_origin_cartesian();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: direct for fragment "<<i<<" [end]"<<std::endl;
-    std::cout<<" -----------------------------------------"<<std::endl;
-#endif
-  }
-}
-
 void CSupercell::eval_fragmol_initial_position(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: eval_fragmol_initial_position"<<std::endl;
 #endif
-  v_fragments[__active_fragment].eval_initial_position();
+  gsf.v_fragments[__active_fragment].eval_initial_position();
 }
 
 void CSupercell::eval_fragmol_initial_orientation(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: eval_fragmol_initial_orientation"<<std::endl;
 #endif
-  v_fragments[__active_fragment].eval_initial_orientation();
+  gsf.v_fragments[__active_fragment].eval_initial_orientation();
 }
 
 void CSupercell::set_cartesian(void){
@@ -366,7 +239,7 @@ void CSupercell::update_fragmol_cartesian(void){
   TVector<real> _v;
   TVector<unsigned int> v_l;
   unsigned int _n, _s;
-  _n = get_fragmol_number_of_fragments();
+  _n = gsf.get_number_of_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<"FRAGMOL: TOTAL FRAGMENTS: "<<_n<<std::endl;
 #endif
@@ -391,7 +264,7 @@ void CSupercell::update_fragmol_direct(void){
   TVector<real> _v;
   TVector<unsigned int> v_l;
   unsigned int _n, _s;
-  _n = get_fragmol_number_of_fragments();
+  _n = gsf.get_number_of_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<"FRAGMOL: TOTAL FRAGMENTS: "<<_n<<std::endl;
 #endif
@@ -413,15 +286,15 @@ void CSupercell::update_fragmol_direct(void){
 }
 
 void CSupercell::compute_fragmol_position_cartesian(void){
-  v_fragments[__active_fragment].compute_origin_cartesian();
+  gsf.v_fragments[__active_fragment].compute_origin_cartesian();
 }
 
 void CSupercell::is_fragmol_initialized(bool b){
-  v_fragments[__active_fragment].is_initialized(b);
+  gsf.v_fragments[__active_fragment].is_initialized(b);
 }
 
 void CSupercell::apply_pbc(bool b){
-  v_fragments[__active_fragment].is_pbc(b);
+  gsf.v_fragments[__active_fragment].is_pbc(b);
 }
 
 void CSupercell::set_gsf_modified(const bool b){
@@ -468,36 +341,36 @@ void CSupercell::set_export_format(const uint u){
 
 void CSupercell::set_fragment_axis(const TVector<uint>& _v){
   is_fragmol_initialized(false);
-  v_fragments[__active_fragment].set_axis_index(_v);
+  gsf.v_fragments[__active_fragment].set_axis_index(_v);
 }
 
 void CSupercell::set_fragment_axis(const uint idx, const uint val){
   is_fragmol_initialized(false);
-  v_fragments[__active_fragment].set_axis_index(idx,v_atom_cell_table[val]);
+  gsf.v_fragments[__active_fragment].set_axis_index(idx,v_atom_cell_table[val]);
 }
 
 void CSupercell::set_fragmol_fragment_twist(const real r){
-  v_fragments[__active_fragment].set_axis_twist(r);
+  gsf.v_fragments[__active_fragment].set_axis_twist(r);
 }
 
 void CSupercell::set_fragmol_fragment_precession(const real r){
-  v_fragments[__active_fragment].set_axis_precession(r);
+  gsf.v_fragments[__active_fragment].set_axis_precession(r);
 }
 
 void CSupercell::set_fragmol_fragment_tilt(const real r){
-  v_fragments[__active_fragment].set_axis_tilt(r);
+  gsf.v_fragments[__active_fragment].set_axis_tilt(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_u(const real r){
-  v_fragments[__active_fragment].set_origin_u(r);
+  gsf.v_fragments[__active_fragment].set_origin_u(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_v(const real r){
-  v_fragments[__active_fragment].set_origin_v(r);
+  gsf.v_fragments[__active_fragment].set_origin_v(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_w(const real r){
-  v_fragments[__active_fragment].set_origin_w(r);
+  gsf.v_fragments[__active_fragment].set_origin_w(r);
 }
 
 void CSupercell::set_input_file(std::string s){
@@ -529,26 +402,26 @@ void CSupercell::save_topmol_file(std::string _d,std::string _f){
 }
 
 void CSupercell::set_fragment_direct(const uint i, const TMatrix<real>& _m){
-  v_fragments[i].set_position_direct(_m);
+  gsf.v_fragments[i].set_position_direct(_m);
 }
 void CSupercell::set_fragment_cartesian(const uint i, const TMatrix<real>& _m){
-  v_fragments[i].set_position_cartesian(_m);
+  gsf.v_fragments[i].set_position_cartesian(_m);
 }
 
 real CSupercell::get_fragmol_backbone_tilt(void){
-  return v_fragments[__active_fragment].get_backbone_tilt();
+  return gsf.v_fragments[__active_fragment].get_backbone_tilt();
 }
 
 real CSupercell::get_fragmol_backbone_precession(void){
-  return v_fragments[__active_fragment].get_backbone_precession();
+  return gsf.v_fragments[__active_fragment].get_backbone_precession();
 }
 
 real CSupercell::get_fragmol_axis_tilt(void){
-  return v_fragments[__active_fragment].get_axis_tilt();
+  return gsf.v_fragments[__active_fragment].get_axis_tilt();
 }
 
 real CSupercell::get_fragmol_axis_precession(void){
-  return v_fragments[__active_fragment].get_axis_precession();
+  return gsf.v_fragments[__active_fragment].get_axis_precession();
 }
 
 bool CSupercell::is_direct(void){
@@ -568,7 +441,7 @@ bool CSupercell::is_potmol(void){
 }
 
 bool CSupercell::is_fragmol_initialized(void){
-  return v_fragments[__active_fragment].is_initialized();
+  return gsf.v_fragments[__active_fragment].is_initialized();
 }
 
 std::string CSupercell::get_dir(void){
@@ -576,15 +449,15 @@ std::string CSupercell::get_dir(void){
 }
 
 std::string CSupercell::get_fragment_atomic_label(uint i, uint j){
-  return v_fragments[i].get_atomic_label(j);
+  return gsf.v_fragments[i].get_atomic_label(j);
 }
 
 std::string CSupercell::get_fragment_atomic_symbol(uint i, uint j){
-  return v_fragments[i].get_atomic_symbol(j);
+  return gsf.v_fragments[i].get_atomic_symbol(j);
 }
 
 uint CSupercell::get_fragmol_number_of_fragments(void){
-  return __number_of_fragments;
+  return gsf.get_number_of_fragments();
 }
 
 uint CSupercell::get_fragmol_active_fragment(void){
@@ -592,11 +465,11 @@ uint CSupercell::get_fragmol_active_fragment(void){
 }
 
 uint CSupercell::get_fragment_size(uint i){
-  return v_fragments[i].size();
+  return gsf.v_fragments[i].size();
 }
 
 uint CSupercell::get_fragment_atomic_number(uint i,uint j){
-  return v_fragments[i].get_atomic_number(j);
+  return gsf.v_fragments[i].get_atomic_number(j);
 }
 
 uint CSupercell::get_fragmol_total_atoms(void){
@@ -604,52 +477,52 @@ uint CSupercell::get_fragmol_total_atoms(void){
 }
 
 TVector<real> CSupercell::get_fragmol_axis_angles(void){
-  return v_fragments[__active_fragment].get_axis_angles();
+  return gsf.v_fragments[__active_fragment].get_axis_angles();
 }
 
 TVector<real> CSupercell::get_fragmol_basis_direct(void){
-  return v_fragments[__active_fragment].get_basis_direct();
+  return gsf.v_fragments[__active_fragment].get_basis_direct();
 }
 
 TVector<real> CSupercell::get_fragmol_position_direct(void){
-  return v_fragments[__active_fragment].get_origin_direct();
+  return gsf.v_fragments[__active_fragment].get_origin_direct();
 }
 
 TVector<real> CSupercell::get_fragmol_position_uvw(void){
-  return v_fragments[__active_fragment].get_origin_uvw();
+  return gsf.v_fragments[__active_fragment].get_origin_uvw();
 }
 
 TVector<real> CSupercell::get_fragmol_position_cartesian(void){
-  return v_fragments[__active_fragment].get_origin_cartesian();
+  return gsf.v_fragments[__active_fragment].get_origin_cartesian();
 }
 
 TVector<real> CSupercell::get_fragmol_centered_position_cartesian(void){
-  return v_fragments[__active_fragment].get_centered_origin_cartesian();
+  return gsf.v_fragments[__active_fragment].get_centered_origin_cartesian();
 }
 
 TVector<real> CSupercell::get_fragment_direct(uint i,uint j){
-  return v_fragments[i].get_direct(j);
+  return gsf.v_fragments[i].get_direct(j);
 }
 
 TVector<real> CSupercell::get_fragment_cartesian(uint i,uint j){
-  return v_fragments[i].get_cartesian(j);
+  return gsf.v_fragments[i].get_cartesian(j);
   //return v_fragments[i].get_centered_cartesian(j);
 }
 
 TVector<real> CSupercell::get_fragment_centered_cartesian(uint i,uint j){
-  return v_fragments[i].get_centered_cartesian(j);
+  return gsf.v_fragments[i].get_centered_cartesian(j);
 }
 
 TMatrix<real> CSupercell::get_fragment_direct(uint i){
-  return v_fragments[i].get_direct();
+  return gsf.v_fragments[i].get_direct();
 }
 
 TMatrix<real> CSupercell::get_fragment_cartesian(uint i){
-  return v_fragments[i].get_cartesian();
+  return gsf.v_fragments[i].get_cartesian();
 }
 
 TMatrix<real> CSupercell::get_fragment_centered_cartesian(uint i){
-  return v_fragments[i].get_centered_cartesian();
+  return gsf.v_fragments[i].get_centered_cartesian();
 }
 
 // STRUCTURE
@@ -778,15 +651,15 @@ TVector<uint> CSupercell::get_fragmol_fragment_table(void){
 }
 
 TMatrix<real> CSupercell::get_unit_uvw_to_xyz(void){
-  return m_uvw_to_xyz_u;
+  return gsf.get_uvw_to_xyz_u();
 }
 
 TMatrix<real> CSupercell::get_uvw_to_xyz(void){
-  return m_uvw_to_xyz;
+  return gsf.get_uvw_to_xyz();
 }
 
 TMatrix<real> CSupercell::get_bounding_box(void){
-  return m_uvw_to_xyz;
+  return gsf.get_uvw_to_xyz();
 }
 
 TMatrix<real> CSupercell::get_cartesian(void){
