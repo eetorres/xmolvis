@@ -14,23 +14,6 @@
 #include <config_debug.h>
 #include <fl_gl_atom.h>
 
-
-// Selection Buffer
-//#define SelBufferSize 512
-
-// Picking Stuff //
-//#define MODE_RENDER    1
-//#define MODE_SELECT    2
-//#define BUFSIZE     1024
-
-//GLuint selectBuf[BUFSIZE];
-//GLint hits;
-//int render_mode = MODE_RENDER;
-//int cursorX, cursorY;
-
-//#define ALPHA 0.5
-//#define HAVE_GL 1
-
 #if HAVE_GL
 Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y,w,h,l)
 #else
@@ -82,8 +65,6 @@ void Fl_Gl_Atom::eval_initial_properties(void){
   TVector<real> _atom_xyz;
   TVector<real> _rcolor(4);
   m_radius_color.resize(__number_of_atoms,4);
-  //index_palette.set(__number_of_atoms+MENU_RESERVED_IDS);
-  //index_palette.set(__number_of_atoms);
   index_palette.set_color(0);
   index_palette.initialize(0,__number_of_atoms+MENU_RESERVED_IDS,__number_of_atoms+MENU_RESERVED_IDS);
   index_palette.update_palette_index();
@@ -93,7 +74,6 @@ void Fl_Gl_Atom::eval_initial_properties(void){
 #endif
   if(is_eval_sphere){
     set_sphere_resolution(2);
-    //eval_sphere(u_sphere_resolution);
     is_eval_sphere=false;
   }
   if(is_draw_atoms_){
@@ -102,19 +82,13 @@ void Fl_Gl_Atom::eval_initial_properties(void){
       _radius=atom_rrgb[i_z][0];
       _rcolor[0]=_radius;
       _atom_xyz = m_atom_coordinates[i];
-      //m_text_position.add_row(_atom_xyz); // text position
       _rcolor[1] = atom_rrgb[i_z][1];
       _rcolor[2] = atom_rrgb[i_z][2];
       _rcolor[3] = atom_rrgb[i_z][3];
-      //m_radius_color.add_row(_rcolor);
       m_radius_color[i]=_rcolor;
     }
   }
   m_atom_rcolor = m_radius_color;
-//#ifdef _ATOM_DEBUG_MESSAGES_
-//  std::cout<<" m_atom_rcolor = "<<m_atom_rcolor;
-//#endif
-  //eval_atom_spheres(); //<--------------
 }
 
 void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
@@ -130,43 +104,30 @@ void Fl_Gl_Atom::update_atomic_coordinates(const TMatrix<real>& m){
 }
 
 void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
-  //clear();
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: Initialize"<<std::endl;
 #endif
-  //m_atom_coordinates = m;
   update_atomic_coordinates(m);
   __number_of_atoms = m_atom_coordinates.rows();
   if(__number_of_atoms<100){
     is_linked_cell=false;
   }
-  //cout<<" ATOM: New number of atoms: "<<__number_of_atoms<<std::endl;
-  //std::cout<<" atoms: "<<m_atom_coordinates;
   if(is_first_structure_){
-    //std::cout<<" ATOM: Initialize 1-1"<<std::endl;
 #ifdef _ATOM_DEBUG_MESSAGES_
     std::cout<<" ATOM: First structures"<<std::endl;
 #endif
-    //std::cout<<"Sphere level: "<<__sphere_strip_size<<std::endl;
-    //cout<<"m_atoms_strip.rows = "<<m_atoms_strip.rows()<<std::endl;
     if(is_initialize_rot)
       initialize_rotation_matrix();
     initialize_transform_matrix();
     is_draw_atoms_=true;
     is_first_structure_=false;
-    //std::cout<<" ATOM: Initialize 1-2"<<std::endl;
   }
-  //m_atoms_strip.resize(__number_of_atoms*__sphere_strip_length,3);
-  //std::cout<<" ATOM: Initialize 1-3"<<std::endl;
   is_update_atomic_properties = true;
   if(is_draw_bonds_){
     is_update_bonds=true;
-    //update_bonds_color=true;
   }
   is_update_radius=true;
   eval_initial_properties(); // <---------------------!!!@
-  //set_xyz_cells();
-  //eval_system_properties();
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: Initialized"<<std::endl;
 #endif
@@ -191,113 +152,40 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: start - update_atomic_bonds(void)"<<std::endl;
 #endif
-  //bool use_pbc;
   uint i, j;//,  nbonds;
-  //real rl, r, r2, rr, ri, rj, rlz, rlxy;
-  //real r, r2;
-  //real ri, rj, rlz, rlxy;
-  //real ri, rlz, rlxy;
   real rlz, rlxy;
-  //TVector<uint> vidx(2);
   TVector<real> vi, vj, vij, vang(2);
   TVector<real> vi_uvw, vj_uvw, vij_uvw;
-  //
   TVector<int>  v_pbc;
-  //vidx[0]=i;
-  //vidx[1]=j;
-  //r = sqrt(r2);
-  //vij = (vj-vi);
-  //rlz = vij[2];
-  //vij[2] = 0;
-  //rlxy = vij.magnitude();
-  //vang[0] = RAD_DEG*atan2(vij[1],vij[0]);       // bond precession
-  //vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz));      // bond tilt
-  //vij = 0.5*(vj+vi);
-  //k = (uint)(r*f_atom_bond_inv_delta);
-  //m_bond_indices.add_row(vidx);
-
-  // Inside the box
-  //m_bond_angles.add_row(vang);
-  //m_bond_position.add_row(vij);
-  //v_bond_number.push_back(check_bond(k));
-  //m_bond_indices.add_row(vidx);
-  //nbonds = m_bond_indices.rows();
-  //for(uint n=0; n<nbonds; n++){
   for(uint n=0; n<i_number_of_bonds; n++){
     i=m_bond_indices[n][0];
     j=m_bond_indices[n][1];
-    //
     vi = m_atom_coordinates[i];
-    //vi_uvw = (vi*u_inv_bbox);
-    //ri = m_radius_color[i][0];
     vj = m_atom_coordinates[j];
-    //vj_uvw = (vj*u_inv_bbox);
-    //rj = m_radius_color[i][1];
-    // Sun Feb 24 16:35:37 MST 2013
-    // should check boundaries only if the atoms were moved
-    // right now is checking all, low efficiency
-    //use_pbc = false;
-    //vij_uvw = (vj_uvw-vi_uvw);
-    /* bonds inside the volume box dont need PBC
-    for(uint coord=0; coord<3; coord++){
-      //v_pbc[coord] = 0;
-      if(vij_uvw[coord] <= -v_bbox[coord]){
-        vj += 2.0*m_bbox[coord];       // PBC
-        //use_pbc = true;
-        //v_pbc[coord] = 1;
-      }else if(vij_uvw[coord] > v_bbox[coord]){
-        vj -= 2.0*m_bbox[coord];       // PBC
-        //use_pbc = true;
-        //v_pbc[coord] = -1;
-      }
-    }*/
     vij = (vj-vi);
-    // check if the bond is still within the range
-    //r2 = vij.magnitude();
-    //r = sqrt(r2);
-    //uint k = get_bond_index(r);
-    // working here...!!!!
     rlz = vij[2];
     vij[2] = 0;
     rlxy = vij.magnitude();
     vang[0] = RAD_DEG*atan2(vij[1],vij[0]);       // bond precession
     vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz));      // bond tilt
     vij = 0.5*(vj+vi);
-    //
-    //k = (uint)(r*f_atom_bond_inv_delta);
     m_bond_angles[n]=vang;
     m_bond_position[n]=vij;
   }
-
-  // PBC
-  //m_bond_boundary_pbc.add_row(v_pbc);
-  //m_bond_angles_pbc.add_row(vang);
-  //m_bond_position_pbc.add_row(vij);
-  //v_bond_number_pbc.push_back(check_bond(k));
-  //m_bond_indices_pbc.add_row(vidx);
-
   // THERE IS A BIG BUG HERE
   // PBC BONDS DONT SHOW CORRECT
-  //nbonds = m_bond_indices_pbc.rows();
   for(uint n=0; n<i_number_of_bonds_pbc; n++){
     i=m_bond_indices_pbc[n][0];
     j=m_bond_indices_pbc[n][1];
     //
     vi = m_atom_coordinates[i];
     vi_uvw = (vi*u_inv_bbox);
-    //ri = m_radius_color[i][0];
     vj = m_atom_coordinates[j];
     for(uint coord=0; coord<3; coord++){
-      //vj[coord]+=(neighbor_cells[_m][coord]*v_box_size[coord]);                    // PBC
-      //vj[coord]+=(neighbor_cells[_m][coord]*2.0*(m_bbox[0][coord]+m_bbox[1][coord]+m_bbox[2][coord]));                    // PBC
       if ( m_bond_boundary_pbc[n][coord] != 0 )
         vj += m_bond_boundary_pbc[n][coord]*2.0*m_bbox[coord];       // PBC
-      //v_pbc[coord] = neighbor_cells[_m][coord];
     }
     vj_uvw = (vj*u_inv_bbox);
-    //rj = m_radius_color[i][1];
-    //
-    //r = sqrt(r2);
     vij = (vj-vi);
     rlz = vij[2];
     vij[2] = 0;
@@ -305,8 +193,6 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
     vang[0] = RAD_DEG*atan2(vij[1],vij[0]);       // bond precession
     vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz));      // bond tilt
     vij = 0.5*(vj+vi);
-    //k = (uint)(r*f_atom_bond_inv_delta);
-    //
     m_bond_angles_pbc[n]=vang;
     m_bond_position_pbc[n]=vij;
   }
@@ -408,7 +294,7 @@ void Fl_Gl_Atom::save_wysiwyg_as(std::string _p, std::string _f){
 
 void Fl_Gl_Atom::save_wysiwyg_as(std::string _f){
   //if((get_output_file_format() == OUTPUT_FORMAT_ATM_NFR) || (get_output_file_format() == OUTPUT_FORMAT_ATM_FRG))
-    //std::cout<<"hola";
+    //std::cout<<"check";
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: do save_wysiwyg_as (2)"<<std::endl;
 #endif
@@ -444,21 +330,12 @@ void Fl_Gl_Atom::set_bounding_box(const TMatrix<real>& m){
   _vv = m_bbox[1];
   _vw = m_bbox[2];
   // set up the half box sides
-  // v_bbox is the half of the box
   v_bbox[0]=_vu.magnitude();
   v_bbox[1]=_vv.magnitude();
   v_bbox[2]=_vw.magnitude();
   // the full box is used for the bond search method
   v_box_size = 2.0*v_bbox;
-  //v_box_size = v_bbox;
-  //v_bbox[0]=m_bbox[0][0];
-  //v_bbox[1]=m_bbox[1][1];
-  //v_bbox[2]=m_bbox[2][2];
-  //u_bbox[0] = _vu/_vu.magnitude();
-  //u_bbox[1] = _vv/_vv.magnitude();
-  //u_bbox[2] = _vw/_vw.magnitude();
   u_bbox=supercell.get_unit_uvw_to_xyz();
-  //m_bbox.transpose();
   u_inv_bbox=u_bbox.inverse();
   // set view size
   base_view = maxi(_vu.magnitude(), _vv.magnitude());
@@ -526,16 +403,12 @@ void Fl_Gl_Atom::add_stick(const TVector<real>& c,real l, real r, real a1, real 
     e = vrot_y(e,a2);
     e = vrot_z(e,a1);
     glNormal3f(e[0],e[1],e[2]);
-    //glTexCoord2f(m_cylinder_texture1[i][0],m_cylinder_texture1[i][1]);
     glVertex3f(t[0],t[1],t[2]);
-    //p[0] = r * e[0];
-    //p[1] = r * e[1];
     p[2] = l;
     t = vrot_y(p,a2);
     t = vrot_z(t,a1);
     t = c+t;
     glNormal3f(e[0],e[1],e[2]);
-    //glTexCoord2f(m_cylinder_texture1[i][0],m_cylinder_texture1[i][1]);
     glVertex3f(t[0],t[1],t[2]);
   }
 #ifdef _SHOW_DEBUG_ADD_STICK_
@@ -562,8 +435,6 @@ void Fl_Gl_Atom::add_axis(const TVector<real>& c,real l, real r, real a1, real a
 #ifdef _SHOW_DEBUG_ADD_AXIS_
   std::cout<<" ATOM: init"<<std::endl;
 #endif
-  //glColor3f(0.4,0.9,0.1);
-  //add_stick(c,10,l,__axis_precession,__axis_tilt);
   add_stick(c,l,r,a1,a2);
 #ifdef _SHOW_DEBUG_ADD_AXIS_
   std::cout<<" ATOM: strip"<<std::endl;
@@ -603,26 +474,20 @@ void Fl_Gl_Atom::set_cells(void){
   std::cout<<" LINKED: Cell = "<<v_cell_side;
 #endif
   // set the necesary neighbor cells
-  // neighbor_cells_xyz
   if(v_cell_side[0]==2) xpcb=-1;
   if(v_cell_side[1]==2) ypcb=-1;
   if(v_cell_side[2]==2) zpcb=-1;
   neighbor_cells_xyz.resize(0,3);
-  //int count=0;
   i_neighbor_cells=0;
   for(int k=0; k<27; k++){
 	v1[0] = neighbor_cells[k][0];
 	v1[1] = neighbor_cells[k][1];
 	v1[2] = neighbor_cells[k][2];
 	if((v1[0] > xpcb) && (v1[1] > ypcb) && (v1[2] > zpcb)){
-	  //std::cout<<v1<<std::endl;
 	  neighbor_cells_xyz.add_row(v1);
 	  i_neighbor_cells++;
 	}
   }
-  //std::cout<<" Neighbouring cells = "<<i_neighbor_cells<<std::endl;
-  //std::cout<<" Neighbouring matrix = "<<neighbor_cells_xyz<<std::endl;
-  //
   is_linked_cell=true;
   for(int i=0; i<3; i++){
     if(v_cell_side[1]<=2){
@@ -675,21 +540,12 @@ void Fl_Gl_Atom::eval_linked_list(void){
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
     std::cout<<" direct r = "<<v_positive_r;
 #endif
-    // v_positive_r = fVAdd(m_atom_coordinates[_n],v_box_middle);
     // use half of the box here
     v_positive_r = fVAdd(v_positive_r,v_bbox);
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
     std::cout<<" positive r = "<<v_positive_r;
 #endif
     // apply PBC to place all the atoms inside the box
-    /*
-    for(uint coord=0; coord<3; coord++){
-      if(v_positive_r[coord] <= 0){
-        v_positive_r[coord]+= v_box_size[coord];
-      }else if(v_positive_r[coord] > v_box_size[coord]){
-        v_positive_r[coord]-=v_box_size[coord];
-      }
-    }*/
     v_integer_r = iVMul(v_positive_r,v_cell_frac);
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
     std::cout<<" v_integer_r = "<<v_integer_r;
@@ -708,24 +564,8 @@ void Fl_Gl_Atom::eval_linked_list(void){
 }
 
 // Fri Jan 13 16:55:51 MST 2012
-// alpha version
+// beta version
 // find bonds between atoms closer than the sum of their van der Waals radius
-// it needs linked list to be faster (ASAP). (DONE)
-// !!!This Bug was fixed!!!
-// there is a bug in this code. It can be reproduce when I load the sam_asphaltane.xyz
-// and then I add the bonds.
-// !!!This Bug was fixed!!!
-//
-// Tue May 29 21:40:47 MDT 2012
-// !!!This Bug was fixed!!!
-// bonds broken when periodic images of the unit cell is used.
-// this can be solved using PBC when the bonds are evald.
-// !!!This Bug was fixed!!!
-//
-// !!!This Bug was fixed!!!
-// Sun Oct 21 15:04:24 MDT 2012
-// bond to the last atom sometimes is missing
-// !!!This Bug was fixed!!!
 void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: eval_atomic_bonds "<<std::endl;
@@ -735,7 +575,6 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #endif
   int j;
   bool use_pbc;
-  //real dx, r2;
   real rl, r, r2, rr, ri, rj, rlz, rlxy;
   TVector<uint> vidx(2);
   TVector<real> vi, vj, vij, vang(2);
@@ -754,32 +593,17 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: estimated max bonds "<<max_bonds<<std::endl;
 #endif
-  //v_bond_number.push_back(check_bond(k));
-  //m_bond_indices.add_row(vidx);
-  //
   v_bond_table.resize(0);
-  //v_bond_length.resize(0);
   i_number_of_bonds = 0;
   i_number_of_bonds_pbc = 0;
   ////////////////////////////////////////
-  //v_bond_number.resize(0);
-  //m_bond_indices.resize(0,2);
   v_bond_number.resize(max_bonds);
   m_bond_indices.resize(max_bonds,2);
-  //v_bond_number_pbc.resize(0);
-  //m_bond_indices_pbc.resize(0,2);
   v_bond_number_pbc.resize(uint(max_bonds/2));
   m_bond_indices_pbc.resize(uint(max_bonds/2),2);
   m_bond_boundary_pbc.resize(uint(max_bonds/2),2);
   ////////////////////////////////////////
-  //m_bond_angles.resize(0,2);
-  //m_bond_position.resize(0,3);
-  //
-  //m_bond_angles_pbc.resize(0,2);
-  //m_bond_position_pbc.resize(0,3);
-  //m_bond_boundary_pbc.resize(0,3);
   v_pbc.resize(3);
-  //
 #ifdef _ATOM_DEBUG_BONDS_
   std::cout<<" FL_GL_ATOM: LINKED: Box = "<<v_box_size;
 #endif
@@ -810,13 +634,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
         v_integer_r  = iVMul(v_positive_r,v_cell_frac);
         // using the neighbour list
         // searching inside the neighbour cells
-        //for (int _m=0; _m<27; _m++){
         for (int _m=0; _m<i_neighbor_cells; _m++){
-          //use_pbc = true;
-          // Neighbour cell
-          //v_neighbor_cell = iVAdd(v_integer_r,neighbor_cells[_m]);
-          //std::cout<<" Neighbouring cells = "<<i_neighbor_cells<<std::endl;
-          //std::cout<<" Neighbouring matrix = "<<neighbor_cells_xyz<<std::endl;
           v_neighbor_cell = iVAdd(v_integer_r,neighbor_cells_xyz[_m]);
           // Used to apply PCB to cells in each dimension
           /////////////////////////////////////////////////////////////////////////////////
@@ -880,31 +698,17 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
                 rlxy = vij.magnitude();
                 vang[0] = RAD_DEG*atan2(vij[1],vij[0]);       // bond precession
                 vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz));      // bond tilt
-                //vij = 0.5*(vj+vi);
-                //k = (uint)(r*f_atom_bond_inv_delta);
                 k = get_bond_index(r);
-                //m_bond_indices.add_row(vidx);
                 if(use_pbc){
                   v_bond_number_pbc[i_number_of_bonds_pbc]=check_bond(k);
                   m_bond_indices_pbc[i_number_of_bonds_pbc]=vidx;
                   m_bond_boundary_pbc[i_number_of_bonds_pbc]=v_pbc;
                   i_number_of_bonds_pbc++;
-                  //m_bond_angles_pbc.add_row(vang);
-                  //m_bond_position_pbc.add_row(vij);
-                  //v_bond_number_pbc.push_back(check_bond(k));
-                  //m_bond_indices_pbc.add_row(vidx);
-                  //m_bond_boundary_pbc.add_row(v_pbc);
                 }else{
                   v_bond_number[i_number_of_bonds]=check_bond(k);
                   m_bond_indices[i_number_of_bonds]=vidx;
                   i_number_of_bonds++;
-                  //v_bond_number.push_back(check_bond(k));
-                  //m_bond_indices.add_row(vidx);
-                  //count_bonds++;
-                  //m_bond_angles.add_row(vang);
-                  //m_bond_position.add_row(vij);
                 }
-                //i_number_of_bonds++;
               }
             }
             j = v_cell_list[j];
@@ -925,8 +729,6 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
             if(strcmp(v_atomic_symbol_table_gl[v_atom_table[j]].c_str(),"X")){
               vj = m_atom_coordinates[j];
               for(uint coord=0; coord<3; coord++){
-                //vj[coord]+=(neighbor_cells[_m][coord]*v_box_size[coord]);                                        // PBC
-                //vj[coord]+=(neighbor_cells[_m][coord]*2.0*(m_bbox[0][coord]+m_bbox[1][coord]+m_bbox[2][coord])); // PBC
                 vj += neighbor_cells[_m][coord]*2.0*m_bbox[coord];       // PBC
                 v_pbc[coord] = neighbor_cells[_m][coord];
               }
@@ -947,26 +749,13 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
                 rlxy = vij.magnitude();
                 vang[0] = RAD_DEG*atan2(vij[1],vij[0]);  // precession
                 vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz)); // tilt
-                //vij = 0.5*(vj+vi);
                 r = sqrt(rl);
-                //uint k = (uint)(r/f_atom_bond_delta);
                 uint k = get_bond_index(r);
-                //
-                //m_bond_angles.add_row(vang);
-                //m_bond_position.add_row(vij);
-                //v_bond_number.push_back(check_bond(k));
-                //m_bond_indices.add_row(vidx);
                 if(_m>0){
                   v_bond_number_pbc[i_number_of_bonds_pbc]=check_bond(k);
                   m_bond_indices_pbc[i_number_of_bonds_pbc]=vidx;
                   m_bond_boundary_pbc[i_number_of_bonds_pbc]=v_pbc;
                   i_number_of_bonds_pbc++;
-                  //count_bonds++;
-                  //m_bond_boundary_pbc.add_row(v_pbc);
-                  //v_bond_number_pbc.push_back(check_bond(k));
-                  //m_bond_indices_pbc.add_row(vidx);
-                  //m_bond_angles_pbc.add_row(vang);
-                  //m_bond_position_pbc.add_row(vij);
 #ifdef _ATOM_DEBUG_BONDS_
                   std::cout<<" ATOM: bond pcb type: "<<check_bond(k)<<std::endl;
 #endif
@@ -974,16 +763,10 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
                   v_bond_number[i_number_of_bonds]=check_bond(k);
                   m_bond_indices[i_number_of_bonds]=vidx;
                   i_number_of_bonds++;
-                  //v_bond_number.push_back(check_bond(k));
-                  //m_bond_indices.add_row(vidx);
-                  //count_bonds++;
-                  //m_bond_angles.add_row(vang);
-                  //m_bond_position.add_row(vij);
 #ifdef _SHOW_DEBUG_NOPBC_BONDS_
                   std::cout<<" ATOM: bond type: "<<check_bond(k)<<std::endl;
 #endif
                 }
-                //i_number_of_bonds++; //
               }
             }
             }
@@ -991,12 +774,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
         }
       }
     }
-    //i_number_of_bonds+=v_bond_number.size();
   }
-  //i_number_of_bonds=v_bond_number.size()+v_bond_number_pbc.size();
-  //i_number_of_bonds=v_bond_number.size();
-  //i_number_of_bonds--;
-  //i_number_of_bonds_pbc=v_bond_number_pbc.size();
   m_bond_rcolor_0.resize(i_number_of_bonds,4);
   m_bond_rcolor_1.resize(i_number_of_bonds,4);
   m_bond_rcolor_pbc_0.resize(i_number_of_bonds_pbc,4);
@@ -1006,7 +784,6 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   m_bond_angles_pbc.resize(i_number_of_bonds_pbc,2);
   m_bond_position.resize(i_number_of_bonds,3);
   m_bond_position_pbc.resize(i_number_of_bonds_pbc,3);
-  //std::cout<<" m_bond_indices="<<m_bond_indices;
 #ifdef _ATOM_DEBUG_BONDS_
   std::cout<<" ATOM: i_number_of_bonds="<<i_number_of_bonds<<std::endl;
   std::cout<<" ATOM: i_number_of_bonds_pbc="<<i_number_of_bonds_pbc<<std::endl;
@@ -1068,51 +845,37 @@ void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
 }
 
 void Fl_Gl_Atom::compute_atom_fragment(const uint _u){
-  //supercell.eval_atom_fragment(_u);
-  //supercell.eval_scaled_fragment(_u,0.1);
   // Use fragment table
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_radial_fragment(const uint _u, const real _r){
-  //supercell.eval_radial_fragment(_u,true,_r);
   // Use fragment table
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_vdw_fragment(const uint _u){
-  //supercell.eval_vdw_fragment(_u);
-  //supercell.eval_scaled_fragment(_u,1.1);
   update_fragments(_u,true);
 }
 
 void Fl_Gl_Atom::compute_atom_fragments(void){
-  //unsigned int _n;
-  //supercell.eval_scaled_fragments(0.1);
   // Use fragment number
   update_fragments(1,false);
-  //set_fragment_total(get_view_total_fragments());
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total fragments: "<<__fragment_total<<std::endl;
 #endif
-  //set_fragment_table(get_view_fragment_table());
 }
 
 void Fl_Gl_Atom::compute_vdw_fragments(void){
-  //unsigned int _n;
-  //supercell.eval_scaled_fragments(1.1);
   // Use fragment number
   update_fragments(1,false);
   //set_fragment_total(get_view_total_fragments());
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total fragments: "<<__fragment_total<<std::endl;
 #endif
-  //set_fragment_table(get_view_fragment_table());
 }
 
 void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
-  //supercell.eval_atom_fragment(_u);
-  //supercell.eval_merge_fragment(_u,false);
   // Use fragment table
   update_fragments(_u,true);
 }
@@ -1124,28 +887,9 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
   __fragment_active=_af;
   // fragments are counted from 1
   set_map_active_fragment(_af-1);
-  //set_fragment_active(_af);
-  //update_coordinates=true;
   set_update_coordinates(true);
   update_data(); //<-------------------------
 }
-
-/*
-void Fl_Gl_Atom::set_atom_fragment(const uint _a){
-  //uint _af;
-  //eval_new_fragment(_a);
-  //compute_new_fragment(_a);
-  // atoms are counted from 1 in the scene
-  //_af= v_fragment_table_gl[_a];
-  v_fragment_table_gl[_a]=__fragment_total;
-  __fragment_active=__fragment_total;
-  set_fragment_total(__fragment_total+1);
-  set_update_coordinates(true);
-  // fragments are counted from 1
-  //set_map_active_fragment(__fragment_total-1);
-  //set_fragment_active(_af); // the same as zero above.
-  //update_data();
-}*/
 
 uint Fl_Gl_Atom::check_bond(uint u){
   uint size = v_bond_table.size();
@@ -1163,7 +907,6 @@ void Fl_Gl_Atom::eval_sphere(uint maxlevel){
     int s, cont = 0;
     __sphere_strip_length=20*(u_sphere_rows*(u_sphere_rows-1)+(u_sphere_rows*3));
     m_sphere.resize(__sphere_strip_length,3);
-    //m_sphere.resize(0,3);
     TVector<real> vt(3);
     /* iterate over the 20 sides of the icosahedron */
     for(s = 0; s < 20; s++) {
@@ -1179,8 +922,6 @@ void Fl_Gl_Atom::eval_sphere(uint maxlevel){
             linearly_interpolate(&t->pt[1], &t->pt[0], (float)i/u_sphere_rows, &v1);
             linearly_interpolate(&t->pt[1], &t->pt[2], (float)(i+1)/u_sphere_rows, &v2);
             linearly_interpolate(&t->pt[1], &t->pt[2], (float)i/u_sphere_rows, &v3);
-            //glBegin(GL_TRIANGLE_STRIP);
-
             NORMV(v0,cont);
             cont++;
             NORMV(v1,cont);
@@ -1196,12 +937,8 @@ void Fl_Gl_Atom::eval_sphere(uint maxlevel){
             }
             NORMV(v2,cont);
             cont++;
-            //std::cout<<s<<") "<<__sphere_strip_length<<" + "<<(2*i+3)<<" = ";
-            //__sphere_strip_length+=(2*i+3);
-            //std::cout<<__sphere_strip_length<<std::endl;
         }
     }
-    //m_atoms_strip.resize(__sphere_strip_length,3);
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" FL_GL_ATOM: sphere rows = "<<u_sphere_rows<<std::endl;
   std::cout<<" FL_GL_ATOM: sphere_strip_length = "<<__sphere_strip_length<<std::endl;
@@ -1221,9 +958,6 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
   if(n < 4){
       n = 4;
   }
-  //else if(n < 0){
-  //    n = -n;
-  //}
   __cylinder_strip_length=n;
   for (uint i=0;i<=n;i++){
     theta3 = i * C_2PI / n;
@@ -1241,7 +975,6 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
 }
 
 void Fl_Gl_Atom::initialize_transform_matrix(void){
-  //tb_button = button;
   tb_angle = 0.0;
   glMatrixMode(GL_PROJECTION);
   // put the identity in the trackball transform
@@ -1252,9 +985,7 @@ void Fl_Gl_Atom::initialize_transform_matrix(void){
 }
 
 void Fl_Gl_Atom::initialize_rotation_matrix(void){
-  //tb_button = button;
   tb_angle = 0.0;
-  //glMatrixMode(GL_PROJECTION);
   glMatrixMode(GL_MODELVIEW);
   /* put the identity in the trackball transform */
   glPushMatrix();

@@ -102,11 +102,7 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   f_highlight_brightness_max = 1.5;
   f_select_brightness_max    = 1.5;
   f_atom_brightness_max      = 1.5;
-  //
-  //eval_sphere(2);
-  // for the inial world axes
-  //eval_cylinder(20);
-  // Locatios
+  // Locations
   view_left   =  base_view;
   view_right  =  base_view;
   view_bottom =  base_view;
@@ -148,8 +144,6 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
     is_radio_active[i]    = false;
   }
   is_draw_bbox_           = true;
-  //init_font();
-  //
 #if !HAVE_GL
   label("OpenGL is required for this demo to operate.");
   align(FL_ALIGN_WRAP | FL_ALIGN_INSIDE);
@@ -159,20 +153,14 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
 ////////////////////////////OPENGL////////////////////////////////
 #if HAVE_GL
 Fl_Gl_Mol_View::~Fl_Gl_Mol_View(){
-  //m_sphere_e1.clear();
-  //m_sphere_e2.clear();
-  //m_texture1.clear();
-  //m_texture2.clear();
   clear();
 }
 
 void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
   m_atom_coordinates.clear();
-  //m_text_position.clear();
   m_radius_color.clear();
   v_atom_symbols.clear();
-  //m_atoms_strip.clear();
   //
   is_eval_bonds           = true;
   update_normal_color     = true;
@@ -185,7 +173,6 @@ void Fl_Gl_Mol_View::clear(void){
   //
   is_graphics_on          = false;
   is_first_structure_     = true;
-  //is_draw_bbox_           = true;
   is_draw_pie_menu        = false;
   is_draw_pie_submenu     = false;
   is_draw_line            = false;
@@ -201,8 +188,6 @@ void Fl_Gl_Mol_View::clear(void){
   //
   is_mode_atom            = true;
   //
-  //is_draw_molecular_axes_ = false;
-  //is_draw_molecular_axis_ = false;
   is_draw_atoms_          = false;
   is_update_mask_rcolor   = false;
   is_update_radius        = false;
@@ -210,7 +195,6 @@ void Fl_Gl_Mol_View::clear(void){
   is_update_atomic_properties = false;
   is_normal_color_        = true;
   is_highlight_atom_      = true;
-  //is_normal_atom_         = false;
   is_highlight_fragment_  = false;
   is_dark_mask_           = false;
   is_pbc                  = true;
@@ -223,12 +207,10 @@ void Fl_Gl_Mol_View::clear(void){
   __highlight_atom_b      = 0;
   __select_begin          = -1;
   __select_end            = -1;
-
   i_number_of_bonds       = 0;
   i_number_of_bonds_pbc   = 0;
   __axis_precession       = 0;
   __axis_tilt             = 0;
-  //r_axis_bias = 0.0;
   v_axes_position.resize(3);
   //
   u_selected_index        = 0;
@@ -241,15 +223,6 @@ void Fl_Gl_Mol_View::clear(void){
   is_slider_active[0]     = true;
   // initialize radios
   u_radio_index           = 0;
-  //for(uint i=0; i<NUMBER_OF_RADIOS; i++){
-    //is_radio_active[i]    = false;
-  //}
-  // default radio
-  //is_radio_active[0]      =true;
-  //is_slider_active[1]     =false;
-  //is_slider_active[2]     =false;
-  //is_slider_active[3]     =false;
-  //
   label="";
 }
 
@@ -354,7 +327,6 @@ void Fl_Gl_Mol_View::create_cylinder_dl(void){
   v_cylinder_list.resize(u_bond_types);
   for(uint i=0; i<u_bond_types; i++){
 #ifdef _SHOW_DEBUG_CYLINDERS_
-    //std::cout<<" bond index: "<<v_bond_number[i]<<std::endl;
     std::cout<<" bond length: "<<v_bond_table[i]<<std::endl;
 #endif
     length = 0.5*f_atom_bond_delta*(real)v_bond_table[i];
@@ -363,12 +335,10 @@ void Fl_Gl_Mol_View::create_cylinder_dl(void){
     glNewList(v_cylinder_list[i],GL_COMPILE);
     // call the function that contains the rendering commands
     initialize_cylinder(-length);
-    //initialize_cylinder(-length);
     // end list
     glEndList();
     glNewList(v_cylinder_list[i]+1,GL_COMPILE);
     // call the function that contains the rendering commands
-    //initialize_cylinder(length);
     initialize_cylinder(length);
     // end list
     glEndList();
@@ -377,30 +347,17 @@ void Fl_Gl_Mol_View::create_cylinder_dl(void){
 
 void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   gm_rgb color;
-  //TVector<real> vcolor;
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
   std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (0)"<<std::endl;
 #endif
-  //uint _fhl;
   if(update_normal_color){
     for(int i=0; i<__number_of_atoms; i++){
-      //if(is_highlight_fragment_ && v_fragment_table_gl[i]==__fragment_active){
-        //color = palette.get_color(__fragment_active);
-        //m_atom_rcolor[i][1] = f_atom_brightness*color.r;
-        //m_atom_rcolor[i][2] = f_atom_brightness*color.g;
-        //m_atom_rcolor[i][3] = f_atom_brightness*color.b;
-      //}else
       if(is_mode_atom){
-        //m_atom_rcolor[i] = f_atom_brightness*m_radius_color[i];
         m_atom_rcolor[i][1] = f_atom_brightness*m_radius_color[i][1];
         m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
         m_atom_rcolor[i][3] = f_atom_brightness*m_radius_color[i][3];
       }else{
-        //std::cout<<" fragment ="<<i<<std::endl;
         color = palette.get_color(v_fragment_table_gl[i]);
-        //vcolor = palette.get_vcolor(v_fragment_table_gl[i]);
-        //std::cout<<" vcolor ="<<vcolor<<std::endl;
-        //m_atom_rcolor[i] = (f_atom_brightness*vcolor);
         m_atom_rcolor[i][1] = f_atom_brightness*color.r;
         m_atom_rcolor[i][2] = f_atom_brightness*color.g;
         m_atom_rcolor[i][3] = f_atom_brightness*color.b;
@@ -417,23 +374,17 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       int idx0 = m_bond_indices[i][0];
       int idx1 = m_bond_indices[i][1];
       if(is_mode_atom){
-        //m_bond_rcolor_0[i] = f_atom_brightness*m_radius_color[idx0];
         m_bond_rcolor_0[i][1] = f_atom_brightness*m_radius_color[idx0][1];
         m_bond_rcolor_0[i][2] = f_atom_brightness*m_radius_color[idx0][2];
         m_bond_rcolor_0[i][3] = f_atom_brightness*m_radius_color[idx0][3];
-        //m_bond_rcolor_1[i] = f_atom_brightness*m_radius_color[idx1];
         m_bond_rcolor_1[i][1] = f_atom_brightness*m_radius_color[idx1][1];
         m_bond_rcolor_1[i][2] = f_atom_brightness*m_radius_color[idx1][2];
         m_bond_rcolor_1[i][3] = f_atom_brightness*m_radius_color[idx1][3];
       }else{
-        //std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
         color = palette.get_color(v_fragment_table_gl[idx0]);
-        //vcolor = palette.get_vcolor(v_fragment_table_gl[idx0]);
-        //m_bond_rcolor_0[i] = f_atom_brightness*vcolor;
         m_bond_rcolor_0[i][1] = f_atom_brightness*color.r;
         m_bond_rcolor_0[i][2] = f_atom_brightness*color.g;
         m_bond_rcolor_0[i][3] = f_atom_brightness*color.b;
-        //m_bond_rcolor_1[i] = f_atom_brightness*vcolor;
         m_bond_rcolor_1[i][1] = f_atom_brightness*color.r;
         m_bond_rcolor_1[i][2] = f_atom_brightness*color.g;
         m_bond_rcolor_1[i][3] = f_atom_brightness*color.b;
@@ -453,11 +404,9 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         std::cout<<" (idx0,idx1) = ("<<idx0<<","<<idx1<<")"<<std::endl;
 #endif
       if(is_mode_atom){
-        //m_bond_rcolor_pbc_0[i] = f_atom_brightness*m_radius_color[idx0];
         m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*m_radius_color[idx0][1];
         m_bond_rcolor_pbc_0[i][2] = f_atom_brightness*m_radius_color[idx0][2];
         m_bond_rcolor_pbc_0[i][3] = f_atom_brightness*m_radius_color[idx0][3];
-        //m_bond_rcolor_pbc_1[i] = f_atom_brightness*m_radius_color[idx1];
         m_bond_rcolor_pbc_1[i][1] = f_atom_brightness*m_radius_color[idx1][1];
         m_bond_rcolor_pbc_1[i][2] = f_atom_brightness*m_radius_color[idx1][2];
         m_bond_rcolor_pbc_1[i][3] = f_atom_brightness*m_radius_color[idx1][3];
@@ -490,55 +439,8 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   std::cout<<" Bond index = "<<m_bond_indices;
 #endif
   // testing
-  /*
-  if(is_highlight_fragment_ && update_highlight_fragment){
-    for(int i=0; i<__number_of_atoms; i++){
-      if(v_fragment_table_gl[i]==__fragment_active){
-        //glColor3f(0.2*atom_rrgb[i][1],0.2*atom_rrgb[i][2],0.2*atom_rrgb[i][3]);
-        //m_atom_rcolor[i][1] = f_select_brightness*m_radius_color[i][1];
-        //m_atom_rcolor[i][2] = f_select_brightness*m_radius_color[i][2];
-        //m_atom_rcolor[i][3] = f_select_brightness*m_radius_color[i][3];
-        m_atom_rcolor[i][1] = f_atom_brightness;
-        m_atom_rcolor[i][2] = 0;
-        m_atom_rcolor[i][3] = 0;
-      }else{
-        //glColor3f(0.8*atom_rrgb[i][1],0.8*atom_rrgb[i][2],0.8*atom_rrgb[i][3]);
-        m_atom_rcolor[i][1] = f_atom_brightness*m_radius_color[i][1];
-        m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
-        m_atom_rcolor[i][3] = f_atom_brightness*m_radius_color[i][3];
-      }
-    }
-    update_highlight_fragment=false;
-  }*/
-
-/*
-  if(is_dark_mask_ && update_dark_mask){
-    for(int i=0; i<__number_of_atoms; i++){
-      if((i>=__select_begin) && (i<=__select_end)){
-        //glColor3f(0.2*atom_rrgb[i][1],0.2*atom_rrgb[i][2],0.2*atom_rrgb[i][3]);
-        m_atom_rcolor[i][1] = f_select_brightness*m_radius_color[i][1];
-        m_atom_rcolor[i][2] = f_select_brightness*m_radius_color[i][2];
-        m_atom_rcolor[i][3] = f_select_brightness*m_radius_color[i][3];
-      }else{
-        //glColor3f(0.8*atom_rrgb[i][1],0.8*atom_rrgb[i][2],0.8*atom_rrgb[i][3]);
-        m_atom_rcolor[i][1] = f_atom_brightness*m_radius_color[i][1];
-        m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
-        m_atom_rcolor[i][3] = f_atom_brightness*m_radius_color[i][3];
-      }
-    }
-    update_dark_mask=false;
-  }
-*/
   if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
-    //glColor3f(1.5*atom_rrgb[i][1],1.5*atom_rrgb[i][2],1.5*atom_rrgb[i][3]);
-    //if(is_highlight_fragment_){// && v_fragment_table_gl[__last_highlight_atom]==__fragment_active){
-      //m_atom_rcolor[__last_highlight_atom][1] = f_atom_brightness;
-      //m_atom_rcolor[__last_highlight_atom][2] = 0;
-      //m_atom_rcolor[__last_highlight_atom][3] = 0;
-    //}
     if(is_mode_atom){
-      //m_atom_rcolor[__last_highlight_atom] = f_atom_brightness*m_radius_color[__last_highlight_atom];
-      //m_atom_rcolor[__highlight_atom] = f_select_brightness*m_radius_color[__highlight_atom];
       m_atom_rcolor[__last_highlight_atom][1] = f_atom_brightness*m_radius_color[__last_highlight_atom][1];
       m_atom_rcolor[__last_highlight_atom][2] = f_atom_brightness*m_radius_color[__last_highlight_atom][2];
       m_atom_rcolor[__last_highlight_atom][3] = f_atom_brightness*m_radius_color[__last_highlight_atom][3];
@@ -548,10 +450,8 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     }else{
       uint __last_fragment = v_fragment_table_gl[__last_highlight_atom];
       color = palette.get_color(__last_fragment);
-      //vcolor = palette.get_vcolor(__last_fragment);
       for(int i=0; i<__number_of_atoms; i++){
         if(v_fragment_table_gl[i]==__last_fragment){
-          //m_atom_rcolor[i] = f_atom_brightness*vcolor;
           m_atom_rcolor[i][1] = f_atom_brightness*color.r;
           m_atom_rcolor[i][2] = f_atom_brightness*color.g;
           m_atom_rcolor[i][3] = f_atom_brightness*color.b;
@@ -559,35 +459,16 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       }
       uint __new_fragment  = v_fragment_table_gl[__highlight_atom];
       color = palette.get_color(__new_fragment);
-      //vcolor = palette.get_vcolor(__new_fragment);
       for(int i=0; i<__number_of_atoms; i++){
         if(v_fragment_table_gl[i]==__new_fragment){
-          //m_atom_rcolor[i] = f_select_brightness*vcolor;
           m_atom_rcolor[i][1] = f_select_brightness*color.r;
           m_atom_rcolor[i][2] = f_select_brightness*color.g;
           m_atom_rcolor[i][3] = f_select_brightness*color.b;
         }
       }
-      //m_atom_rcolor[__highlight_atom][1] = f_select_brightness*color.r;
-      //m_atom_rcolor[__highlight_atom][2] = f_select_brightness*color.g;
-      //m_atom_rcolor[__highlight_atom][3] = f_select_brightness*color.b;
     }
     update_highlight_atom=false;
-  }/*else if(is_highlight_atom_ && (hits == 0)){
-    if(is_highlight_fragment_ && v_fragment_table_gl[__highlight_atom]==__fragment_active){
-      gm_rgb color = palette.get_color(__highlight_atom);
-      m_atom_rcolor[__highlight_atom][1] = f_atom_brightness*color.r;
-      m_atom_rcolor[__highlight_atom][2] = f_atom_brightness*color.g;
-      m_atom_rcolor[__highlight_atom][3] = f_atom_brightness*color.b;
-      //m_atom_rcolor[__highlight_atom][1] = f_atom_brightness;
-      //m_atom_rcolor[__highlight_atom][2] = 0;
-      //m_atom_rcolor[__highlight_atom][3] = 0;
-    }else{
-      m_atom_rcolor[__highlight_atom][1] = f_atom_brightness*m_radius_color[__highlight_atom][1];
-      m_atom_rcolor[__highlight_atom][2] = f_atom_brightness*m_radius_color[__highlight_atom][2];
-      m_atom_rcolor[__highlight_atom][3] = f_atom_brightness*m_radius_color[__highlight_atom][3];
-    }
-  }*/else if(is_draw_tools_ && update_selected_atoms){
+  }else if(is_draw_tools_ && update_selected_atoms){
     for(uint i=0; i<u_selected_index; i++){
       m_atom_rcolor[v_selected_atoms[i]][1] = f_select_brightness;
       m_atom_rcolor[v_selected_atoms[i]][2] = 0;
@@ -596,14 +477,11 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     if(is_unselected_atom){
       // unselect if the atom was selected
       if(is_mode_atom){
-        //m_atom_rcolor[u_unselected_atom] = f_atom_brightness*m_radius_color[u_unselected_atom];
         m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*m_radius_color[u_unselected_atom][1];
         m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*m_radius_color[u_unselected_atom][2];
         m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*m_radius_color[u_unselected_atom][3];
       }else{
         color = palette.get_color(v_fragment_table_gl[u_unselected_atom]);
-        //vcolor = palette.get_vcolor(v_fragment_table_gl[u_unselected_atom]);
-        //m_atom_rcolor[u_unselected_atom] = f_atom_brightness*vcolor;
         m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*color.r;
         m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*color.g;
         m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*color.b;
@@ -611,7 +489,6 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       is_unselected_atom=false;
     }
   }
-  //m_atom_rcolor = m_radius_color;
 }
 
 void Fl_Gl_Mol_View::draw_atoms(void){
@@ -622,30 +499,17 @@ void Fl_Gl_Mol_View::draw_atoms(void){
     for(int c=0; c<get_total_cells(); c++){ // repetition in z
       for(int i=0; i<__number_of_atoms; i++){
         if(render_mode==MODE_SELECT){
-          //glPushName(i+100); // the first 100 names are reserved for the menues
           ui_rgb color;
           color = index_palette.get_index(i+MENU_RESERVED_IDS);
-          //std::cout<<" color["<<i<<"]: "<<color.r<<" "<<color.g<<" "<<color.b<<std::endl;
           glColor3ub(color.r,color.g,color.b);
         }else{
           glColor3f(m_atom_rcolor[i][1],m_atom_rcolor[i][2],m_atom_rcolor[i][3]);
-          // testing the selection palette ==================================
-          //ui_rgb color;
-          //color = index_palette.get_index(i);
-          //glColor3ub(color.r,color.g,color.b);
-          ///std::cout<<" color["<<i<<"]: "<<color.r<<" "<<color.g<<" "<<color.b<<std::endl;
-          // testing the selection palette ==================================
         }
         _xyz=m_atom_position[i+c*__number_of_atoms];
         glPushMatrix();
         glTranslatef(_xyz[0],_xyz[1],_xyz[2]);
-        //glColor3f(m_atom_rcolor[i][1],m_atom_rcolor[i][2],m_atom_rcolor[i][3]);
         glCallList(v_sphere_list[v_atom_table[i]]);
         glPopMatrix();
-        // to be removed
-        //if(render_mode==MODE_SELECT)
-          //glPopName();
-        // to be removed
       }
     }
   }
@@ -653,17 +517,12 @@ void Fl_Gl_Mol_View::draw_atoms(void){
 
 // draw bonds between atoms closer than the sum of their van der Waals radius
 void Fl_Gl_Mol_View::draw_bonds(void){
-  //uint _bn;
 #ifdef _SHOW_DEBUG_BONDS_
   std::cout<<" GLMOL: draw_bonds"<<std::endl;
 #endif
   TVector<real> _xyz(3), _ang(2);
-  //glColor3f(f_bond_brightness*0.8, f_bond_brightness*0.8, f_bond_brightness*0.8);
-  // unit cell bonds
 #ifdef _SHOW_DEBUG_BONDS_
   std::cout<<" GLMOL: ----- internal bonds -----"<<std::endl;
-  //std::cout<<" f_bond_brightness = "<<f_bond_brightness<<std::endl;
-  //std::cout<<" Used bond colors = "<<m_bond_rcolor_0;
 #endif
   for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
     for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
@@ -676,8 +535,6 @@ void Fl_Gl_Mol_View::draw_bonds(void){
           glTranslatef(_xyz[0],_xyz[1],_xyz[2]);
           glRotatef(_ang[0],0,0,1); // rotation arround the z axis
           glRotatef(_ang[1],0,1,0); // rotation arround the y asis
-          //glCallList(cylinder_dl);
-          //glCallList(v_cylinder_list[0]);
           glColor3f(m_bond_rcolor_0[i][1],m_bond_rcolor_0[i][2],m_bond_rcolor_0[i][3]);
           glCallList(v_cylinder_list[v_bond_number[i]]);
           //
@@ -738,10 +595,6 @@ void Fl_Gl_Mol_View::draw_bonds(void){
               glTranslatef(_xyz[0],_xyz[1],_xyz[2]);
               glRotatef(_ang[0],0,0,1); // rotation arround the z axis
               glRotatef(_ang[1],0,1,0); // rotation arround the y asis
-              //glCallList(cylinder_dl);
-              //glCallList(v_cylinder_list[0]);
-              //_bn = v_bond_number_pbc[i];
-              //glColor3f(f_bond_brightness*0.8, f_bond_brightness*0.8, f_bond_brightness*0.8);
               glColor3f(m_bond_rcolor_pbc_0[i][1],m_bond_rcolor_pbc_0[i][2],m_bond_rcolor_pbc_0[i][3]);
               glCallList(v_cylinder_list[v_bond_number_pbc[i]]);
               //
@@ -751,16 +604,12 @@ void Fl_Gl_Mol_View::draw_bonds(void){
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
               std::cout<<" bond cylinder = "<<v_bond_number_pbc[i];
 #endif
-              //
-              //glCallList(v_cylinder_list[v_bond_number_pbc[i]]);
-              //glPopMatrix();
             }
           }
         }
       }
     }
   }
-  //update_bonds_color = false;
   is_update_bonds = false;
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
   std::cout<<" GLMOL: draw_bonds end"<<std::endl;
@@ -787,7 +636,6 @@ void Fl_Gl_Mol_View::draw_symbols(void){
   glPushMatrix();
   GLboolean boolval;
   char buff[10];
-  //GLfloat str_width;
   for(int i=0; i<__number_of_atoms; i++){
   //for(int i=0; i<2; i++){
     _xyz=m_atom_coordinates[i];

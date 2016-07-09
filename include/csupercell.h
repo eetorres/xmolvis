@@ -73,10 +73,7 @@ public:
   // Begin deprecated
   void eval_vdw_fragments(void);               // Create all vdW framgents
   void eval_atom_fragments(void);               // Create all atom framgents
-  //bool eval_atom_fragment(uint);               // Create one atom framgent
-  //bool eval_vdw_fragment(uint);                // Create one vdW framgent
   // End deprecated
-  //bool eval_vdw_fragment(uint,bool,real);      // Create one framgent using scaling
   bool eval_merge_fragment(uint,bool);         // Merge two fragments
   //
   bool delete_atom(uint u);                    // Delete an atom
@@ -198,7 +195,6 @@ private:
   uint __output_format;
   uint __total_atoms;
   uint __atomic_species;
-  uint __number_of_fragments;
   uint __active_fragment;
   //
   std::ifstream iposmol;
@@ -210,7 +206,6 @@ private:
   TVector<uint> v_atomic_composition_table;
   TVector<uint> v_atomic_number_table;
   TVector<uint> v_atomic_numbers;
-  //TVector<uint> v_fragment_table;
   TVector<uint> v_atom_type_table;
   TVector<uint> v_atom_cell_table;
   TVector<std::string> v_atomic_labels;
@@ -223,10 +218,6 @@ private:
   TMatrix<real> m_uvw_to_xyz_u;
   //
   std::string inputfile, output_filename, potmolfile, __sdir;
-  //
-  void clear_fragments(void);
-  void create_initial_fragments(void);     //
-  void eval_initial_fragments(void);               //
   //
 };
 

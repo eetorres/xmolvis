@@ -35,20 +35,11 @@ CSupercell::CSupercell(){
 }
 
 CSupercell::~CSupercell(void){
-  clear_fragments();
 }
 
 void CSupercell::clear(void){
-  __number_of_fragments=0;
-  //gsf.get_total_atoms()=0;
   __is_potmol=false;
   __active_fragment=0;
-}
-
-void CSupercell::clear_fragments(void){
-  for(unsigned int i=0; i<v_fragments.size(); i++)
-    v_fragments[i].clear();
-  v_fragments.clear();
 }
 
 bool CSupercell::read_input_file(void){
@@ -59,11 +50,6 @@ bool CSupercell::read_input_file(void){
   // Read the input structure file
   res = gsf.read_input_file();
   if(res){
-    //gsf.get_total_atoms()=gsf.get_total_atoms();
-    //gsf.get_atomic_species()=gsf.get_atomic_species();
-    //gsf.get_is_direct()=gsf.get_is_direct();
-    //gsf.get_is_periodic()=gsf.get_is_periodic();
-    //gsf.get_input_format()=gsf.get_input_format();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGMOL: total atoms = "<<gsf.get_total_atoms()<<std::endl;
     std::cout<<" FRAGMOL: total species = "<<gsf.get_atomic_species()<<std::endl;
@@ -79,9 +65,6 @@ bool CSupercell::read_input_file(void){
     v_atomic_labels=gsf.get_atomic_labels();
     v_atomic_symbols=gsf.get_atomic_symbols();
     v_atomic_numbers=gsf.get_atomic_numbers();
-    //if(gsf.get_input_format()==2 || gsf.get_input_format()==4){
-      //v_fragment_table=gsf.get_fragment_table();
-    //}
     v_atom_cell_table.resize(gsf.get_total_atoms());
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
@@ -93,11 +76,8 @@ bool CSupercell::read_input_file(void){
     std::cout<<" FRAGMOL: Z-Numbers ="<<v_atomic_numbers;
 #endif
     //
-    //m_xyz_centered=gsf.get_xyz();
     m_xyz=gsf.get_xyz();
     m_uvw=gsf.get_uvw();
-    //m_uvw_to_xyz_u=gsf.get_uvw_to_xyz_u();
-    //m_uvw_to_xyz=gsf.get_uvw_to_xyz();
 #ifdef _FRAGMOL_DATA_MESSAGES_
     std::cout<<" FRAGMOL: XYZ = "<<m_xyz;
     std::cout<<" FRAGMOL: UVW = "<<m_uvw;
@@ -145,41 +125,20 @@ void CSupercell::initialize_fragments(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
 #endif
-  //clear_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
   std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
 #endif
-  //gsf.set_topmol_single_topology(gsf.get_total_atoms());
-  //v_fragment_table.resize(gsf.get_total_atoms());
-  //gsf.set_fragment_table(gsf.get_total_atoms());
   gsf.init_fragments();
-  //create_initial_fragments();
-  //eval_initial_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<std::endl;
 #endif
 }
 
-// create fragments from the input topology
-void CSupercell::create_initial_fragments(void){
-/*
-  // making space for the fragments
-  __number_of_fragments = gsf.get_number_of_topologies();
-  v_fragments.resize(get_fragmol_number_of_fragments());
-  for(uint i=0;i<__number_of_fragments;i++){
-    v_fragments[i].size(gsf.get_topology_size(i));
-  }
-*/
-}
-
-void CSupercell::eval_initial_fragments(void){
-}
-
 void CSupercell::eval_cell_table(void){
   TVector<uint> v_l;
   uint _s;
-  for(uint i=0;i<get_fragmol_number_of_fragments();i++){
+  for(uint i=0;i<gsf.get_number_of_fragments();i++){
     _s=v_fragments[i].size();
     v_l = gsf.get_topology_atoms(i);
     for(uint j=0;j<_s;j++){
@@ -214,7 +173,7 @@ void CSupercell::set_cartesian(void){
   TVector<real> _v;
   TVector<unsigned int> v_l;
   unsigned int _n, _s;
-  _n = get_fragmol_number_of_fragments();
+  _n = gsf.get_number_of_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<"FRAGMOL: TOTAL FRAGMENTS: "<<_n<<std::endl;
 #endif
@@ -374,15 +333,9 @@ void CSupercell::set_fragmol_fragment_position_w(const real r){
 }
 
 void CSupercell::set_input_file(std::string s){
-  //inputfile = s;
   gsf.set_input_file(s);
   gsf.topmol_filename(s);
 }
-
-//void CSupercell::set_output_file_name(std::string s){
-  //output_filename = s;
-//  gsf.set_output_file_name(s);
-//}
 
 void CSupercell::set_dir(std::string s){
   // use__sdir in case you would like to change the default directory
@@ -392,8 +345,6 @@ void CSupercell::set_dir(std::string s){
 
 
 void CSupercell::set_topmol_directory(std::string s){
-  // use__sdir in case you would like to change the default directory
-  //__sdir = s;
   gsf.topmol_dir(s);
 }
 
@@ -626,22 +577,18 @@ real CSupercell::get_dihedral(uint i, uint j, uint k, uint l){
 
 //////
 TVector<std::string> CSupercell::get_fragmol_atomic_symbol_table(void){
-  //return v_atomic_symbol_table;
   return gsf.get_atomic_symbol_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atomic_composition_table(void){
-  //return v_atomic_composition_table;
   return gsf.get_atomic_composition_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atomic_number_table(void){
-  //return v_atomic_number_table;
   return gsf.get_atomic_number_table();
 }
 
 TVector<uint> CSupercell::get_fragmol_atom_table(void){
-  //return v_atom_type_table;
   return gsf.get_atom_table();
 }
 //////

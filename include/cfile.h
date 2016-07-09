@@ -68,12 +68,6 @@ public:
   void save_input_file(void);
   void save_xyz(void);
   void save_as_file(std::string);
-  //void save_as_file(std::string,std::string);
-  //void save_poscar_as(std::string);
-  //void save_xyz_as(std::string);
-  //void save_gau_as(std::string);
-  //void save_pdb_as(std::string);
-  //void save_dlp_as(std::string);
   void save_as_file(std::string,std::string);
   void save_poscar_as(std::string,std::string,uint);
   void save_xyz_as(std::string,std::string,uint);
@@ -118,7 +112,7 @@ public:
   //
   void set_xyz(TMatrix<real> m);
   void set_xyz_cells(int x, int y, int z, int t);
-  //void set_input_file(std::string inputfile, potcarfile, s_actual_dir;
+
   uint get_total_atoms(void){ return u_total_atoms;}
   uint get_atomic_species(void){ return u_atomic_species;}
   uint get_input_type(void){ return u_input_file_type;}
@@ -164,7 +158,6 @@ private:
   bool b_direct;
   bool b_periodic;
   bool is_potcar;
-  //bool is_input_fragment;
   bool is_bounding_box;
   bool is_labels;
   bool is_numbers;
