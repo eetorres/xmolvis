@@ -708,6 +708,22 @@ void CFile::eval_fragments(void){
   }
 }
 
+void CFile::update_cell_table(void){
+  TVector<uint> v_l;
+  uint _s;
+  for(uint i=0;i<v_fragments.size();i++){
+    _s=v_fragments[i].size();
+    v_l = get_topology_atoms(i);
+    for(uint j=0;j<_s;j++){
+      // store the position of the current atom inside the fragment as a table
+      v_atom_cell_table[v_l[j]]=j;
+    }
+  }
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGMOL: updated atom cell table: "<<v_atom_cell_table;
+#endif
+}
+
 void CFile::comp_all_cartesian(void){
   //TMatrix<real> _U = get_uvw_to_xyz_u();
   //TMatrix<real> _T = get_uvw_to_xyz();

@@ -84,6 +84,7 @@ public:
   void comp_all_cartesian(void);
   void comp_cartesian(uint);
   void comp_all_direct(void);
+  void update_cell_table(void);
   void comp_direct(uint);
   //
   void set_input_file(std::string s);
@@ -132,10 +133,12 @@ public:
   TVector<std::string> get_atomic_symbols(void){ return v_atomic_symbols;}
   TVector<std::string> get_atomic_symbol_table(void){ return v_atomic_symbol_table;}
   //  
+  uint get_fragment_size(uint u){ return v_fragments[u].size();}
   uint get_atomic_composition(uint u){ return v_atomic_composition_table[u];}
   uint get_atomic_number_table(uint u){ return v_atomic_number_table[u];}
   uint get_atomic_number(uint u){ return v_atomic_numbers[u];}
-  uint get_atom_table(uint u){ return v_atom_table[u];}
+  uint get_atom_table(uint u){ return v_atom_cell_table[u];}
+  uint get_atom_cell_table(uint u){ return v_atom_table[u];}
   strg get_atomic_symbol(uint u){ return v_atomic_symbols[u];}
   strg get_atomic_label(uint u){ return v_atomic_labels[u];}
   strg get_atomic_symbol_table(uint u){ return v_atomic_symbol_table[u];}

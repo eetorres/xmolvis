@@ -58,31 +58,31 @@ bool CSupercell::read_input_file(void){
     std::cout<<" FRAGMOL: input format = "<<gsf.get_input_format()<<std::endl;
 #endif
     //
-    v_atomic_composition_table=gsf.get_atomic_composition_table();
-    v_atomic_number_table=gsf.get_atomic_number_table();
-    v_atomic_symbol_table=gsf.get_atomic_symbol_table();
-    v_atom_type_table=gsf.get_atom_table();
-    v_atomic_labels=gsf.get_atomic_labels();
-    v_atomic_symbols=gsf.get_atomic_symbols();
-    v_atomic_numbers=gsf.get_atomic_numbers();
-    v_atom_cell_table.resize(gsf.get_total_atoms());
+    //v_atomic_composition_table=gsf.get_atomic_composition_table();
+    //v_atomic_number_table=gsf.get_atomic_number_table();
+    //v_atomic_symbol_table=gsf.get_atomic_symbol_table();
+    //v_atom_type_table=gsf.get_atom_table();
+    //v_atomic_labels=gsf.get_atomic_labels();
+    //v_atomic_symbols=gsf.get_atomic_symbols();
+    //v_atomic_numbers=gsf.get_atomic_numbers();
+    //v_atom_cell_table.resize(gsf.get_total_atoms());
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
-    std::cout<<" FRAGMOL: Z-Number Table ="<<v_atomic_number_table;
-    std::cout<<" FRAGMOL: Symbol Table ="<<v_atomic_symbol_table;
-    std::cout<<" FRAGMOL: Type ="<<v_atom_type_table;
-    std::cout<<" FRAGMOL: Labels ="<<v_atomic_labels;
-    std::cout<<" FRAGMOL: Symbols ="<<v_atomic_symbols;
-    std::cout<<" FRAGMOL: Z-Numbers ="<<v_atomic_numbers;
+    //std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
+    //std::cout<<" FRAGMOL: Z-Number Table ="<<v_atomic_number_table;
+    //std::cout<<" FRAGMOL: Symbol Table ="<<v_atomic_symbol_table;
+    //std::cout<<" FRAGMOL: Type ="<<v_atom_type_table;
+    //std::cout<<" FRAGMOL: Labels ="<<v_atomic_labels;
+    //std::cout<<" FRAGMOL: Symbols ="<<v_atomic_symbols;
+    //std::cout<<" FRAGMOL: Z-Numbers ="<<v_atomic_numbers;
 #endif
     //
     m_xyz=gsf.get_xyz();
     m_uvw=gsf.get_uvw();
 #ifdef _FRAGMOL_DATA_MESSAGES_
-    std::cout<<" FRAGMOL: XYZ = "<<m_xyz;
-    std::cout<<" FRAGMOL: UVW = "<<m_uvw;
-    std::cout<<" FRAGMOL: uvwTxyz U = "<<m_uvw_to_xyz_u;
-    std::cout<<" FRAGMOL: uvwTxyz  = "<<m_uvw_to_xyz;
+    //std::cout<<" FRAGMOL: XYZ = "<<m_xyz;
+    //std::cout<<" FRAGMOL: UVW = "<<m_uvw;
+    //std::cout<<" FRAGMOL: uvwTxyz U = "<<m_uvw_to_xyz_u;
+    //std::cout<<" FRAGMOL: uvwTxyz  = "<<m_uvw_to_xyz;
 #endif
     return res;
   }
@@ -135,11 +135,12 @@ void CSupercell::initialize_fragments(void){
 #endif
 }
 
+/*
 void CSupercell::eval_cell_table(void){
   TVector<uint> v_l;
   uint _s;
   for(uint i=0;i<gsf.get_number_of_fragments();i++){
-    _s=v_fragments[i].size();
+    _s=gsf.get_fragment_size(i);
     v_l = gsf.get_topology_atoms(i);
     for(uint j=0;j<_s;j++){
       // store the position of the current atom inside the fragment as a table
@@ -150,6 +151,7 @@ void CSupercell::eval_cell_table(void){
   std::cout<<" FRAGMOL: updated atom cell table: "<<v_atom_cell_table;
 #endif
 }
+*/
 
 void CSupercell::eval_connections(const TMatrix<uint>& _m, uint u){
   gsf.eval_connections(_m,u);
@@ -305,7 +307,7 @@ void CSupercell::set_fragment_axis(const TVector<uint>& _v){
 
 void CSupercell::set_fragment_axis(const uint idx, const uint val){
   is_fragmol_initialized(false);
-  gsf.v_fragments[__active_fragment].set_axis_index(idx,v_atom_cell_table[val]);
+  gsf.v_fragments[__active_fragment].set_axis_index(idx,gsf.get_atom_cell_table(val));
 }
 
 void CSupercell::set_fragmol_fragment_twist(const real r){
@@ -499,7 +501,8 @@ uint CSupercell::get_output_file_format(void){
 }
 
 uint CSupercell::get_atomic_composition(uint i){
-  return v_atomic_composition_table[i];
+  return gsf.get_atomic_composition(i);
+  //v_atomic_composition_table[i];
 }
 
 TVector<real> CSupercell::get_cartesian(uint i){

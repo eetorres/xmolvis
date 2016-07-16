@@ -63,7 +63,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   void eval_fragmol_initial_position(void);
   void eval_fragmol_initial_orientation(void);
-  void eval_cell_table(void);
+  //void eval_cell_table(void);
   void eval_connections(const TMatrix<uint>&,uint);
   bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
   bool eval_scaled_fragment(uint,bool,real);      // Create a framgent using scaled distance
@@ -202,20 +202,20 @@ private:
   std::ofstream oposmol;
   std::ofstream otopmol;
   //
-  TVector<CFragment> v_fragments;
-  TVector<uint> v_atomic_composition_table;
-  TVector<uint> v_atomic_number_table;
-  TVector<uint> v_atomic_numbers;
-  TVector<uint> v_atom_type_table;
-  TVector<uint> v_atom_cell_table;
-  TVector<std::string> v_atomic_labels;
-  TVector<std::string> v_atomic_symbols;
-  TVector<std::string> v_atomic_symbol_table;
+  //TVector<CFragment> v_fragments;
+  //TVector<uint> v_atomic_composition_table;
+  //TVector<uint> v_atomic_number_table;
+  //TVector<uint> v_atomic_numbers;
+  //TVector<uint> v_atom_type_table;
+  //TVector<uint> v_atom_cell_table;
+  //TVector<std::string> v_atomic_labels;
+  //TVector<std::string> v_atomic_symbols;
+  //TVector<std::string> v_atomic_symbol_table;
   //
   TMatrix<real> m_xyz;
   TMatrix<real> m_uvw;
-  TMatrix<real> m_uvw_to_xyz;
-  TMatrix<real> m_uvw_to_xyz_u;
+  //TMatrix<real> m_uvw_to_xyz;
+  //TMatrix<real> m_uvw_to_xyz_u;
   //
   std::string inputfile, output_filename, potmolfile, __sdir;
   //
