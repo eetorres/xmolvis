@@ -1,11 +1,11 @@
-//========================================================================
-// FILE: cread.cxx
-//
-// This an utility program to manipulate and genarate structure files
-//
-// Copyright 2011-2015 by Edmanuel Torres
-// email:   eetorres@gmail.com
-//
+//======================================================================//
+// FILE: cread.cxx                                                      //
+//                                                                      //
+// This an utility program to manipulate and genarate structure files   //
+//                                                                      //
+// Copyright 2011-2016 by Edmanuel Torres                               //
+// email:   eetorres@gmail.com                                          //
+//                                                                      //
 //========================================================================
 //  This file is part of xmolview                                       //
 //                                                                      //

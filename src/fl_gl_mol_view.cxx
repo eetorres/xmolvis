@@ -249,7 +249,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_atomic_symbol_table(get_view_atomic_symbol_table());
     set_fragment_total(get_view_total_fragments());
     set_fragment_table(get_view_fragment_table());
-    initialize_atomic_coordinates(get_view_cartesian());
+    initialize_atomic_coordinates(get_cartesian());
     // End GUI functions
 #ifdef _ATOM_DATA_MESSAGES_
     std::cout<<" GLMOL: atom labels = "<<v_atom_labels;

@@ -120,7 +120,7 @@ void CMapcell::set_map_active_fragment(const unsigned int i){
 #ifdef _debugging_messages_
     std::cout<<"MAPMOL: initializing the fragment"<<std::endl;
 #endif
-    supercell.eval_fragmol_initial_position();
+    supercell.eval_initial_position();
     // this is now done inside cfragment
     // compute_fragmol_axis_angles();
     supercell.eval_fragmol_initial_orientation();
@@ -283,8 +283,8 @@ void CMapcell::set_scan_title(const std::string s){
   s_scan_directory=s;
 }
 
-unsigned int CMapcell::get_map_total_atoms(void){
-  return supercell.get_fragmol_total_atoms() ;
+uint CMapcell::get_total_atoms(void){
+  return supercell.get_total_atoms() ;
 }
 
 real CMapcell::get_translation_distance(void){
@@ -315,19 +315,19 @@ real CMapcell::get_precession_step(void){
   return __precession_map_step;
 }
 
-real CMapcell::get_map_axis_precession(void){
+real CMapcell::get_axis_precession(void){
   return supercell.get_fragmol_axis_precession();
 }
 
-real CMapcell::get_map_axis_tilt(void){
+real CMapcell::get_axis_tilt(void){
   return supercell.get_fragmol_axis_tilt();
 }
 
-real CMapcell::get_map_backbone_precession(void){
+real CMapcell::get_backbone_precession(void){
   return supercell.get_fragmol_backbone_precession();
 }
 
-real CMapcell::get_map_backbone_tilt(void){
+real CMapcell::get_backbone_tilt(void){
   return supercell.get_fragmol_backbone_tilt();
 }
 
@@ -367,11 +367,16 @@ TVector<real> CMapcell::get_map_position_cartesian(void){
   return supercell.get_fragmol_position_cartesian();
 }
 
-TVector<real> CMapcell::get_map_centered_position_cartesian(void){
+TVector<real> CMapcell::get_centered_position_cartesian(void){
   return supercell.get_fragmol_centered_position_cartesian();
 }
 
-TMatrix<real> CMapcell::get_map_cartesian(void){
+TVector<real> CMapcell::get_cartesian(uint u){
+  //return m_cartesian;
+  return supercell.get_cartesian(u);
+}
+
+TMatrix<real> CMapcell::get_cartesian(void){
   //return m_cartesian;
   return supercell.get_cartesian();
 }

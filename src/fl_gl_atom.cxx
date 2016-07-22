@@ -81,7 +81,8 @@ void Fl_Gl_Atom::eval_initial_properties(void){
       i_z=v_atom_numbers[i];
       _radius=atom_rrgb[i_z][0];
       _rcolor[0]=_radius;
-      _atom_xyz = m_atom_coordinates[i];
+      //_atom_xyz = m_atom_coordinates[i];
+      _atom_xyz = get_cartesian(i);
       _rcolor[1] = atom_rrgb[i_z][1];
       _rcolor[2] = atom_rrgb[i_z][2];
       _rcolor[3] = atom_rrgb[i_z][3];
@@ -137,12 +138,12 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
 void Fl_Gl_Atom::update_data(void){
   update_view();
   if(update_coordinates){
-    update_atomic_coordinates(get_view_cartesian());
-    set_axis_position(get_view_centered_position_cartesian());
-    set_axis_precession(get_view_axis_precession());
-    set_axis_tilt(get_view_axis_tilt());
-    set_backbone_precession(get_view_backbone_precession());
-    set_backbone_tilt(get_view_backbone_tilt());
+    update_atomic_coordinates(get_cartesian());
+    set_axis_position(get_centered_position_cartesian());
+    set_axis_precession(get_axis_precession());
+    set_axis_tilt(get_axis_tilt());
+    set_backbone_precession(get_backbone_precession());
+    set_backbone_tilt(get_backbone_tilt());
     update_coordinates=false;
   }
   Fl::wait(0.1);
@@ -160,8 +161,10 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
   for(uint n=0; n<i_number_of_bonds; n++){
     i=m_bond_indices[n][0];
     j=m_bond_indices[n][1];
-    vi = m_atom_coordinates[i];
-    vj = m_atom_coordinates[j];
+    //vi = m_atom_coordinates[i];
+    //vj = m_atom_coordinates[j];
+    vi = get_cartesian(i);
+    vj = get_cartesian(j);
     vij = (vj-vi);
     rlz = vij[2];
     vij[2] = 0;

@@ -61,7 +61,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   // Evaluation functions
   /////////////////////////////////////////////////////////////////////////////////
-  void eval_fragmol_initial_position(void);
+  void eval_initial_position(void);
   void eval_fragmol_initial_orientation(void);
   //void eval_cell_table(void);
   void eval_connections(const TMatrix<uint>&,uint);

@@ -102,7 +102,7 @@ public:
   //void set_write_xyz_file(const std::string);
   //void set_write_uvw_file(const std::string);
   //
-  unsigned int get_map_total_atoms(void);
+  uint get_total_atoms(void);
   //
   TVector<real> get_map_position_uvw1(uint);
   TVector<real> get_map_position_uvw2(uint);
@@ -115,10 +115,10 @@ public:
   real get_tilt_step(void);
   real get_precession_step(void);
   //
-  real get_map_axis_precession(void);
-  real get_map_axis_tilt(void);
-  real get_map_backbone_precession(void);
-  real get_map_backbone_tilt(void);
+  real get_axis_precession(void);
+  real get_axis_tilt(void);
+  real get_backbone_precession(void);
+  real get_backbone_tilt(void);
   //
   TVector<std::string> get_map_atomic_labels(void);
   TVector<std::string> get_map_atomic_symbols(void);
@@ -130,12 +130,13 @@ public:
   TVector<real> get_map_position_uvw(void);
   //
   TVector<real> get_map_position_cartesian(void);
-  TVector<real> get_map_centered_position_cartesian(void);
+  TVector<real> get_centered_position_cartesian(void);
   TVector<real> get_map_axis_direct_origin(void);
   TVector<real> get_map_axis_cartesian_origin(void);
   //
   //TMatrix<real> get_map_bounding_box(void);
-  TMatrix<real> get_map_cartesian(void);
+  TVector<real> get_cartesian(uint);
+  TMatrix<real> get_cartesian(void);
   TMatrix<real> get_map_direct(void);
   //
   // pure virtual functions

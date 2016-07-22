@@ -1,15 +1,14 @@
 //======================================================================//
 // FILE: csupercell.cxx -> csupercell                                   //
 //                                                                      //
-// Abstraction layer of the supercell and fragments.                    //
+// Abstraction layer of the supercell.                                  //
 // The manipulation of individual fragments is hidden.                  //
 //                                                                      //
-// Copyright 2011-2015 by Edmanuel Torres                               //
+// Copyright 2011-2016 by Edmanuel Torres                               //
 // email:   eetorres@gmail.com                                          //
 //                                                                      //
-// Comment: change this class/file names to CSupercell/csupercell       //
+// Comment:                                                             //
 //                                                                      //
-// Lastest update: Tue Jul 14 16:22:34 EDT 2015                         //
 //======================================================================//
 //  This file is part of xmolview                                       //
 //                                                                      //
@@ -157,9 +156,9 @@ void CSupercell::eval_connections(const TMatrix<uint>& _m, uint u){
   gsf.eval_connections(_m,u);
 }
 
-void CSupercell::eval_fragmol_initial_position(void){
+void CSupercell::eval_initial_position(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGMOL: eval_fragmol_initial_position"<<std::endl;
+  std::cout<<" FRAGMOL: eval_initial_position"<<std::endl;
 #endif
   gsf.v_fragments[__active_fragment].eval_initial_position();
 }
@@ -425,9 +424,7 @@ uint CSupercell::get_fragment_atomic_number(uint i,uint j){
   return gsf.v_fragments[i].get_atomic_number(j);
 }
 
-uint CSupercell::get_fragmol_total_atoms(void){
-  return gsf.get_total_atoms();
-}
+
 
 TVector<real> CSupercell::get_fragmol_axis_angles(void){
   return gsf.v_fragments[__active_fragment].get_axis_angles();
@@ -482,6 +479,10 @@ TMatrix<real> CSupercell::get_fragment_centered_cartesian(uint i){
 
 uint CSupercell::get_species(void){
   return gsf.get_atomic_species();
+}
+
+uint CSupercell::get_fragmol_total_atoms(void){
+  return gsf.get_total_atoms();
 }
 
 uint CSupercell::get_total_atoms(void){
