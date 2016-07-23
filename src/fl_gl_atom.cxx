@@ -97,7 +97,7 @@ void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
 }
 
 void Fl_Gl_Atom::update_atomic_coordinates(const TMatrix<real>& m){
-  m_atom_coordinates = m;
+  //m_atom_coordinates = m;
   is_update_bonds = true;
   is_update_atomic_properties = true;
   is_update_mask_rcolor = true;
@@ -109,7 +109,7 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
   std::cout<<" ATOM: Initialize"<<std::endl;
 #endif
   update_atomic_coordinates(m);
-  __number_of_atoms = m_atom_coordinates.rows();
+  __number_of_atoms = get_total_atoms(); //m_atom_coordinates.rows();
   if(__number_of_atoms<100){
     is_linked_cell=false;
   }
@@ -180,10 +180,11 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
   for(uint n=0; n<i_number_of_bonds_pbc; n++){
     i=m_bond_indices_pbc[n][0];
     j=m_bond_indices_pbc[n][1];
-    //
-    vi = m_atom_coordinates[i];
+    //vi = m_atom_coordinates[i];
+    vi = get_cartesian(i);
     vi_uvw = (vi*u_inv_bbox);
-    vj = m_atom_coordinates[j];
+    //vj = m_atom_coordinates[j];
+    vj = get_cartesian(j);
     for(uint coord=0; coord<3; coord++){
       if ( m_bond_boundary_pbc[n][coord] != 0 )
         vj += m_bond_boundary_pbc[n][coord]*2.0*m_bbox[coord];       // PBC
@@ -267,7 +268,7 @@ void Fl_Gl_Atom::set_xyz_cells(void){
       for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
         for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
           for(int i=0; i<__number_of_atoms; i++){
-            _xyz=m_atom_coordinates[i];
+            _xyz=get_cartesian(i); //m_atom_coordinates[i];
             _xyz=_xyz+2.0*(x*_vu+y*_vv+z*_vw);
             m_atom_position[cont]=_xyz;
             cont++;
@@ -535,9 +536,9 @@ void Fl_Gl_Atom::eval_linked_list(void){
 #endif
   for(_n=0; _n<(uint)__number_of_atoms; _n++){
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" atom coordinates["<<_n<<"] = "<<m_atom_coordinates[_n];
+    std::cout<<" atom coordinates["<<_n<<"] = "<<get_cartesian(_n); //m_atom_coordinates[_n];
 #endif
-    v_positive_r=m_atom_coordinates[_n];
+    v_positive_r=get_cartesian(_n); //m_atom_coordinates[_n];
     // uvw coordinates
     v_positive_r =  (v_positive_r*u_inv_bbox);
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
@@ -629,7 +630,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
     std::cout<<" ATOM: i="<<i<<std::endl;
 #endif
     if(strcmp(v_atomic_symbol_table_gl[v_atom_table[i]].c_str(),"X")){
-      vi = m_atom_coordinates[i];
+      vi = get_cartesian(i);//m_atom_coordinates[i];
       vi_uvw = (vi*u_inv_bbox);
       ri = m_radius_color[i][0];
       if(is_linked_cell){
@@ -666,7 +667,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
               std::cout<<" FL_GL_ATOM: test bond for [i-j]="<<i<<","<<j<<std::endl;
 #endif
               r2 = 0;                                         // set distance to cero
-              vj = m_atom_coordinates[j];
+              vj = get_cartesian(j);  //m_atom_coordinates[j];
               vj_uvw = vj*u_inv_bbox;
               rj = m_radius_color[j][0];
               r = (ri+rj);
@@ -729,7 +730,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
             std::cout<<" ATOM: j="<<j<<" i="<<i<<" m="<<_m<<std::endl;
 #endif
             if(strcmp(v_atomic_symbol_table_gl[v_atom_table[j]].c_str(),"X")){
-              vj = m_atom_coordinates[j];
+              vj = get_cartesian(j); //m_atom_coordinates[j];
               for(uint coord=0; coord<3; coord++){
                 vj += neighbor_cells[_m][coord]*2.0*m_bbox[coord];       // PBC
                 v_pbc[coord] = neighbor_cells[_m][coord];

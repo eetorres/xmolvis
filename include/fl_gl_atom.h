@@ -318,7 +318,7 @@ protected:
   // this may be useful?
   TMatrix<real> m_cylinder_texture1;
   // atoms
-  TMatrix<real> m_atom_coordinates;
+  //TMatrix<real> m_atom_coordinates;
   TMatrix<real> m_atom_position;
   TMatrix<real> m_radius_color;
   TMatrix<real> m_atom_rcolor;

@@ -158,7 +158,7 @@ Fl_Gl_Mol_View::~Fl_Gl_Mol_View(){
 
 void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
-  m_atom_coordinates.clear();
+  //m_atom_coordinates.clear();
   m_radius_color.clear();
   v_atom_symbols.clear();
   //
@@ -638,7 +638,7 @@ void Fl_Gl_Mol_View::draw_symbols(void){
   char buff[10];
   for(int i=0; i<__number_of_atoms; i++){
   //for(int i=0; i<2; i++){
-    _xyz=m_atom_coordinates[i];
+    _xyz=get_cartesian(i); //m_atom_coordinates[i];
     if(is_draw_symbols_ && is_draw_numbers_){
       if(is_mode_atom)
         sprintf(buff,"%s-%i",v_atom_symbols[i].c_str(),i+1);
