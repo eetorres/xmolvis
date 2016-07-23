@@ -469,6 +469,7 @@ void Fl_Gl_Atom::add_axis(const TVector<real>& c,real l, real r, real a1, real a
   glEnd();
 }
 
+/* DEPRECATED: MOVED TO SUPERCELL
 // Linked and shell cell configuration functions
 void Fl_Gl_Atom::set_cells(void){
   TVector<int> v1(3);
@@ -566,6 +567,8 @@ void Fl_Gl_Atom::eval_linked_list(void){
   std::cout<<" END: eval_cell_list"<<std::endl;
 #endif
 }
+DEPRECATED: MOVED TO SUPERCELL 
+*/
 
 // Fri Jan 13 16:55:51 MST 2012
 // beta version

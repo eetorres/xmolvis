@@ -424,8 +424,6 @@ uint CSupercell::get_fragment_atomic_number(uint i,uint j){
   return gsf.v_fragments[i].get_atomic_number(j);
 }
 
-
-
 TVector<real> CSupercell::get_fragmol_axis_angles(void){
   return gsf.v_fragments[__active_fragment].get_axis_angles();
 }
@@ -619,6 +617,106 @@ TMatrix<real> CSupercell::get_cartesian(void){
 
 TMatrix<real> CSupercell::get_direct(void){
   return m_uvw;
+}
+
+// Special MD functions
+
+// Linked and shell cell configuration functions
+void Fl_Gl_Atom::set_cells(void){
+  TVector<int> v1(3);
+  int xpcb=-2, ypcb=-2, zpcb=-2;
+  v_cell_side = iVScale(v_box_size, (1.0/r_cut_radius));
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" LINKED: Cell = "<<v_cell_side;
+#endif
+  // set the necesary neighbor cells
+  if(v_cell_side[0]==2) xpcb=-1;
+  if(v_cell_side[1]==2) ypcb=-1;
+  if(v_cell_side[2]==2) zpcb=-1;
+  neighbor_cells_xyz.resize(0,3);
+  i_neighbor_cells=0;
+  for(int k=0; k<27; k++){
+	v1[0] = neighbor_cells[k][0];
+	v1[1] = neighbor_cells[k][1];
+	v1[2] = neighbor_cells[k][2];
+	if((v1[0] > xpcb) && (v1[1] > ypcb) && (v1[2] > zpcb)){
+	  neighbor_cells_xyz.add_row(v1);
+	  i_neighbor_cells++;
+	}
+  }
+  is_linked_cell=true;
+  for(int i=0; i<3; i++){
+    if(v_cell_side[1]<=2){
+      is_linked_cell=false;
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" LINKED CELL too small [turned off]"<<std::endl;
+#endif
+    }
+  }
+}
+
+void Fl_Gl_Atom::set_inverse_cell(void){
+  v_cell_frac = fVDiv(v_cell_side,v_box_size);
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" LINKED: Cell Frac = "<<v_cell_frac;
+#endif
+}
+
+void Fl_Gl_Atom::set_cell_list(void){
+  u_cell_number = (uint)vVol(v_cell_side);
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" LINKED: Number of used cells = "<<u_cell_number<<std::endl;
+#endif
+  v_cell_head.resize(u_cell_number);
+  v_cell_list.resize(__number_of_atoms);
+}
+
+void Fl_Gl_Atom::eval_linked_list(void){
+  set_cells();
+  set_inverse_cell();
+  set_cell_list();
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" LINKED: BEGIN: eval_cell_list"<<std::endl;
+#endif
+  uint _n, u_icell;
+  TVector<real> v_positive_r;
+  TVector<int>  v_integer_r;
+  for(_n=0; _n<u_cell_number; _n++)
+    v_cell_head[_n] = -1;
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" LINKED: build the linked cell"<<std::endl;
+#endif
+  for(_n=0; _n<(uint)__number_of_atoms; _n++){
+#ifdef _SHOW_DEBUG_LINKED_EVAL_
+    std::cout<<" atom coordinates["<<_n<<"] = "<<get_cartesian(_n); //m_atom_coordinates[_n];
+#endif
+    v_positive_r=get_cartesian(_n); //m_atom_coordinates[_n];
+    // uvw coordinates
+    v_positive_r =  (v_positive_r*u_inv_bbox);
+#ifdef _SHOW_DEBUG_LINKED_EVAL_
+    std::cout<<" direct r = "<<v_positive_r;
+#endif
+    // use half of the box here
+    v_positive_r = fVAdd(v_positive_r,v_bbox);
+#ifdef _SHOW_DEBUG_LINKED_EVAL_
+    std::cout<<" positive r = "<<v_positive_r;
+#endif
+    // apply PBC to place all the atoms inside the box
+    v_integer_r = iVMul(v_positive_r,v_cell_frac);
+#ifdef _SHOW_DEBUG_LINKED_EVAL_
+    std::cout<<" v_integer_r = "<<v_integer_r;
+#endif
+    u_icell = iVLinear(v_integer_r,v_cell_side);
+#ifdef _SHOW_DEBUG_LINKED_EVAL_
+    std::cout<<" u_icell = "<<u_icell<<std::endl;
+#endif
+    v_cell_list[_n] = v_cell_head[u_icell];
+    v_cell_head[u_icell] = _n;
+  }
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" v_cell_list="<<v_cell_list<<std::endl;
+  std::cout<<" END: eval_cell_list"<<std::endl;
+#endif
 }
 
 // SUPERCELL END
