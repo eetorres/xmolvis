@@ -546,7 +546,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #endif
       if(supercell.is_linked_cell()){
         v_positive_r = fVAdd(vi_uvw,supercell.get_bbox());
-        v_integer_r  = iVMul(v_positive_r,get_cell_frac());
+        v_integer_r  = iVMul(v_positive_r,supercell.get_cell_frac());
 #ifdef _ATOM_DEBUG_BONDS_
         std::cout<<" ATOM: v_positive_r="<<v_positive_r<<std::endl;
         std::cout<<" ATOM: v_integer_r="<<v_integer_r<<std::endl;

@@ -150,8 +150,8 @@ public:
   //void set_box_size(TVector<real>& v){ supercell.set_box_size(v);};
   //bool is_linked_cell(void){ return supercell.is_linked_cell();};
   //void is_linked_cell(bool b){ supercell.is_linked_cell(b);};
-  TVector<real> get_box_size(void){ return supercell.get_box_size();};
-  TVector<real> get_cell_frac(void){ return supercell.get_cell_frac();};
+  //TVector<real> get_box_size(void){ return supercell.get_box_size();};
+  //TVector<real> get_cell_frac(void){ return supercell.get_cell_frac();};
   //TVector<int>  get_neighbor_cells_xyz(uint u){ return get_neighbor_cells_xyz(u);};
   // pure virtual functions
   virtual void view_redraw(void)=0;
