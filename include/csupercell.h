@@ -183,6 +183,12 @@ public:
   TMatrix<real> get_unit_uvw_to_xyz(void);
   TMatrix<real> get_bounding_box(void);
 
+  // MD special functions
+  // cell list
+  void set_cells(void);
+  void set_inverse_cell(void);
+  void set_cell_list(void);
+  void eval_linked_list(void);
 
 private:
 

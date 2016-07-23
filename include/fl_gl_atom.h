@@ -124,10 +124,6 @@ public:
   void initialize_transform_matrix(void);
   void initialize_rotation_matrix(void);
   void initialize_atomic_coordinates(const TMatrix<real>&);
-  // cell list
-  void set_cells(void);
-  void set_inverse_cell(void);
-  void set_cell_list(void);
   void set_bounding_box(const TMatrix<real>&);
   //
   void set_x_cells(int);
@@ -157,7 +153,6 @@ public:
   // Evaluation functions
   ////////////////////////////////////////////////////////////////////////////////////////
   void eval_initial_properties(void);
-  void eval_linked_list(void);
   void eval_atomic_bonds(void);
   void eval_sphere(uint);
   void eval_cylinder(uint);
