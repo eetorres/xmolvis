@@ -54,37 +54,6 @@
 #include <cviewmol.h>
 #include <sphere.h>
 
-// Neighbouring cells
-const int neighbor_cells[27][3] = {
-{  0, 0, 0}, // 0
-{  1, 0, 0}, // 1
-{  1, 1, 0}, // 2
-{  0, 1, 0}, // 3
-{ -1, 1, 0}, // 4
-{  0, 0, 1}, // 5
-{  1, 0, 1}, // 6
-{ -1, 0, 1}, // 7
-{  1, 1, 1}, // 8
-{  0, 1, 1}, // 9
-{ -1, 1, 1}, // 10
-{ -1,-1, 1}, // 11
-{  0,-1, 1}, // 12
-{  1,-1, 1}, // 13
-{  0, 0,-1}, // 14
-{  1, 0,-1}, // 15
-{ -1, 0,-1}, // 16
-{  1, 1,-1}, // 17
-{  0, 1,-1}, // 18
-{ -1, 1,-1}, // 19
-{ -1,-1,-1}, // 20
-{  0,-1,-1}, // 21
-{  1,-1,-1}, // 22
-{ -1, 0, 0}, // 23
-{ -1,-1, 0}, // 24
-{  0,-1, 0}, // 25
-{  1,-1, 0}  // 26
-};
-
 static const GLfloat light_ambient[]  = { 0.3, 0.3, 0.3, 1.0};
 static const GLfloat light_diffuse[]  = { 0.5, 0.5, 0.5, 1.0};
 static const GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0};
@@ -226,7 +195,7 @@ protected:
   bool is_update_atomic_properties;
   bool is_update_radius;
   bool is_update_bonds;
-  bool is_linked_cell;
+  //bool is_linked_cell;
   bool is_update_mask_rcolor;
   bool update_coordinates;
   //
@@ -238,7 +207,7 @@ protected:
   int  __sphere_strip_length;
   int  __cylinder_strip_length;
   int  u_cylinder_resolution;
-  int  i_neighbor_cells;
+  //int  i_neighbor_cells;
   //
   uint u_bond_types;
   uint __fragment_total;
@@ -285,14 +254,15 @@ protected:
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
   //
-  TVector<real> v_bbox, _vu, _vv, _vw;
+  TVector<real> _vu, _vv, _vw;
   //
   // linked cell variables
-  uint u_cell_number, u_particle_number;
+  //uint u_cell_number;
+  uint u_particle_number;
   real r_cut_radius, r_cut_radius_2;
-  TVector<real> v_cell_frac, v_box_size, v_box_middle;
+  // TVector<real> v_cell_frac, v_box_size, v_box_middle;
   TVector<uint> v_cell_number;
-  TVector<int>  v_cell_side, v_cell_list, v_cell_head;
+  //TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TVector<int>  v_neighbor_cell, v_md_pbc;
   //
   TVector<std::string> v_atom_labels; // <--------------
@@ -303,7 +273,7 @@ protected:
   TMatrix<uint> m_bond_indices_pbc;
   // bonds with PBC
   TMatrix<int>  m_bond_boundary_pbc;
-  TMatrix<int>  neighbor_cells_xyz;
+  //TMatrix<int>  neighbor_cells_xyz;
   //
   TMatrix<real> m_sphere;
   TMatrix<real> m_cylinder;
@@ -331,7 +301,7 @@ protected:
   // bounding box
   TMatrix<real> m_bbox;
   TMatrix<real> u_bbox;
-  TMatrix<real> u_inv_bbox;
+  //TMatrix<real> u_inv_bbox;
   //
   private:
     CTimer gl_atom_clock;

@@ -40,6 +40,7 @@ public:
   //
   void initialize_map(void);
   //
+  void eval_linked_list(void);
   void eval_map_cartesian(void);
   void eval_map_direct(void);
   void eval_map_properties(void);
@@ -139,6 +140,19 @@ public:
   TMatrix<real> get_cartesian(void);
   TMatrix<real> get_map_direct(void);
   //
+  // Temporal functions
+  int get_cell_side(int i){ return supercell.v_cell_side[i];};
+  TVector<int> get_cell_side(void){ return supercell.v_cell_side;};
+  //
+  //int get_cell_list(int i){ return supercell.v_cell_list[i];};
+  //int get_cell_head(int i){ return supercell.v_cell_head[i];};
+  //void set_cut_radius(real r){ supercell.set_cut_radius(r);};
+  //void set_box_size(TVector<real>& v){ supercell.set_box_size(v);};
+  //bool is_linked_cell(void){ return supercell.is_linked_cell();};
+  //void is_linked_cell(bool b){ supercell.is_linked_cell(b);};
+  TVector<real> get_box_size(void){ return supercell.get_box_size();};
+  TVector<real> get_cell_frac(void){ return supercell.get_cell_frac();};
+  //TVector<int>  get_neighbor_cells_xyz(uint u){ return get_neighbor_cells_xyz(u);};
   // pure virtual functions
   virtual void view_redraw(void)=0;
   virtual void update_data(void)=0;

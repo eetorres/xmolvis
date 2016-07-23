@@ -31,6 +31,37 @@
 #include<cfragment.h>
 #include<cfile.h>
 
+// Neighbouring cells
+const int neighbor_cells[27][3] = {
+{  0, 0, 0}, // 0
+{  1, 0, 0}, // 1
+{  1, 1, 0}, // 2
+{  0, 1, 0}, // 3
+{ -1, 1, 0}, // 4
+{  0, 0, 1}, // 5
+{  1, 0, 1}, // 6
+{ -1, 0, 1}, // 7
+{  1, 1, 1}, // 8
+{  0, 1, 1}, // 9
+{ -1, 1, 1}, // 10
+{ -1,-1, 1}, // 11
+{  0,-1, 1}, // 12
+{  1,-1, 1}, // 13
+{  0, 0,-1}, // 14
+{  1, 0,-1}, // 15
+{ -1, 0,-1}, // 16
+{  1, 1,-1}, // 17
+{  0, 1,-1}, // 18
+{ -1, 1,-1}, // 19
+{ -1,-1,-1}, // 20
+{  0,-1,-1}, // 21
+{  1,-1,-1}, // 22
+{ -1, 0, 0}, // 23
+{ -1,-1, 0}, // 24
+{  0,-1, 0}, // 25
+{  1,-1, 0}  // 26
+};
+
 class CSupercell {
 
 public:
@@ -185,10 +216,35 @@ public:
 
   // MD special functions
   // cell list
+  int  i_neighbor_cells;
+  bool b_linked_cell;
+  uint u_cell_number;
+  bool is_linked_cell(void){ return b_linked_cell;};
+  void is_linked_cell(bool b){ b_linked_cell=b;};
   void set_cells(void);
   void set_inverse_cell(void);
   void set_cell_list(void);
   void eval_linked_list(void);
+  int  get_cell_list(int i){ return v_cell_list[i];};
+  int  get_cell_head(int i){ return v_cell_head[i];};
+  int  get_neighbor_cells(void){ return i_neighbor_cells;};
+  uint get_cell_number(void){ return u_cell_number;};
+  void set_bbox(const TVector<real>& v){ v_bbox = v;};
+  real get_bbox(uint u){ return v_bbox[u];};
+  TVector<real> get_bbox(void){ return v_bbox;};
+  void set_box_size(const TVector<real>& v){ v_box_size = 2.0*v;};
+  TVector<real> get_box_size(void){ return v_box_size;};
+  TVector<real> get_cell_frac(void){ return v_cell_frac;};
+  TVector<int>  get_neighbor_cells_xyz(uint u){ return neighbor_cells_xyz[u];};
+  TMatrix<real> get_inv_bbox(void){ return m_inv_bbox;};
+  void set_inv_bbox(const TMatrix<real>& m){ m_inv_bbox=m;};
+  // Temporal pbulic variables
+  TVector<real> v_bbox;
+  TVector<int>  v_cell_side, v_cell_list, v_cell_head;
+  TMatrix<real> m_inv_bbox;
+  TMatrix<int>  neighbor_cells_xyz;
+  // Temporal functions
+  void set_cut_radius(real r){ r_cut_radius=r; r_cut_radius_2=r*r;};
 
 private:
 
@@ -203,11 +259,14 @@ private:
   uint __atomic_species;
   uint __active_fragment;
   //
+  real r_cut_radius, r_cut_radius_2;
+  //
   std::ifstream iposmol;
   std::ifstream itopmol;
   std::ofstream oposmol;
   std::ofstream otopmol;
-  //
+  ///
+  TVector<real> v_cell_frac, v_box_size, v_box_middle;
   //TVector<CFragment> v_fragments;
   //TVector<uint> v_atomic_composition_table;
   //TVector<uint> v_atomic_number_table;

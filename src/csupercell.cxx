@@ -31,6 +31,7 @@
 
 CSupercell::CSupercell(){
   __is_potmol=false;
+  clear();
 }
 
 CSupercell::~CSupercell(void){
@@ -39,6 +40,7 @@ CSupercell::~CSupercell(void){
 void CSupercell::clear(void){
   __is_potmol=false;
   __active_fragment=0;
+  is_linked_cell(true);
 }
 
 bool CSupercell::read_input_file(void){
@@ -622,7 +624,7 @@ TMatrix<real> CSupercell::get_direct(void){
 // Special MD functions
 
 // Linked and shell cell configuration functions
-void Fl_Gl_Atom::set_cells(void){
+void CSupercell::set_cells(void){
   TVector<int> v1(3);
   int xpcb=-2, ypcb=-2, zpcb=-2;
   v_cell_side = iVScale(v_box_size, (1.0/r_cut_radius));
@@ -644,10 +646,10 @@ void Fl_Gl_Atom::set_cells(void){
 	  i_neighbor_cells++;
 	}
   }
-  is_linked_cell=true;
+  b_linked_cell=true;
   for(int i=0; i<3; i++){
     if(v_cell_side[1]<=2){
-      is_linked_cell=false;
+      b_linked_cell=false;
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" LINKED CELL too small [turned off]"<<std::endl;
 #endif
@@ -655,23 +657,23 @@ void Fl_Gl_Atom::set_cells(void){
   }
 }
 
-void Fl_Gl_Atom::set_inverse_cell(void){
+void CSupercell::set_inverse_cell(void){
   v_cell_frac = fVDiv(v_cell_side,v_box_size);
 #ifdef _SHOW_DEBUG_LINKED_
   std::cout<<" LINKED: Cell Frac = "<<v_cell_frac;
 #endif
 }
 
-void Fl_Gl_Atom::set_cell_list(void){
+void CSupercell::set_cell_list(void){
   u_cell_number = (uint)vVol(v_cell_side);
 #ifdef _SHOW_DEBUG_LINKED_
   std::cout<<" LINKED: Number of used cells = "<<u_cell_number<<std::endl;
 #endif
   v_cell_head.resize(u_cell_number);
-  v_cell_list.resize(__number_of_atoms);
+  v_cell_list.resize(get_total_atoms());
 }
 
-void Fl_Gl_Atom::eval_linked_list(void){
+void CSupercell::eval_linked_list(void){
   set_cells();
   set_inverse_cell();
   set_cell_list();
@@ -686,13 +688,13 @@ void Fl_Gl_Atom::eval_linked_list(void){
 #ifdef _SHOW_DEBUG_LINKED_
   std::cout<<" LINKED: build the linked cell"<<std::endl;
 #endif
-  for(_n=0; _n<(uint)__number_of_atoms; _n++){
+  for(_n=0; _n<(uint)get_total_atoms(); _n++){
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
     std::cout<<" atom coordinates["<<_n<<"] = "<<get_cartesian(_n); //m_atom_coordinates[_n];
 #endif
     v_positive_r=get_cartesian(_n); //m_atom_coordinates[_n];
     // uvw coordinates
-    v_positive_r =  (v_positive_r*u_inv_bbox);
+    v_positive_r =  (v_positive_r*m_inv_bbox);
 #ifdef _SHOW_DEBUG_LINKED_EVAL_
     std::cout<<" direct r = "<<v_positive_r;
 #endif

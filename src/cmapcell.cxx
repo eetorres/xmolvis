@@ -73,6 +73,10 @@ TVector<real> CMapcell::get_map_position_uvw2(uint u){
   return (real)u*v_position_map_step_2d;
 }
 
+void CMapcell::eval_linked_list(void){
+  supercell.eval_linked_list();
+}
+
 void CMapcell::eval_map_cartesian(void){
   supercell.update_fragmol_cartesian();
 }

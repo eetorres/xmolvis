@@ -136,7 +136,7 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   is_control_left_on      = false;
   last_action = 0;
   // Arrays
-  v_bbox.resize(3);
+  //v_bbox.resize(3);
   v_distance1.resize(3);
   v_distance2.resize(3);
   v_distance3.resize(3);
@@ -198,7 +198,7 @@ void Fl_Gl_Mol_View::clear(void){
   is_highlight_fragment_  = false;
   is_dark_mask_           = false;
   is_pbc                  = true;
-  is_linked_cell          = true;
+  supercell.is_linked_cell(true);
   //
   __fragment_active       = 1;
   __highlight_atom        = 0;
@@ -351,7 +351,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (0)"<<std::endl;
 #endif
   if(update_normal_color){
-    for(int i=0; i<__number_of_atoms; i++){
+    for(int i=0; i<get_total_atoms(); i++){
       if(is_mode_atom){
         m_atom_rcolor[i][1] = f_atom_brightness*m_radius_color[i][1];
         m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
@@ -450,7 +450,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     }else{
       uint __last_fragment = v_fragment_table_gl[__last_highlight_atom];
       color = palette.get_color(__last_fragment);
-      for(int i=0; i<__number_of_atoms; i++){
+      for(int i=0; i<get_total_atoms(); i++){
         if(v_fragment_table_gl[i]==__last_fragment){
           m_atom_rcolor[i][1] = f_atom_brightness*color.r;
           m_atom_rcolor[i][2] = f_atom_brightness*color.g;
@@ -459,7 +459,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       }
       uint __new_fragment  = v_fragment_table_gl[__highlight_atom];
       color = palette.get_color(__new_fragment);
-      for(int i=0; i<__number_of_atoms; i++){
+      for(int i=0; i<get_total_atoms(); i++){
         if(v_fragment_table_gl[i]==__new_fragment){
           m_atom_rcolor[i][1] = f_select_brightness*color.r;
           m_atom_rcolor[i][2] = f_select_brightness*color.g;
@@ -497,7 +497,7 @@ void Fl_Gl_Mol_View::draw_atoms(void){
   TVector<real> e(3),p(3);
   if(is_draw_atoms_){
     for(int c=0; c<get_total_cells(); c++){ // repetition in z
-      for(int i=0; i<__number_of_atoms; i++){
+      for(int i=0; i<get_total_atoms(); i++){
         if(render_mode==MODE_SELECT){
           ui_rgb color;
           color = index_palette.get_index(i+MENU_RESERVED_IDS);
@@ -505,7 +505,7 @@ void Fl_Gl_Mol_View::draw_atoms(void){
         }else{
           glColor3f(m_atom_rcolor[i][1],m_atom_rcolor[i][2],m_atom_rcolor[i][3]);
         }
-        _xyz=m_atom_position[i+c*__number_of_atoms];
+        _xyz=m_atom_position[i+c*get_total_atoms()];
         glPushMatrix();
         glTranslatef(_xyz[0],_xyz[1],_xyz[2]);
         glCallList(v_sphere_list[v_atom_table[i]]);
@@ -636,7 +636,7 @@ void Fl_Gl_Mol_View::draw_symbols(void){
   glPushMatrix();
   GLboolean boolval;
   char buff[10];
-  for(int i=0; i<__number_of_atoms; i++){
+  for(int i=0; i<get_total_atoms(); i++){
   //for(int i=0; i<2; i++){
     _xyz=get_cartesian(i); //m_atom_coordinates[i];
     if(is_draw_symbols_ && is_draw_numbers_){
@@ -1853,11 +1853,11 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   GLfloat y_delta = 0.04*base_view;
   x_pos+=y_delta;
   y_pos-=1.5*y_delta;
-  widget_int_output(x_pos, y_pos, y_pos_end, z, __number_of_atoms, (char*)"Atoms:");
+  widget_int_output(x_pos, y_pos, y_pos_end, z, get_total_atoms(), (char*)"Atoms:");
   y_pos-=y_delta;
   widget_int_output(x_pos, y_pos, y_pos_end, z, __fragment_total, (char*)"Fragments:");
   y_pos-=y_delta;
-  widget_vector_output(x_pos, y_pos, y_pos_end, z, v_bbox, (char*)"Box:");
+  widget_vector_output(x_pos, y_pos, y_pos_end, z, supercell.get_bbox(), (char*)"Box:");
 }
 
 // slider widget
@@ -2497,13 +2497,14 @@ void Fl_Gl_Mol_View::set_atom_table(const TVector<uint>& v){
 
 void Fl_Gl_Mol_View::set_atomic_number_table(const TVector<uint>& v){
   v_atomic_number_table_gl = v;
-  r_cut_radius=0;
+  real r_cut_radius=0;
   //std::cout<<" v_atomic_number_table_gl = "<<v_atomic_number_table_gl;
   for(uint i=0; i<v_atomic_number_table_gl.size(); i++){
     r_cut_radius=maxi(r_cut_radius,atom_rrgb[v_atomic_number_table_gl[i]][0]);
   }
   r_cut_radius*=2.0;
-  r_cut_radius_2 = r_cut_radius*r_cut_radius;
+  supercell.set_cut_radius(r_cut_radius);
+  //r_cut_radius_2 = r_cut_radius*r_cut_radius;
 #ifdef _SHOW_DEBUG_LINKED_
   std::cout<<" Cut Radius = "<<r_cut_radius<<std::endl;
 #endif

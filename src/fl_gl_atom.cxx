@@ -64,20 +64,20 @@ void Fl_Gl_Atom::eval_initial_properties(void){
   real _radius;
   TVector<real> _atom_xyz;
   TVector<real> _rcolor(4);
-  m_radius_color.resize(__number_of_atoms,4);
+  m_radius_color.resize(get_total_atoms(),4);
   index_palette.set_color(0);
-  index_palette.initialize(0,__number_of_atoms+MENU_RESERVED_IDS,__number_of_atoms+MENU_RESERVED_IDS);
+  index_palette.initialize(0,get_total_atoms()+MENU_RESERVED_IDS,get_total_atoms()+MENU_RESERVED_IDS);
   index_palette.update_palette_index();
   int i_z=0;
 #ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" ATOM: Number of atoms: "<<__number_of_atoms<<std::endl;
+  std::cout<<" ATOM: Number of atoms: "<<get_total_atoms()<<std::endl;
 #endif
   if(is_eval_sphere){
     set_sphere_resolution(2);
     is_eval_sphere=false;
   }
   if(is_draw_atoms_){
-    for(int i=0; i<__number_of_atoms; i++){
+    for(int i=0; i<get_total_atoms(); i++){
       i_z=v_atom_numbers[i];
       _radius=atom_rrgb[i_z][0];
       _rcolor[0]=_radius;
@@ -109,9 +109,9 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
   std::cout<<" ATOM: Initialize"<<std::endl;
 #endif
   update_atomic_coordinates(m);
-  __number_of_atoms = get_total_atoms(); //m_atom_coordinates.rows();
-  if(__number_of_atoms<100){
-    is_linked_cell=false;
+  //__number_of_atoms = get_total_atoms(); //m_atom_coordinates.rows();
+  if(get_total_atoms()<100){
+    supercell.is_linked_cell(false);
   }
   if(is_first_structure_){
 #ifdef _ATOM_DEBUG_MESSAGES_
@@ -182,14 +182,14 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
     j=m_bond_indices_pbc[n][1];
     //vi = m_atom_coordinates[i];
     vi = get_cartesian(i);
-    vi_uvw = (vi*u_inv_bbox);
+    vi_uvw = (vi*supercell.get_inv_bbox());
     //vj = m_atom_coordinates[j];
     vj = get_cartesian(j);
     for(uint coord=0; coord<3; coord++){
       if ( m_bond_boundary_pbc[n][coord] != 0 )
         vj += m_bond_boundary_pbc[n][coord]*2.0*m_bbox[coord];       // PBC
     }
-    vj_uvw = (vj*u_inv_bbox);
+    vj_uvw = (vj*supercell.get_inv_bbox());
     vij = (vj-vi);
     rlz = vij[2];
     vij[2] = 0;
@@ -262,12 +262,12 @@ void Fl_Gl_Atom::set_xyz_cells(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total cells = "<<total_cells<<std::endl;
 #endif
-  m_atom_position.resize(total_cells*__number_of_atoms,3);
+  m_atom_position.resize(total_cells*get_total_atoms(),3);
   if(is_draw_atoms_){
     for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
       for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
         for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
-          for(int i=0; i<__number_of_atoms; i++){
+          for(int i=0; i<get_total_atoms(); i++){
             _xyz=get_cartesian(i); //m_atom_coordinates[i];
             _xyz=_xyz+2.0*(x*_vu+y*_vv+z*_vw);
             m_atom_position[cont]=_xyz;
@@ -328,31 +328,35 @@ void Fl_Gl_Atom::save_wysiwyg_extension(std::string _f){
 }
 
 void Fl_Gl_Atom::set_bounding_box(const TMatrix<real>& m){
+  TVector<real> v_bb;
   m_bbox = m;
   u_bbox.resize(3,3);
+  v_bb.resize(3);
   _vu = m_bbox[0];
   _vv = m_bbox[1];
   _vw = m_bbox[2];
   // set up the half box sides
-  v_bbox[0]=_vu.magnitude();
-  v_bbox[1]=_vv.magnitude();
-  v_bbox[2]=_vw.magnitude();
+  v_bb[0]=_vu.magnitude();
+  v_bb[1]=_vv.magnitude();
+  v_bb[2]=_vw.magnitude();
+  supercell.set_bbox(v_bb);
   // the full box is used for the bond search method
-  v_box_size = 2.0*v_bbox;
+  //v_box_size = 2.0*v_bbox;
+  supercell.set_box_size(v_bb);
   u_bbox=supercell.get_unit_uvw_to_xyz();
-  u_inv_bbox=u_bbox.inverse();
+  supercell.set_inv_bbox(u_bbox.inverse());
   // set view size
   base_view = maxi(_vu.magnitude(), _vv.magnitude());
   base_view = maxi(base_view, _vw.magnitude());
   r_axes_position = 0.9*base_view;
   base_view *= 1.1;
-#ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" Unit cell = "<<m_bbox<<std::endl;
-  std::cout<<" Half Box = "<<v_bbox<<std::endl;
-  std::cout<<" Full Box = "<<v_box_size<<std::endl;
-  std::cout<<" Unit Box = "<<u_bbox<<std::endl;
-  std::cout<<" Unit Inv Box = "<<u_inv_bbox<<std::endl;
-#endif
+//#ifdef _ATOM_DEBUG_MESSAGES_
+  //std::cout<<" Unit cell = "<<m_bbox<<std::endl;
+  //std::cout<<" Half Box = "<<v_bbox<<std::endl;
+  //std::cout<<" Full Box = "<<v_box_size<<std::endl;
+  //std::cout<<" Unit Box = "<<u_bbox<<std::endl;
+  //std::cout<<" Unit Inv Box = "<<supercell.get_inv_bbox()<<std::endl;
+//#endif
 }
 
 void Fl_Gl_Atom::initialize_sphere(real r){
@@ -469,107 +473,6 @@ void Fl_Gl_Atom::add_axis(const TVector<real>& c,real l, real r, real a1, real a
   glEnd();
 }
 
-/* DEPRECATED: MOVED TO SUPERCELL
-// Linked and shell cell configuration functions
-void Fl_Gl_Atom::set_cells(void){
-  TVector<int> v1(3);
-  int xpcb=-2, ypcb=-2, zpcb=-2;
-  v_cell_side = iVScale(v_box_size, (1.0/r_cut_radius));
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" LINKED: Cell = "<<v_cell_side;
-#endif
-  // set the necesary neighbor cells
-  if(v_cell_side[0]==2) xpcb=-1;
-  if(v_cell_side[1]==2) ypcb=-1;
-  if(v_cell_side[2]==2) zpcb=-1;
-  neighbor_cells_xyz.resize(0,3);
-  i_neighbor_cells=0;
-  for(int k=0; k<27; k++){
-	v1[0] = neighbor_cells[k][0];
-	v1[1] = neighbor_cells[k][1];
-	v1[2] = neighbor_cells[k][2];
-	if((v1[0] > xpcb) && (v1[1] > ypcb) && (v1[2] > zpcb)){
-	  neighbor_cells_xyz.add_row(v1);
-	  i_neighbor_cells++;
-	}
-  }
-  is_linked_cell=true;
-  for(int i=0; i<3; i++){
-    if(v_cell_side[1]<=2){
-      is_linked_cell=false;
-#ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" LINKED CELL too small [turned off]"<<std::endl;
-#endif
-    }
-  }
-}
-
-void Fl_Gl_Atom::set_inverse_cell(void){
-  v_cell_frac = fVDiv(v_cell_side,v_box_size);
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" LINKED: Cell Frac = "<<v_cell_frac;
-#endif
-}
-
-void Fl_Gl_Atom::set_cell_list(void){
-  u_cell_number = (uint)vVol(v_cell_side);
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" LINKED: Number of used cells = "<<u_cell_number<<std::endl;
-#endif
-  v_cell_head.resize(u_cell_number);
-  v_cell_list.resize(__number_of_atoms);
-}
-
-void Fl_Gl_Atom::eval_linked_list(void){
-  set_cells();
-  set_inverse_cell();
-  set_cell_list();
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" LINKED: BEGIN: eval_cell_list"<<std::endl;
-#endif
-  uint _n, u_icell;
-  TVector<real> v_positive_r;
-  TVector<int>  v_integer_r;
-  for(_n=0; _n<u_cell_number; _n++)
-    v_cell_head[_n] = -1;
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" LINKED: build the linked cell"<<std::endl;
-#endif
-  for(_n=0; _n<(uint)__number_of_atoms; _n++){
-#ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" atom coordinates["<<_n<<"] = "<<get_cartesian(_n); //m_atom_coordinates[_n];
-#endif
-    v_positive_r=get_cartesian(_n); //m_atom_coordinates[_n];
-    // uvw coordinates
-    v_positive_r =  (v_positive_r*u_inv_bbox);
-#ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" direct r = "<<v_positive_r;
-#endif
-    // use half of the box here
-    v_positive_r = fVAdd(v_positive_r,v_bbox);
-#ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" positive r = "<<v_positive_r;
-#endif
-    // apply PBC to place all the atoms inside the box
-    v_integer_r = iVMul(v_positive_r,v_cell_frac);
-#ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" v_integer_r = "<<v_integer_r;
-#endif
-    u_icell = iVLinear(v_integer_r,v_cell_side);
-#ifdef _SHOW_DEBUG_LINKED_EVAL_
-    std::cout<<" u_icell = "<<u_icell<<std::endl;
-#endif
-    v_cell_list[_n] = v_cell_head[u_icell];
-    v_cell_head[u_icell] = _n;
-  }
-#ifdef _SHOW_DEBUG_LINKED_
-  std::cout<<" v_cell_list="<<v_cell_list<<std::endl;
-  std::cout<<" END: eval_cell_list"<<std::endl;
-#endif
-}
-DEPRECATED: MOVED TO SUPERCELL 
-*/
-
 // Fri Jan 13 16:55:51 MST 2012
 // beta version
 // find bonds between atoms closer than the sum of their van der Waals radius
@@ -596,7 +499,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   TVector<int>  v_neighbor_cell;
   TVector<int>  v_pbc;
   //
-  uint max_bonds = 15*(__number_of_atoms);
+  uint max_bonds = 15*get_total_atoms();
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: estimated max bonds "<<max_bonds<<std::endl;
 #endif
@@ -611,10 +514,10 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   m_bond_boundary_pbc.resize(uint(max_bonds/2),2);
   ////////////////////////////////////////
   v_pbc.resize(3);
-#ifdef _ATOM_DEBUG_BONDS_
-  std::cout<<" FL_GL_ATOM: LINKED: Box = "<<v_box_size;
-#endif
-  if(is_linked_cell){
+//#ifdef _ATOM_DEBUG_BONDS_
+  //std::cout<<" FL_GL_ATOM: LINKED: Box = "<<v_box_size;
+//#endif
+  if(supercell.is_linked_cell()){
 #ifdef _ATOM_DEBUG_BONDS_
     std::cout<<" FL_GL_ATOM: LINKED CELL USED"<<std::endl;
 #endif
@@ -628,36 +531,52 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
     std::cout<<" FL_GL_ATOM: LINKED CELL NOT USED"<<std::endl;
   }
 #endif
-  for(int i=0; i<__number_of_atoms-1; i++){
+  for(int i=0; i<get_total_atoms()-1; i++){
 #ifdef _ATOM_DEBUG_BONDS_
     std::cout<<" ATOM: i="<<i<<std::endl;
 #endif
     if(strcmp(v_atomic_symbol_table_gl[v_atom_table[i]].c_str(),"X")){
       vi = get_cartesian(i);//m_atom_coordinates[i];
-      vi_uvw = (vi*u_inv_bbox);
+      vi_uvw = (vi*supercell.get_inv_bbox());
       ri = m_radius_color[i][0];
-      if(is_linked_cell){
-        v_positive_r = fVAdd(vi_uvw,v_bbox);
-        v_integer_r  = iVMul(v_positive_r,v_cell_frac);
+#ifdef _ATOM_DEBUG_BONDS_
+    std::cout<<" ATOM: ii="<<vi<<std::endl;
+    std::cout<<" ATOM: vi_uvw="<<vi_uvw<<std::endl;
+    std::cout<<" ATOM: ii="<<vi<<std::endl;
+#endif
+      if(supercell.is_linked_cell()){
+        v_positive_r = fVAdd(vi_uvw,supercell.get_bbox());
+        v_integer_r  = iVMul(v_positive_r,get_cell_frac());
+#ifdef _ATOM_DEBUG_BONDS_
+        std::cout<<" ATOM: v_positive_r="<<v_positive_r<<std::endl;
+        std::cout<<" ATOM: v_integer_r="<<v_integer_r<<std::endl;
+#endif
         // using the neighbour list
         // searching inside the neighbour cells
-        for (int _m=0; _m<i_neighbor_cells; _m++){
-          v_neighbor_cell = iVAdd(v_integer_r,neighbor_cells_xyz[_m]);
+        for (int _m=0; _m<supercell.get_neighbor_cells(); _m++){
+          v_neighbor_cell = iVAdd(v_integer_r,supercell.get_neighbor_cells_xyz(_m));
+#ifdef _ATOM_DEBUG_BONDS_
+          std::cout<<" ATOM: v_neighbor_cell="<<v_neighbor_cell<<std::endl;
+#endif
           // Used to apply PCB to cells in each dimension
           /////////////////////////////////////////////////////////////////////////////////
           for (uint coord=0; coord<3; coord++){
-            if(v_neighbor_cell[coord] >= v_cell_side[coord]){ // check if  PBC is necessary
+            if(v_neighbor_cell[coord] >= get_cell_side(coord)){ // check if  PBC is necessary
               v_neighbor_cell[coord]= 0;                      // apply PBC to each  cell
               //if(is_pbc) use_pbc = false;
             }else if(v_neighbor_cell[coord] < 0){             // check if  PBC is necessary
-              v_neighbor_cell[coord]= v_cell_side[coord]-1;   // apply PBC to each cell
+              v_neighbor_cell[coord]= get_cell_side(coord)-1;   // apply PBC to each cell
               //if(is_pbc) use_pbc = false;
             }
           }
           /////////////////////////////////////////////////////////////////////////////////
-          u_icell = iVLinear(v_neighbor_cell,v_cell_side);    // head atom index in the the cell
-          if(u_icell>=0 && u_icell < (int)u_cell_number){          // inside of a cells
-            j = v_cell_head[u_icell];                         // head atom in the actual cell
+          u_icell = iVLinear(v_neighbor_cell,get_cell_side());    // head atom index in the the cell
+#ifdef _ATOM_DEBUG_BONDS_
+          std::cout<<" ATOM: v_neighbor_cell="<<v_neighbor_cell<<std::endl;
+          std::cout<<" ATOM: u_icell ="<<u_icell<<std::endl;
+#endif
+          if(u_icell>=0 && u_icell < (int)supercell.get_cell_number()){          // inside of a cells
+            j = supercell.get_cell_head(u_icell);                         // head atom in the actual cell
           }else{                                              // out of the box
             j = -1;                                           // outside of a cells
           }
@@ -671,7 +590,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #endif
               r2 = 0;                                         // set distance to cero
               vj = get_cartesian(j);  //m_atom_coordinates[j];
-              vj_uvw = vj*u_inv_bbox;
+              vj_uvw = vj*supercell.get_inv_bbox();
               rj = m_radius_color[j][0];
               r = (ri+rj);
               rr = 1.2*(r*r);
@@ -679,11 +598,11 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
               vij_uvw = (vj_uvw-vi_uvw);
               for(uint coord=0; coord<3; coord++){
                 v_pbc[coord] = 0;
-                if(vij_uvw[coord] <= -v_bbox[coord]){
+                if(vij_uvw[coord] <= -supercell.get_bbox(coord)){
                   vj += 2.0*m_bbox[coord];       // PBC
                   use_pbc = true;
                   v_pbc[coord] = 1;
-                }else if(vij_uvw[coord] > v_bbox[coord]){
+                }else if(vij_uvw[coord] > supercell.get_bbox(coord)){
                   vj -= 2.0*m_bbox[coord];       // PBC
                   use_pbc = true;
                   v_pbc[coord] = -1;
@@ -717,7 +636,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
                 }
               }
             }
-            j = v_cell_list[j];
+            j = supercell.get_cell_list(j);
           }
         }
       }else{
@@ -727,7 +646,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
         // the code below can be used for small number of atoms.
         // searching inside the neighbour cells
         for (int _m=0; _m<27; _m++){
-          for(int j=i+1; j<__number_of_atoms; j++){
+          for(int j=i+1; j<get_total_atoms(); j++){
             if(v_ft[j] == v_ft[i]){  // avoid bonds between fragments
 #ifdef _ATOM_DEBUG_BONDS_
             std::cout<<" ATOM: j="<<j<<" i="<<i<<" m="<<_m<<std::endl;
@@ -739,7 +658,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
                 v_pbc[coord] = neighbor_cells[_m][coord];
               }
               rj = m_radius_color[j][0];
-              vj_uvw = vj*u_inv_bbox;
+              vj_uvw = vj*supercell.get_inv_bbox();
               vij = (vj-vi);
               r = (ri+rj);
               rr = 1.2*(r*r);
