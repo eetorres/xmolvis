@@ -121,10 +121,12 @@ public:
   real get_backbone_precession(void);
   real get_backbone_tilt(void);
   //
-  TVector<std::string> get_map_atomic_labels(void);
-  TVector<std::string> get_map_atomic_symbols(void);
-  TVector<unsigned int> get_map_atomic_numbers(void);
-  TVector<unsigned int> get_map_atomic_table(void);
+  TVector<std::string> get_atom_labels(void);
+  std::string get_atom_label(uint);
+  TVector<std::string> get_atomic_symbols(void);
+  std::string get_atomic_symbol(uint);
+  TVector<uint> get_map_atomic_numbers(void);
+  TVector<uint> get_map_atomic_table(void);
   TVector<real> get_map_axis_angles(void);
   TVector<real> get_map_basis_direct(void);
   TVector<real> get_map_position_direct(void);
@@ -141,18 +143,10 @@ public:
   TMatrix<real> get_map_direct(void);
   //
   // Temporal functions
+  uint get_atomic_number(uint u){ return v_atomic_numbers[u];};
   int get_cell_side(int i){ return supercell.v_cell_side[i];};
   TVector<int> get_cell_side(void){ return supercell.v_cell_side;};
   //
-  //int get_cell_list(int i){ return supercell.v_cell_list[i];};
-  //int get_cell_head(int i){ return supercell.v_cell_head[i];};
-  //void set_cut_radius(real r){ supercell.set_cut_radius(r);};
-  //void set_box_size(TVector<real>& v){ supercell.set_box_size(v);};
-  //bool is_linked_cell(void){ return supercell.is_linked_cell();};
-  //void is_linked_cell(bool b){ supercell.is_linked_cell(b);};
-  //TVector<real> get_box_size(void){ return supercell.get_box_size();};
-  //TVector<real> get_cell_frac(void){ return supercell.get_cell_frac();};
-  //TVector<int>  get_neighbor_cells_xyz(uint u){ return get_neighbor_cells_xyz(u);};
   // pure virtual functions
   virtual void view_redraw(void)=0;
   virtual void update_data(void)=0;
@@ -194,8 +188,8 @@ private:
   //
   TVector<std::string>  v_atomic_labels;
   TVector<std::string>  v_atomic_symbols;
-  TVector<unsigned int> v_atomic_numbers;
-  TVector<unsigned int> v_atomic_table;
+  TVector<uint> v_atomic_numbers;
+  TVector<uint> v_atomic_table;
 
   TVector<real> v_position_map_uvw1;
   TVector<real> v_position_map_uvw2;

@@ -168,7 +168,7 @@ public:
   uint get_fragment_atomic_number(uint,uint);
   //
   uint get_fragmol_total_atoms(void);
-  uint get_species(void);
+  uint get_atomic_species(void);
   uint get_atomic_composition(uint);
   uint get_total_atoms(void);
   uint get_input_file_format(void);
@@ -183,8 +183,10 @@ public:
   TVector<std::string> get_fragmol_atomic_symbol_table(void);
   //
   TVector<uint> get_fragmol_atomic_composition_table(void);
-  TVector<uint> get_fragmol_atomic_number_table(void);
-  TVector<uint> get_fragmol_atom_table(void);
+  TVector<uint> get_atomic_number_table(void);
+  uint get_atomic_number_table(uint);
+  TVector<uint> get_atom_table(void);
+  uint get_atom_table(uint);
   TVector<uint> get_fragmol_fragment_table(void);
   //
   TVector<real> get_fragmol_axis_angles(void);

@@ -225,19 +225,15 @@ public:
   // Set radius scaling factor
   void set_atom_radius_scale(real);
   void set_bond_radius_scale(real);
-  //void set_axis_precession(real f){ __axis_precession=f;};
-  //void set_axis_tilt(real f){ __axis_tilt=f;};
-  //void set_backbone_precession(real f){ __backbone_precession=f;};
-  //void set_backbone_tilt(real f){ __backbone_tilt=f;};
   //
   //void set_basis_vectors(const TVector<real>&,const TVector<real>&,const TVector<real>&);
   // End GUI controls
-  void set_atomic_labels(const TVector<std::string>&);
-  void set_atomic_symbols(const TVector<std::string>&);
+  //void set_atomic_labels(const TVector<std::string>&);
+  //void set_atomic_symbols(const TVector<std::string>&);
   void set_atomic_symbol_table(const TVector<std::string>&);
-  void set_atomic_numbers(const TVector<uint>&);
-  void set_atom_table(const TVector<uint>&);
-  void set_atomic_number_table(const TVector<uint>&);
+  //void set_atomic_numbers(const TVector<uint>&);
+  //void set_atom_table(const TVector<uint>&);
+  void set_atomic_cut_radius(void);
   //void set_fragment_table(const TVector<uint>&);
   //
   uint get_highlight_atom(void);
@@ -296,8 +292,6 @@ private:
   uint __highlight_atom;
   uint __last_highlight_atom;
   //
-  //uint __fragment_total;
-  //uint __fragment_active;
   uint __total_species;
   //
   uint u_menu_index;
@@ -331,10 +325,6 @@ private:
   real __x_ang, __y_ang, __z_ang;
   real y_off, _scl, zoom_step;
   real shift_factor;
-  //real __axis_precession;
-  //real __axis_tilt;
-  //real __backbone_precession;
-  //real __backbone_tilt;
   //
   real r_distance1;
   real r_distance2;

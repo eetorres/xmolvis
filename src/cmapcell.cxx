@@ -335,12 +335,20 @@ real CMapcell::get_backbone_tilt(void){
   return supercell.get_fragmol_backbone_tilt();
 }
 
-TVector<std::string> CMapcell::get_map_atomic_labels(void){
+TVector<std::string> CMapcell::get_atom_labels(void){
   return v_atomic_labels;
 }
 
-TVector<std::string> CMapcell::get_map_atomic_symbols(void){
+std::string CMapcell::get_atom_label(uint u){
+ return v_atomic_labels[u];
+}
+
+TVector<std::string> CMapcell::get_atomic_symbols(void){
   return v_atomic_symbols;
+}
+
+std::string CMapcell::get_atomic_symbol(uint u){
+  return v_atomic_symbols[u];
 }
 
 TVector<unsigned int> CMapcell::get_map_atomic_numbers(void){

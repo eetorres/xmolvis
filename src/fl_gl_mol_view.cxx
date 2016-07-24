@@ -160,7 +160,7 @@ void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
   //m_atom_coordinates.clear();
   m_radius_color.clear();
-  v_atom_symbols.clear();
+  //v_atom_symbols.clear();
   //
   is_eval_bonds           = true;
   update_normal_color     = true;
@@ -241,11 +241,11 @@ bool Fl_Gl_Mol_View::initialize(void){
     // set the data to visualize
     set_bounding_box(get_view_bounding_box());
     is_draw_bbox(is_view_periodic());
-    set_atomic_labels(get_view_atomic_labels());
-    set_atomic_symbols(get_view_atomic_symbols());
-    set_atomic_numbers(get_view_atomic_numbers());
-    set_atom_table(get_view_atom_table());
-    set_atomic_number_table(get_view_atomic_number_table());
+    //set_atomic_labels(get_atomic_labels());
+    //set_atomic_symbols(get_view_atomic_symbols());
+    //set_atomic_numbers(get_view_atomic_numbers());
+    //set_atom_table(get_view_atom_table());
+    set_atomic_cut_radius();
     set_atomic_symbol_table(get_view_atomic_symbol_table());
     set_fragment_total(get_view_total_fragments());
     set_fragment_table(get_view_fragment_table());
@@ -296,7 +296,7 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
   real radius;
   // delete the lists only if it exists
   delete_sphere_dl();
-  __total_species=v_atomic_number_table_gl.size();
+  __total_species=supercell.get_atomic_species();  //v_atomic_number_table_gl.size();
 #ifdef _GLMOL_DEBUG_MESSAGES_
   std::cout<<" total species = "<<__total_species<<std::endl;
 #endif
@@ -306,7 +306,7 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
   // Create the id for each sphere list
   v_sphere_list.resize(__total_species);
   for(uint i=0; i<__total_species; i++){
-    radius = atom_rrgb[v_atomic_number_table_gl[i]][0];
+    radius = atom_rrgb[supercell.get_atomic_number_table(i)][0];
     v_sphere_list[i]=glGenLists(1);
     // start list
     glNewList(v_sphere_list[i],GL_COMPILE);
@@ -508,7 +508,7 @@ void Fl_Gl_Mol_View::draw_atoms(void){
         _xyz=m_atom_position[i+c*get_total_atoms()];
         glPushMatrix();
         glTranslatef(_xyz[0],_xyz[1],_xyz[2]);
-        glCallList(v_sphere_list[v_atom_table[i]]);
+        glCallList(v_sphere_list[supercell.get_atom_table(i)]);
         glPopMatrix();
       }
     }
@@ -641,18 +641,18 @@ void Fl_Gl_Mol_View::draw_symbols(void){
     _xyz=get_cartesian(i); //m_atom_coordinates[i];
     if(is_draw_symbols_ && is_draw_numbers_){
       if(is_mode_atom)
-        sprintf(buff,"%s-%i",v_atom_symbols[i].c_str(),i+1);
+        sprintf(buff,"%s-%i",get_atomic_symbol(i).c_str(),i+1);
       else
-        sprintf(buff,"%i-%s",v_fragment_table_gl[i],v_atom_symbols[i].c_str());
+        sprintf(buff,"%i-%s",v_fragment_table_gl[i],get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_ && is_draw_numbers_){
       if(is_mode_atom)
-        sprintf(buff,"%s-%i",v_atom_labels[i].c_str(),i+1);
+        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),i+1);
       else
-        sprintf(buff,"%s-%i",v_atom_labels[i].c_str(),v_fragment_table_gl[i]);
+        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),v_fragment_table_gl[i]);
     }else if(is_draw_symbols_){
-      sprintf(buff,"%s",v_atom_symbols[i].c_str());
+      sprintf(buff,"%s",get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_){
-      sprintf(buff,"%s",v_atom_labels[i].c_str());
+      sprintf(buff,"%s",get_atom_label(i).c_str());
     }else{
       if(is_mode_atom)
         sprintf(buff,"%i",i+1);
@@ -2475,32 +2475,32 @@ void Fl_Gl_Mol_View::set_lock_controls(bool b){
   set_active_radio(8,is_lock_controls);
 }
 
-void Fl_Gl_Mol_View::set_atomic_labels(const TVector<std::string>& v){
-  v_atom_labels = v;
-}
+//void Fl_Gl_Mol_View::set_atomic_labels(const TVector<std::string>& v){
+//  v_atom_labels = v;
+//}
 
-void Fl_Gl_Mol_View::set_atomic_symbols(const TVector<std::string>& v){
-  v_atom_symbols = v;
-}
+//void Fl_Gl_Mol_View::set_atomic_symbols(const TVector<std::string>& v){
+//  v_atom_symbols = v;
+//}
 
 void Fl_Gl_Mol_View::set_atomic_symbol_table(const TVector<std::string>& v){
   v_atomic_symbol_table_gl = v;
 }
 
-void Fl_Gl_Mol_View::set_atomic_numbers(const TVector<uint>& v){
-  v_atom_numbers = v;
-}
+//void Fl_Gl_Mol_View::set_atomic_numbers(const TVector<uint>& v){
+//  v_atom_numbers = v;
+//}
 
-void Fl_Gl_Mol_View::set_atom_table(const TVector<uint>& v){
-  v_atom_table = v;
-}
+//void Fl_Gl_Mol_View::set_atom_table(const TVector<uint>& v){
+//  v_atom_table = v;
+//}
 
-void Fl_Gl_Mol_View::set_atomic_number_table(const TVector<uint>& v){
-  v_atomic_number_table_gl = v;
+void Fl_Gl_Mol_View::set_atomic_cut_radius(void){
+  //v_atomic_number_table_gl = v;
   real r_cut_radius=0;
   //std::cout<<" v_atomic_number_table_gl = "<<v_atomic_number_table_gl;
-  for(uint i=0; i<v_atomic_number_table_gl.size(); i++){
-    r_cut_radius=maxi(r_cut_radius,atom_rrgb[v_atomic_number_table_gl[i]][0]);
+  for(uint i=0; i<supercell.get_atomic_species(); i++){
+    r_cut_radius=maxi(r_cut_radius,atom_rrgb[supercell.get_atomic_number_table(i)][0]);
   }
   r_cut_radius*=2.0;
   supercell.set_cut_radius(r_cut_radius);

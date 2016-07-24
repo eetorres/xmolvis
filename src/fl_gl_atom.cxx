@@ -78,7 +78,8 @@ void Fl_Gl_Atom::eval_initial_properties(void){
   }
   if(is_draw_atoms_){
     for(int i=0; i<get_total_atoms(); i++){
-      i_z=v_atom_numbers[i];
+      //i_z=v_atom_numbers[i];
+      i_z=get_atomic_number(i);
       _radius=atom_rrgb[i_z][0];
       _rcolor[0]=_radius;
       //_atom_xyz = m_atom_coordinates[i];
@@ -535,7 +536,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_BONDS_
     std::cout<<" ATOM: i="<<i<<std::endl;
 #endif
-    if(strcmp(v_atomic_symbol_table_gl[v_atom_table[i]].c_str(),"X")){
+    if(strcmp(v_atomic_symbol_table_gl[supercell.get_atom_table(i)].c_str(),"X")){
       vi = get_cartesian(i);//m_atom_coordinates[i];
       vi_uvw = (vi*supercell.get_inv_bbox());
       ri = m_radius_color[i][0];
@@ -651,7 +652,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_BONDS_
             std::cout<<" ATOM: j="<<j<<" i="<<i<<" m="<<_m<<std::endl;
 #endif
-            if(strcmp(v_atomic_symbol_table_gl[v_atom_table[j]].c_str(),"X")){
+            if(strcmp(v_atomic_symbol_table_gl[supercell.get_atom_table(j)].c_str(),"X")){
               vj = get_cartesian(j); //m_atom_coordinates[j];
               for(uint coord=0; coord<3; coord++){
                 vj += neighbor_cells[_m][coord]*2.0*m_bbox[coord];       // PBC

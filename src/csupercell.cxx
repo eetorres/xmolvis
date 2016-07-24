@@ -308,7 +308,7 @@ void CSupercell::set_fragment_axis(const TVector<uint>& _v){
 
 void CSupercell::set_fragment_axis(const uint idx, const uint val){
   is_fragmol_initialized(false);
-  gsf.v_fragments[__active_fragment].set_axis_index(idx,gsf.get_atom_cell_table(val));
+  gsf.v_fragments[__active_fragment].set_axis_index(idx,gsf.get_atom_table(val));
 }
 
 void CSupercell::set_fragmol_fragment_twist(const real r){
@@ -477,7 +477,7 @@ TMatrix<real> CSupercell::get_fragment_centered_cartesian(uint i){
 
 // STRUCTURE
 
-uint CSupercell::get_species(void){
+uint CSupercell::get_atomic_species(void){
   return gsf.get_atomic_species();
 }
 
@@ -588,13 +588,22 @@ TVector<uint> CSupercell::get_fragmol_atomic_composition_table(void){
   return gsf.get_atomic_composition_table();
 }
 
-TVector<uint> CSupercell::get_fragmol_atomic_number_table(void){
+TVector<uint> CSupercell::get_atomic_number_table(void){
   return gsf.get_atomic_number_table();
 }
 
-TVector<uint> CSupercell::get_fragmol_atom_table(void){
+uint CSupercell::get_atomic_number_table(uint u){
+  return gsf.get_atomic_number_table(u);
+}
+
+TVector<uint> CSupercell::get_atom_table(void){
   return gsf.get_atom_table();
 }
+
+uint CSupercell::get_atom_table(uint u){
+  return gsf.get_atom_table(u);
+}
+
 //////
 
 TVector<uint> CSupercell::get_fragmol_fragment_table(void){

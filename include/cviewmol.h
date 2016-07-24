@@ -91,15 +91,15 @@ public:
   //real get_view_backbone_precession(void);
   //real get_view_backbone_tilt(void);
   //
-  TVector<std::string> get_view_atomic_labels(void);
-  TVector<std::string> get_view_atomic_symbols(void);
+  //TVector<std::string> get_view_atomic_labels(void);
+  //TVector<std::string> get_view_atomic_symbols(void);
   TVector<std::string> get_view_atomic_symbol_table(void);
   //
   TVector<uint> get_view_atom_table(void);
   TVector<uint> get_view_atomic_composition_table(void);
   TVector<uint> get_view_atomic_number_table(void);
   TVector<uint> get_view_fragment_table(void);
-  TVector<uint> get_view_atomic_numbers(void);
+  //TVector<uint> get_view_atomic_numbers(void);
   //
   TVector<real> get_view_axis_angles(void);
   TVector<real> get_view_basis_direct(void);

@@ -126,8 +126,12 @@ public:
   TVector<uint> get_atomic_composition_table(void){ return v_atomic_composition_table;}
   TVector<uint> get_atomic_numbers(void){ return v_atomic_numbers;}
   TVector<uint> get_fragment_table(void){ return v_fragment_table;}
+
   TVector<uint> get_atom_table(void){ return v_atom_table;}
+  uint get_atom_table(uint u){ return v_atom_table[u];}
+
   TVector<uint> get_atomic_number_table(void){ return v_atomic_number_table;}
+  uint get_atomic_number_table(uint u){ return v_atomic_number_table[u];}
   //
   TVector<std::string> get_atomic_labels(void){ return v_atomic_labels;}
   TVector<std::string> get_atomic_symbols(void){ return v_atomic_symbols;}
@@ -135,10 +139,10 @@ public:
   //  
   uint get_fragment_size(uint u){ return v_fragments[u].size();}
   uint get_atomic_composition(uint u){ return v_atomic_composition_table[u];}
-  uint get_atomic_number_table(uint u){ return v_atomic_number_table[u];}
+  
   uint get_atomic_number(uint u){ return v_atomic_numbers[u];}
-  uint get_atom_table(uint u){ return v_atom_cell_table[u];}
-  uint get_atom_cell_table(uint u){ return v_atom_table[u];}
+  uint get_atom_cell_table(uint u){ return v_atom_cell_table[u];}
+  
   strg get_atomic_symbol(uint u){ return v_atomic_symbols[u];}
   strg get_atomic_label(uint u){ return v_atomic_labels[u];}
   strg get_atomic_symbol_table(uint u){ return v_atomic_symbol_table[u];}

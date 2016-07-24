@@ -247,33 +247,34 @@ uint CViewmol::get_view_file_type(std::string s){
 //  return get_map_backbone_tilt();
 //}
 
-TVector<std::string> CViewmol::get_view_atomic_labels(void){
-   return get_map_atomic_labels();
-}
+//TVector<std::string> CViewmol::get_view_atomic_labels(void){
+//   return get_map_atomic_labels();
+//}
 
-TVector<std::string> CViewmol::get_view_atomic_symbols(void){
-   return get_map_atomic_symbols();
-}
+//TVector<std::string> CViewmol::get_view_atomic_symbols(void){
+//   return get_map_atomic_symbols();
+//}
 
 TVector<std::string> CViewmol::get_view_atomic_symbol_table(void){
    return supercell.get_fragmol_atomic_symbol_table();
 }
 
 TVector<uint> CViewmol::get_view_atom_table(void){
-  return supercell.get_fragmol_atom_table();
+  return supercell.get_atom_table();
 }
 
 TVector<uint> CViewmol::get_view_atomic_composition_table(void){
    return supercell.get_fragmol_atomic_composition_table();
 }
 
+// deprecated
 TVector<uint> CViewmol::get_view_atomic_number_table(void){
-   return supercell.get_fragmol_atomic_number_table();
+   return supercell.get_atomic_number_table();
 }
 
-TVector<uint> CViewmol::get_view_atomic_numbers(void){
-  return get_map_atomic_numbers();
-}
+//TVector<uint> CViewmol::get_view_atomic_numbers(void){
+  //return get_map_atomic_numbers();
+//}
 
 TVector<uint> CViewmol::get_view_fragment_table(void){
   return supercell.get_fragmol_fragment_table();

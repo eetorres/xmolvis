@@ -243,13 +243,13 @@ protected:
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
-  TVector<uint> v_atom_numbers; // <-----------------
-  TVector<uint> v_atom_table;
+  //TVector<uint> v_atom_numbers; // <-----------------
+  //TVector<uint> v_atom_table;
   TVector<uint> v_bond_number;
   TVector<uint> v_bond_number_pbc;
   TVector<uint> v_bond_table;
   TVector<uint> v_fragment_table_gl;
-  TVector<uint> v_atomic_number_table_gl;
+  //TVector<uint> v_atomic_number_table_gl;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
@@ -265,8 +265,8 @@ protected:
   //TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TVector<int>  v_neighbor_cell, v_md_pbc;
   //
-  TVector<std::string> v_atom_labels; // <--------------
-  TVector<std::string> v_atom_symbols; // <--------------
+  //TVector<std::string> v_atom_labels; // <--------------
+  //TVector<std::string> v_atom_symbols; // <--------------
   TVector<std::string> v_atomic_symbol_table_gl;
   //
   TMatrix<uint> m_bond_indices;
