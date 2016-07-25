@@ -101,7 +101,7 @@ public:
   void set_sphere_resolution(uint);
   void set_xyz_cells(void);
   //
-  void set_fragment_total(const uint);
+  void set_palette(const uint);
   void set_fragment_active(uint);
   void set_active_fragment_index(const uint u){ __fragment_active=u;};
   void set_active_fragment(const uint);

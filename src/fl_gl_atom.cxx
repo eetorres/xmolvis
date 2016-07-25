@@ -734,7 +734,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   //update_bonds_color=true;
 }
 
-void Fl_Gl_Atom::set_fragment_total(uint u){
+void Fl_Gl_Atom::set_palette(uint u){
   //__fragment_total=u;
   palette.set(u);
   palette.set_color(4);
