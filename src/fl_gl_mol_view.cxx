@@ -246,9 +246,9 @@ bool Fl_Gl_Mol_View::initialize(void){
     //set_atomic_numbers(get_view_atomic_numbers());
     //set_atom_table(get_view_atom_table());
     set_atomic_cut_radius();
-    set_atomic_symbol_table(get_view_atomic_symbol_table());
-    set_fragment_total(get_view_total_fragments());
-    set_fragment_table(get_view_fragment_table());
+    //set_atomic_symbol_table(get_view_atomic_symbol_table());
+    set_fragment_total(supercell.get_number_of_fragments());
+    //set_fragment_table(get_view_fragment_table());
     initialize_atomic_coordinates(get_cartesian());
     // End GUI functions
 #ifdef _ATOM_DATA_MESSAGES_
@@ -357,7 +357,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
         m_atom_rcolor[i][3] = f_atom_brightness*m_radius_color[i][3];
       }else{
-        color = palette.get_color(v_fragment_table_gl[i]);
+        color = palette.get_color(supercell.get_fragment_table(i));
         m_atom_rcolor[i][1] = f_atom_brightness*color.r;
         m_atom_rcolor[i][2] = f_atom_brightness*color.g;
         m_atom_rcolor[i][3] = f_atom_brightness*color.b;
@@ -381,7 +381,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         m_bond_rcolor_1[i][2] = f_atom_brightness*m_radius_color[idx1][2];
         m_bond_rcolor_1[i][3] = f_atom_brightness*m_radius_color[idx1][3];
       }else{
-        color = palette.get_color(v_fragment_table_gl[idx0]);
+        color = palette.get_color(supercell.get_fragment_table(idx0));
         m_bond_rcolor_0[i][1] = f_atom_brightness*color.r;
         m_bond_rcolor_0[i][2] = f_atom_brightness*color.g;
         m_bond_rcolor_0[i][3] = f_atom_brightness*color.b;
@@ -414,7 +414,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
 #endif
-        color = palette.get_color(v_fragment_table_gl[idx0]);
+        color = palette.get_color(supercell.get_fragment_table(idx0));
         //vcolor = palette.get_vcolor(v_fragment_table_gl[idx0]);
         //m_bond_rcolor_pbc_0[i] = f_atom_brightness*vcolor;
         m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*color.r;
@@ -448,19 +448,19 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       m_atom_rcolor[__highlight_atom][2] = f_select_brightness*m_radius_color[__highlight_atom][2];
       m_atom_rcolor[__highlight_atom][3] = f_select_brightness*m_radius_color[__highlight_atom][3];
     }else{
-      uint __last_fragment = v_fragment_table_gl[__last_highlight_atom];
+      uint __last_fragment = supercell.get_fragment_table(__last_highlight_atom);
       color = palette.get_color(__last_fragment);
       for(int i=0; i<get_total_atoms(); i++){
-        if(v_fragment_table_gl[i]==__last_fragment){
+        if(supercell.get_fragment_table(i)==__last_fragment){
           m_atom_rcolor[i][1] = f_atom_brightness*color.r;
           m_atom_rcolor[i][2] = f_atom_brightness*color.g;
           m_atom_rcolor[i][3] = f_atom_brightness*color.b;
         }
       }
-      uint __new_fragment  = v_fragment_table_gl[__highlight_atom];
+      uint __new_fragment  = supercell.get_fragment_table(__highlight_atom);
       color = palette.get_color(__new_fragment);
       for(int i=0; i<get_total_atoms(); i++){
-        if(v_fragment_table_gl[i]==__new_fragment){
+        if(supercell.get_fragment_table(i)==__new_fragment){
           m_atom_rcolor[i][1] = f_select_brightness*color.r;
           m_atom_rcolor[i][2] = f_select_brightness*color.g;
           m_atom_rcolor[i][3] = f_select_brightness*color.b;
@@ -481,7 +481,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*m_radius_color[u_unselected_atom][2];
         m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*m_radius_color[u_unselected_atom][3];
       }else{
-        color = palette.get_color(v_fragment_table_gl[u_unselected_atom]);
+        color = palette.get_color(supercell.get_fragment_table(u_unselected_atom));
         m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*color.r;
         m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*color.g;
         m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*color.b;
@@ -643,12 +643,12 @@ void Fl_Gl_Mol_View::draw_symbols(void){
       if(is_mode_atom)
         sprintf(buff,"%s-%i",get_atomic_symbol(i).c_str(),i+1);
       else
-        sprintf(buff,"%i-%s",v_fragment_table_gl[i],get_atomic_symbol(i).c_str());
+        sprintf(buff,"%i-%s",supercell.get_fragment_table(i),get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_ && is_draw_numbers_){
       if(is_mode_atom)
         sprintf(buff,"%s-%i",get_atom_label(i).c_str(),i+1);
       else
-        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),v_fragment_table_gl[i]);
+        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),supercell.get_fragment_table(i));
     }else if(is_draw_symbols_){
       sprintf(buff,"%s",get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_){
@@ -657,7 +657,7 @@ void Fl_Gl_Mol_View::draw_symbols(void){
       if(is_mode_atom)
         sprintf(buff,"%i",i+1);
       else
-        sprintf(buff,"%i-%i",v_fragment_table_gl[i],i+1);
+        sprintf(buff,"%i-%i",supercell.get_fragment_table(i),i+1);
     }
     glLoadIdentity();
     glTranslatef(x_shift, y_shift, z_shift);
@@ -1855,7 +1855,7 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   y_pos-=1.5*y_delta;
   widget_int_output(x_pos, y_pos, y_pos_end, z, get_total_atoms(), (char*)"Atoms:");
   y_pos-=y_delta;
-  widget_int_output(x_pos, y_pos, y_pos_end, z, __fragment_total, (char*)"Fragments:");
+  widget_int_output(x_pos, y_pos, y_pos_end, z, supercell.get_number_of_fragments(), (char*)"Fragments:");
   y_pos-=y_delta;
   widget_vector_output(x_pos, y_pos, y_pos_end, z, supercell.get_bbox(), (char*)"Box:");
 }
@@ -2475,22 +2475,23 @@ void Fl_Gl_Mol_View::set_lock_controls(bool b){
   set_active_radio(8,is_lock_controls);
 }
 
+// Deprecated
 //void Fl_Gl_Mol_View::set_atomic_labels(const TVector<std::string>& v){
 //  v_atom_labels = v;
 //}
-
+// Deprecated
 //void Fl_Gl_Mol_View::set_atomic_symbols(const TVector<std::string>& v){
 //  v_atom_symbols = v;
 //}
-
-void Fl_Gl_Mol_View::set_atomic_symbol_table(const TVector<std::string>& v){
-  v_atomic_symbol_table_gl = v;
-}
-
+// Deprecated
+//void Fl_Gl_Mol_View::set_atomic_symbol_table(const TVector<std::string>& v){
+//  v_atomic_symbol_table_gl = v;
+//}
+// Deprecated
 //void Fl_Gl_Mol_View::set_atomic_numbers(const TVector<uint>& v){
 //  v_atom_numbers = v;
 //}
-
+// Deprecated
 //void Fl_Gl_Mol_View::set_atom_table(const TVector<uint>& v){
 //  v_atom_table = v;
 //}

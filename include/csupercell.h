@@ -162,7 +162,7 @@ public:
   std::string get_fragment_atomic_label(uint,uint);
   std::string get_fragment_atomic_symbol(uint,uint);
   //
-  uint get_fragmol_number_of_fragments(void);
+  uint get_number_of_fragments(void);
   uint get_fragmol_active_fragment(void);
   uint get_fragment_size(uint);
   uint get_fragment_atomic_number(uint,uint);
@@ -180,14 +180,17 @@ public:
   real get_fragmol_backbone_tilt(void);
   real get_fragmol_backbone_precession(void);
   //
-  TVector<std::string> get_fragmol_atomic_symbol_table(void);
+  TVector<std::string> get_atomic_symbol_table(void);
+  std::string get_atomic_symbol_table(uint);
   //
   TVector<uint> get_fragmol_atomic_composition_table(void);
   TVector<uint> get_atomic_number_table(void);
   uint get_atomic_number_table(uint);
   TVector<uint> get_atom_table(void);
   uint get_atom_table(uint);
-  TVector<uint> get_fragmol_fragment_table(void);
+  TVector<uint> get_fragment_table(void);
+  //TVector<uint> CSupercell::get_fragment_table(void){
+  uint get_fragment_table(uint);
   //
   TVector<real> get_fragmol_axis_angles(void);
   TVector<real> get_fragmol_basis_direct(void);

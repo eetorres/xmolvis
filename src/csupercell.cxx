@@ -410,7 +410,7 @@ std::string CSupercell::get_fragment_atomic_symbol(uint i, uint j){
   return gsf.v_fragments[i].get_atomic_symbol(j);
 }
 
-uint CSupercell::get_fragmol_number_of_fragments(void){
+uint CSupercell::get_number_of_fragments(void){
   return gsf.get_number_of_fragments();
 }
 
@@ -580,8 +580,12 @@ real CSupercell::get_dihedral(uint i, uint j, uint k, uint l){
 }
 
 //////
-TVector<std::string> CSupercell::get_fragmol_atomic_symbol_table(void){
+TVector<std::string> CSupercell::get_atomic_symbol_table(void){
   return gsf.get_atomic_symbol_table();
+}
+
+std::string CSupercell::get_atomic_symbol_table(uint u){
+  return gsf.get_atomic_symbol_table(u);
 }
 
 TVector<uint> CSupercell::get_fragmol_atomic_composition_table(void){
@@ -606,8 +610,12 @@ uint CSupercell::get_atom_table(uint u){
 
 //////
 
-TVector<uint> CSupercell::get_fragmol_fragment_table(void){
+TVector<uint> CSupercell::get_fragment_table(void){
   return gsf.get_fragment_table();
+}
+
+uint CSupercell::get_fragment_table(uint u){
+  return gsf.get_fragment_table(u);
 }
 
 TMatrix<real> CSupercell::get_unit_uvw_to_xyz(void){

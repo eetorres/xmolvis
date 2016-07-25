@@ -230,7 +230,7 @@ public:
   // End GUI controls
   //void set_atomic_labels(const TVector<std::string>&);
   //void set_atomic_symbols(const TVector<std::string>&);
-  void set_atomic_symbol_table(const TVector<std::string>&);
+  //void set_atomic_symbol_table(const TVector<std::string>&);
   //void set_atomic_numbers(const TVector<uint>&);
   //void set_atom_table(const TVector<uint>&);
   void set_atomic_cut_radius(void);

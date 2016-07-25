@@ -176,9 +176,9 @@ void CViewmol::set_view_position_rpt2(const TVector<real>& _v){
 //  return get_map_total_atoms();
 //}
 
-uint CViewmol::get_view_total_fragments(void){
-  return supercell.get_fragmol_number_of_fragments();
-}
+//uint CViewmol::get_view_total_fragments(void){
+//  return supercell.get_fragmol_number_of_fragments();
+//}
 
 uint CViewmol::get_view_active_fragment(void){
   return supercell.get_fragmol_active_fragment();
@@ -230,34 +230,34 @@ uint CViewmol::get_view_file_type(std::string s){
   std::cout<<" unknown file type"<<std::endl;
   return INPUT_FILE_TYPE_UNKNOWN;
 }
-
+// deprecated
 //real CViewmol::get_view_axis_precession(void){
 //  return get_map_axis_precession();
 //}
-
+// deprecated
 //real CViewmol::get_view_axis_tilt(void){
 //  return get_map_axis_tilt();
 //}
-
+// deprecated
 //real CViewmol::get_view_backbone_precession(void){
 //  return get_map_backbone_precession();
 //}
-
+// deprecated
 //real CViewmol::get_view_backbone_tilt(void){
 //  return get_map_backbone_tilt();
 //}
-
+// deprecated
 //TVector<std::string> CViewmol::get_view_atomic_labels(void){
 //   return get_map_atomic_labels();
 //}
-
+// deprecated
 //TVector<std::string> CViewmol::get_view_atomic_symbols(void){
 //   return get_map_atomic_symbols();
 //}
-
-TVector<std::string> CViewmol::get_view_atomic_symbol_table(void){
-   return supercell.get_fragmol_atomic_symbol_table();
-}
+// deprecated
+//TVector<std::string> CViewmol::get_view_atomic_symbol_table(void){
+//   return supercell.get_fragmol_atomic_symbol_table();
+//}
 
 TVector<uint> CViewmol::get_view_atom_table(void){
   return supercell.get_atom_table();
@@ -268,17 +268,17 @@ TVector<uint> CViewmol::get_view_atomic_composition_table(void){
 }
 
 // deprecated
-TVector<uint> CViewmol::get_view_atomic_number_table(void){
-   return supercell.get_atomic_number_table();
-}
-
+//TVector<uint> CViewmol::get_view_atomic_number_table(void){
+//   return supercell.get_atomic_number_table();
+//}
+// deprecated
 //TVector<uint> CViewmol::get_view_atomic_numbers(void){
   //return get_map_atomic_numbers();
 //}
-
-TVector<uint> CViewmol::get_view_fragment_table(void){
-  return supercell.get_fragmol_fragment_table();
-}
+// deprecated
+//TVector<uint> CViewmol::get_view_fragment_table(void){
+//  return supercell.get_fragmol_fragment_table();
+//}
 
 TVector<real> CViewmol::get_view_axis_angles(void){
   return get_map_axis_angles();

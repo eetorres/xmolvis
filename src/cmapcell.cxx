@@ -93,7 +93,7 @@ void CMapcell::eval_map_properties(void){
   v_atomic_labels.resize(_a);
   v_atomic_symbols.resize(_a);
   v_atomic_numbers.resize(_a);
-  _n = supercell.get_fragmol_number_of_fragments();
+  _n = supercell.get_number_of_fragments();
 #ifdef _debugging_messages
   std::cout<<"MAPMOL: total atoms: "<<_a<<std::endl;
 #endif

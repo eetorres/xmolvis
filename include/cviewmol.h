@@ -80,7 +80,7 @@ public:
   void set_view_position_rpt2(const TVector<real>&);
   //
   //uint get_view_total_atoms(void);
-  uint get_view_total_fragments(void);
+  //uint get_view_total_fragments(void);
   uint get_view_active_fragment(void);
   uint get_view_tilt_axis_begin(unsigned int);
   uint get_view_tilt_axis_end(unsigned int);
@@ -93,12 +93,12 @@ public:
   //
   //TVector<std::string> get_view_atomic_labels(void);
   //TVector<std::string> get_view_atomic_symbols(void);
-  TVector<std::string> get_view_atomic_symbol_table(void);
+  //TVector<std::string> get_view_atomic_symbol_table(void);
   //
   TVector<uint> get_view_atom_table(void);
   TVector<uint> get_view_atomic_composition_table(void);
-  TVector<uint> get_view_atomic_number_table(void);
-  TVector<uint> get_view_fragment_table(void);
+  //TVector<uint> get_view_atomic_number_table(void);
+  //TVector<uint> get_view_fragment_table(void);
   //TVector<uint> get_view_atomic_numbers(void);
   //
   TVector<real> get_view_axis_angles(void);

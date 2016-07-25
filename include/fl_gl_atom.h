@@ -108,7 +108,7 @@ public:
   //void set_new_fragment(const uint);
   //void set_atom_fragment(const uint);
   //
-  void set_fragment_table(const TVector<uint>&);
+  //void set_fragment_table(const TVector<uint>&);
   // Tue Feb 26 12:25:32 MST 2013
   // Migrated from fl_gl_mol_view.h
   void set_axis_position(const TVector<real>&);
@@ -210,7 +210,7 @@ protected:
   //int  i_neighbor_cells;
   //
   uint u_bond_types;
-  uint __fragment_total;
+  //uint __fragment_total;
   uint __fragment_active;
   //
   real f_atom_bond_delta;
@@ -248,7 +248,7 @@ protected:
   TVector<uint> v_bond_number;
   TVector<uint> v_bond_number_pbc;
   TVector<uint> v_bond_table;
-  TVector<uint> v_fragment_table_gl;
+  //TVector<uint> v_fragment_table_gl;
   //TVector<uint> v_atomic_number_table_gl;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
@@ -267,7 +267,7 @@ protected:
   //
   //TVector<std::string> v_atom_labels; // <--------------
   //TVector<std::string> v_atom_symbols; // <--------------
-  TVector<std::string> v_atomic_symbol_table_gl;
+  //TVector<std::string> v_atomic_symbol_table_gl;
   //
   TMatrix<uint> m_bond_indices;
   TMatrix<uint> m_bond_indices_pbc;

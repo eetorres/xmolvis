@@ -491,7 +491,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   TVector<real> vi, vj, vij, vang(2);
   TVector<real> vi_uvw, vj_uvw, vij_uvw;
   TVector<uint> v_ft;
-  v_ft = supercell.get_fragmol_fragment_table();
+  v_ft = supercell.get_fragment_table();
   //
   int u_icell;
   uint k;
@@ -536,7 +536,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_BONDS_
     std::cout<<" ATOM: i="<<i<<std::endl;
 #endif
-    if(strcmp(v_atomic_symbol_table_gl[supercell.get_atom_table(i)].c_str(),"X")){
+    if(strcmp(supercell.get_atomic_symbol_table(supercell.get_atom_table(i)).c_str(),"X")){
       vi = get_cartesian(i);//m_atom_coordinates[i];
       vi_uvw = (vi*supercell.get_inv_bbox());
       ri = m_radius_color[i][0];
@@ -652,7 +652,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_BONDS_
             std::cout<<" ATOM: j="<<j<<" i="<<i<<" m="<<_m<<std::endl;
 #endif
-            if(strcmp(v_atomic_symbol_table_gl[supercell.get_atom_table(j)].c_str(),"X")){
+            if(strcmp(supercell.get_atomic_symbol_table(supercell.get_atom_table(j)).c_str(),"X")){
               vj = get_cartesian(j); //m_atom_coordinates[j];
               for(uint coord=0; coord<3; coord++){
                 vj += neighbor_cells[_m][coord]*2.0*m_bbox[coord];       // PBC
@@ -735,26 +735,27 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 }
 
 void Fl_Gl_Atom::set_fragment_total(uint u){
-  __fragment_total=u;
+  //__fragment_total=u;
   palette.set(u);
   palette.set_color(4);
   palette.initialize(0,u,u);
   palette.update_palette_real();
 }
 
-void Fl_Gl_Atom::set_fragment_table(const TVector<uint>& v){
-  v_fragment_table_gl = v;
-#ifdef _SHOW_DEBUG_FRAGMENTS_
-  std::cout<<" FL_GL_ATOM: fragment table: "<<v_fragment_table_gl;
-#endif
-}
+// Deprecated
+//void Fl_Gl_Atom::set_fragment_table(const TVector<uint>& v){
+//  v_fragment_table_gl = v;
+//#ifdef _SHOW_DEBUG_FRAGMENTS_
+//  std::cout<<" FL_GL_ATOM: fragment table: "<<v_fragment_table_gl;
+//#endif
+//}
 
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
-  set_fragment_total(get_view_total_fragments());
-  set_fragment_table(get_view_fragment_table());
+  set_fragment_total(supercell.get_number_of_fragments());
+  //set_fragment_table(supercell.get_fragment_table());
   //__fragment_active=v_fragment_table_gl[_u];
   if(_sw)
-    set_active_fragment_index(v_fragment_table_gl[_u]);
+    set_active_fragment_index(supercell.get_fragment_table(_u));
   else
     set_active_fragment_index(_u);
 #ifdef _ATOM_DEBUG_MESSAGES_
@@ -809,7 +810,7 @@ void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
 void Fl_Gl_Atom::set_active_fragment(const uint _a){
   uint _af;
   // atoms are counted from 1 in the scene
-  _af= v_fragment_table_gl[_a];
+  _af= supercell.get_fragment_table(_a);
   __fragment_active=_af;
   // fragments are counted from 1
   set_map_active_fragment(_af-1);
