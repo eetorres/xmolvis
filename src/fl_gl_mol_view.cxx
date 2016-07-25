@@ -241,15 +241,16 @@ bool Fl_Gl_Mol_View::initialize(void){
     // set the data to visualize
     set_bounding_box(get_view_bounding_box());
     is_draw_bbox(is_view_periodic());
+    // deprecated
     //set_atomic_labels(get_atomic_labels());
     //set_atomic_symbols(get_view_atomic_symbols());
     //set_atomic_numbers(get_view_atomic_numbers());
     //set_atom_table(get_view_atom_table());
     set_atomic_cut_radius();
     //set_atomic_symbol_table(get_view_atomic_symbol_table());
-    set_fragment_total(supercell.get_number_of_fragments());
+    set_palette(supercell.get_number_of_fragments());
     //set_fragment_table(get_view_fragment_table());
-    initialize_atomic_coordinates(get_cartesian());
+    initialize_atomic_coordinates();
     // End GUI functions
 #ifdef _ATOM_DATA_MESSAGES_
     std::cout<<" GLMOL: atom labels = "<<v_atom_labels;

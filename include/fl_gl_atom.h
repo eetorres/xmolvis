@@ -92,7 +92,7 @@ public:
   //
   void initialize_transform_matrix(void);
   void initialize_rotation_matrix(void);
-  void initialize_atomic_coordinates(const TMatrix<real>&);
+  void initialize_atomic_coordinates(void);
   void set_bounding_box(const TMatrix<real>&);
   //
   void set_x_cells(int);
@@ -139,7 +139,7 @@ public:
   ////////////////////////////////////////////////////////////////////////////////////////
   // Update functions
   ////////////////////////////////////////////////////////////////////////////////////////
-  void update_atomic_coordinates(const TMatrix<real>&);
+  void update_atomic_coordinates(void);
   void update_atomic_bonds(void);
   void update_fragments(uint,bool);
   //

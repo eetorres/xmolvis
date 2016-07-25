@@ -97,7 +97,7 @@ void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
   v_axis_position=v;
 }
 
-void Fl_Gl_Atom::update_atomic_coordinates(const TMatrix<real>& m){
+void Fl_Gl_Atom::update_atomic_coordinates(void){
   //m_atom_coordinates = m;
   is_update_bonds = true;
   is_update_atomic_properties = true;
@@ -105,11 +105,11 @@ void Fl_Gl_Atom::update_atomic_coordinates(const TMatrix<real>& m){
   set_xyz_cells();
 }
 
-void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
+void Fl_Gl_Atom::initialize_atomic_coordinates(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: Initialize"<<std::endl;
 #endif
-  update_atomic_coordinates(m);
+  update_atomic_coordinates();
   //__number_of_atoms = get_total_atoms(); //m_atom_coordinates.rows();
   if(get_total_atoms()<100){
     supercell.is_linked_cell(false);
@@ -139,7 +139,7 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(const TMatrix<real>& m){
 void Fl_Gl_Atom::update_data(void){
   update_view();
   if(update_coordinates){
-    update_atomic_coordinates(get_cartesian());
+    update_atomic_coordinates();
     set_axis_position(get_centered_position_cartesian());
     set_axis_precession(get_axis_precession());
     set_axis_tilt(get_axis_tilt());
@@ -751,7 +751,7 @@ void Fl_Gl_Atom::set_palette(uint u){
 //}
 
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
-  set_fragment_total(supercell.get_number_of_fragments());
+  set_palette(supercell.get_number_of_fragments());
   //set_fragment_table(supercell.get_fragment_table());
   //__fragment_active=v_fragment_table_gl[_u];
   if(_sw)
