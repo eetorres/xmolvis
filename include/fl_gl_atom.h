@@ -199,8 +199,8 @@ protected:
   bool update_coordinates;
   //
   int  __number_of_atoms;
-  uint  i_number_of_bonds;
-  uint i_number_of_bonds_pbc;
+  uint  i_number_of_bonds; // deprecated
+  uint i_number_of_bonds_pbc;// deprecated
   uint u_sphere_resolution;
   int  u_sphere_rows;
   int  __sphere_strip_length;
@@ -240,9 +240,9 @@ protected:
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
-  TVector<uint> v_bond_number;
-  TVector<uint> v_bond_number_pbc;
-  TVector<uint> v_bond_table;
+  TVector<uint> v_bond_number; // deprecated
+  TVector<uint> v_bond_number_pbc; // deprecated
+  TVector<uint> v_bond_table; // deprecated
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
@@ -255,10 +255,10 @@ protected:
   TVector<int>  v_neighbor_cell, v_md_pbc;
   //
   //
-  TMatrix<uint> m_bond_indices;
-  TMatrix<uint> m_bond_indices_pbc;
+  TMatrix<uint> m_bond_indices; // deprecated
+  TMatrix<uint> m_bond_indices_pbc; // deprecated
   // bonds with PBC
-  TMatrix<int>  m_bond_boundary_pbc;
+  TMatrix<int>  m_bond_boundary_pbc; // deprecated
   //
   TMatrix<real> m_sphere;
   TMatrix<real> m_cylinder;
@@ -269,7 +269,7 @@ protected:
   TMatrix<real> m_cylinder_texture1;
   // Atoms for visualization
   TMatrix<real> m_atom_position;
-  TMatrix<real> m_radius_color;
+  TMatrix<real> m_radius_color; // deprecated
   TMatrix<real> m_atom_rcolor;
   //
   TMatrix<real> m_bond_rcolor_0;

@@ -316,7 +316,8 @@ TVector<real> CViewmol::get_view_position_cartesian(void){
 
 TMatrix<real> CViewmol::get_view_bounding_box(void){
   // becausee of the symetry only half is needed for the visualization
-  return 0.5*m_view_bbox;
+  //return 0.5*m_view_bbox;
+  return 0.5*supercell.get_uvw_to_xyz();
 }
 
 // This function return the coordinates showed by the rendering

@@ -161,6 +161,7 @@ public:
   TMatrix<real> get_uvw(void){ return m_uvw;}
   TMatrix<real> get_uvw_to_xyz_u(void){ return m_uvw_to_xyz_u;}
   TMatrix<real> get_uvw_to_xyz(void){ return m_uvw_to_xyz;}
+  TVector<real> get_uvw_to_xyz(uint u){ return m_uvw_to_xyz[u];}
 
 private:
 

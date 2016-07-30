@@ -239,7 +239,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_active_fragment_index(1);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
-    set_bounding_box(get_view_bounding_box());
+    set_bounding_box(get_view_bounding_box()); // deprecated
     is_draw_bbox(is_view_periodic());
     // deprecated
     //set_atomic_labels(get_atomic_labels());
@@ -537,9 +537,11 @@ void Fl_Gl_Mol_View::draw_bonds(void){
           glRotatef(_ang[0],0,0,1); // rotation arround the z axis
           glRotatef(_ang[1],0,1,0); // rotation arround the y asis
           glColor3f(m_bond_rcolor_0[i][1],m_bond_rcolor_0[i][2],m_bond_rcolor_0[i][3]);
+          //glCallList(v_cylinder_list[supercell.get_bond_number(i)]);
           glCallList(v_cylinder_list[v_bond_number[i]]);
           //
           glColor3f(m_bond_rcolor_1[i][1],m_bond_rcolor_1[i][2],m_bond_rcolor_1[i][3]);
+          //glCallList(v_cylinder_list[supercell.get_bond_number(i)]+1);
           glCallList(v_cylinder_list[v_bond_number[i]]+1);
           glPopMatrix();
         }
@@ -589,7 +591,7 @@ void Fl_Gl_Mol_View::draw_bonds(void){
               _xyz = m_bond_position_pbc[i];
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
               std::cout<<" _xyz = "<<_xyz<<std::endl;
-              std::cout<<" bond cylinder = "<<v_bond_number_pbc[i];
+              std::cout<<" bond cylinder = "<<supercell.get_bond_number_pbc(i);
 #endif
               _xyz=(_xyz+2.0*((real)x*_vu+(real)y*_vv+(real)z*_vw));
               glPushMatrix();
@@ -597,13 +599,15 @@ void Fl_Gl_Mol_View::draw_bonds(void){
               glRotatef(_ang[0],0,0,1); // rotation arround the z axis
               glRotatef(_ang[1],0,1,0); // rotation arround the y asis
               glColor3f(m_bond_rcolor_pbc_0[i][1],m_bond_rcolor_pbc_0[i][2],m_bond_rcolor_pbc_0[i][3]);
+              //glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]);
               glCallList(v_cylinder_list[v_bond_number_pbc[i]]);
               //
               glColor3f(m_bond_rcolor_pbc_1[i][1],m_bond_rcolor_pbc_1[i][2],m_bond_rcolor_pbc_1[i][3]);
+              //glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]+1);
               glCallList(v_cylinder_list[v_bond_number_pbc[i]]+1);
               glPopMatrix();
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
-              std::cout<<" bond cylinder = "<<v_bond_number_pbc[i];
+              std::cout<<" bond cylinder = "<<supercell.get_bond_number_pbc(i);
 #endif
             }
           }

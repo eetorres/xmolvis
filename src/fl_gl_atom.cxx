@@ -80,17 +80,18 @@ void Fl_Gl_Atom::eval_initial_properties(void){
     for(int i=0; i<get_total_atoms(); i++){
       //i_z=v_atom_numbers[i];
       i_z=get_atomic_number(i);
-      _radius=atom_rrgb[i_z][0];
-      _rcolor[0]=_radius;
-      //_atom_xyz = m_atom_coordinates[i];
-      _atom_xyz = get_cartesian(i);
+      //_radius=atom_rrgb[i_z][0];
+      //_rcolor[0]=_radius;
+      _rcolor[0] = atom_rrgb[i_z][0];
       _rcolor[1] = atom_rrgb[i_z][1];
       _rcolor[2] = atom_rrgb[i_z][2];
       _rcolor[3] = atom_rrgb[i_z][3];
       m_radius_color[i]=_rcolor;
+      //m_radius_color[i]=atom_rrgb[i_z];
     }
   }
   m_atom_rcolor = m_radius_color;
+  supercell.set_radius_color( m_radius_color);
 }
 
 void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
@@ -701,6 +702,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
       }
     }
   }
+  supercell.eval_atomic_bonds();
   m_bond_rcolor_0.resize(i_number_of_bonds,4);
   m_bond_rcolor_1.resize(i_number_of_bonds,4);
   m_bond_rcolor_pbc_0.resize(i_number_of_bonds_pbc,4);

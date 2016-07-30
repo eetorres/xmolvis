@@ -189,7 +189,7 @@ public:
   TVector<uint> get_atom_table(void);
   uint get_atom_table(uint);
   TVector<uint> get_fragment_table(void);
-  //TVector<uint> CSupercell::get_fragment_table(void){
+  void eval_atomic_bonds(void);
   uint get_fragment_table(uint);
   //
   TVector<real> get_fragmol_axis_angles(void);
@@ -216,6 +216,7 @@ public:
   TMatrix<real> get_fragment_cartesian(uint);
   TMatrix<real> get_fragment_centered_cartesian(uint);
   TMatrix<real> get_uvw_to_xyz(void);
+  TVector<real> get_uvw_to_xyz(uint);
   TMatrix<real> get_unit_uvw_to_xyz(void);
   TMatrix<real> get_bounding_box(void);
 
@@ -243,11 +244,27 @@ public:
   TVector<int>  get_neighbor_cells_xyz(uint u){ return neighbor_cells_xyz[u];};
   TMatrix<real> get_inv_bbox(void){ return m_inv_bbox;};
   void set_inv_bbox(const TMatrix<real>& m){ m_inv_bbox=m;};
+  void set_radius_color(const TMatrix<real>& m){ m_radius_color=m;};
   // Temporal pbulic variables
   TVector<real> v_bbox;
   TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TMatrix<real> m_inv_bbox;
   TMatrix<int>  neighbor_cells_xyz;
+  // bond variables
+  uint get_bond_number(uint u){ return v_bond_number[u];};
+  uint get_bond_number_pbc(uint u){ return v_bond_number_pbc[u];};
+  uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
+  uint check_bond(uint);
+  real f_atom_bond_delta;
+  TVector<uint> v_bond_table;
+  uint  i_number_of_bonds;
+  TVector<uint> v_bond_number;
+  TVector<uint> v_bond_number_pbc;
+  TMatrix<int>  m_bond_boundary_pbc;
+  TMatrix<real> m_radius_color;
+  uint i_number_of_bonds_pbc;
+  TMatrix<uint> m_bond_indices;
+  TMatrix<uint> m_bond_indices_pbc;
   // Temporal functions
   void set_cut_radius(real r){ r_cut_radius=r; r_cut_radius_2=r*r;};
 

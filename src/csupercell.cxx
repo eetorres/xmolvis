@@ -31,6 +31,7 @@
 
 CSupercell::CSupercell(){
   __is_potmol=false;
+  f_atom_bond_delta          = 0.1;
   clear();
 }
 
@@ -626,6 +627,11 @@ TMatrix<real> CSupercell::get_uvw_to_xyz(void){
   return gsf.get_uvw_to_xyz();
 }
 
+TVector<real> CSupercell::get_uvw_to_xyz(uint u){
+  return gsf.get_uvw_to_xyz(u);
+}
+
+// deprecated
 TMatrix<real> CSupercell::get_bounding_box(void){
   return gsf.get_uvw_to_xyz();
 }
@@ -736,6 +742,277 @@ void CSupercell::eval_linked_list(void){
   std::cout<<" v_cell_list="<<v_cell_list<<std::endl;
   std::cout<<" END: eval_cell_list"<<std::endl;
 #endif
+}
+
+uint CSupercell::check_bond(uint u){
+  uint size = v_bond_table.size();
+  for(uint i=0; i<size; i++){
+    if(v_bond_table[i]==u){
+      return i;
+    }
+  }
+  v_bond_table.push_back(u);
+  return size;
+}
+
+// Fri Jan 13 16:55:51 MST 2012
+// beta version
+// find bonds between atoms closer than the sum of their van der Waals radius
+void CSupercell::eval_atomic_bonds(void){
+#ifdef _SUPERCELL_DEBUG_MESSAGES_
+  std::cout<<" SUPERCELL: eval_atomic_bonds "<<std::endl;
+#endif
+#ifdef _SHOW_TIME_
+  gl_atom_clock.start();
+#endif
+  int j;
+  bool use_pbc;
+  real rl, r, r2, rr, ri, rj, rlz, rlxy;
+  TVector<uint> vidx(2);
+  TVector<real> vi, vj, vij, vang(2);
+  TVector<real> vi_uvw, vj_uvw, vij_uvw;
+  TVector<uint> v_ft;
+  v_ft = get_fragment_table();
+  //
+  int u_icell;
+  uint k;
+  TVector<real> v_positive_r;
+  TVector<int>  v_integer_r;
+  TVector<int>  v_neighbor_cell;
+  TVector<int>  v_pbc;
+  //
+  uint max_bonds = 15*get_total_atoms();
+#ifdef _SUPERCELL_DEBUG_MESSAGES_
+  std::cout<<" SUPERCELL: estimated max bonds "<<max_bonds<<std::endl;
+#endif
+  v_bond_table.resize(0);
+  i_number_of_bonds = 0;
+  i_number_of_bonds_pbc = 0;
+  ////////////////////////////////////////
+  v_bond_number.resize(max_bonds);
+  m_bond_indices.resize(max_bonds,2);
+  v_bond_number_pbc.resize(uint(max_bonds/2));
+  m_bond_indices_pbc.resize(uint(max_bonds/2),2);
+  m_bond_boundary_pbc.resize(uint(max_bonds/2),2);
+  ////////////////////////////////////////
+  v_pbc.resize(3);
+//#ifdef _SUPERCELL_DEBUG_BONDS_
+  //std::cout<<" FL_GL_SUPERCELL: LINKED: Box = "<<v_box_size;
+//#endif
+  if(is_linked_cell()){
+#ifdef _SUPERCELL_DEBUG_BONDS_
+    std::cout<<" FL_GL_SUPERCELL: LINKED CELL USED"<<std::endl;
+#endif
+    eval_linked_list();
+#ifdef _SUPERCELL_DEBUG_BONDS_
+    std::cout<<" FL_GL_SUPERCELL: LINKED CELL READY"<<std::endl;
+#endif
+  }
+#ifdef _SUPERCELL_DEBUG_BONDS_
+  else{
+    std::cout<<" FL_GL_SUPERCELL: LINKED CELL NOT USED"<<std::endl;
+  }
+#endif
+  for(int i=0; i<get_total_atoms()-1; i++){
+#ifdef _SUPERCELL_DEBUG_BONDS_
+    std::cout<<" SUPERCELL: i="<<i<<std::endl;
+#endif
+    if(strcmp(get_atomic_symbol_table(get_atom_table(i)).c_str(),"X")){
+      vi = get_cartesian(i);//m_atom_coordinates[i];
+      vi_uvw = (vi*get_inv_bbox());
+      ri = m_radius_color[i][0];
+#ifdef _SUPERCELL_DEBUG_BONDS_
+    std::cout<<" SUPERCELL: ii="<<vi<<std::endl;
+    std::cout<<" SUPERCELL: vi_uvw="<<vi_uvw<<std::endl;
+    std::cout<<" SUPERCELL: ii="<<vi<<std::endl;
+#endif
+      if(is_linked_cell()){
+        v_positive_r = fVAdd(vi_uvw,get_bbox());
+        v_integer_r  = iVMul(v_positive_r,get_cell_frac());
+#ifdef _SUPERCELL_DEBUG_BONDS_
+        std::cout<<" SUPERCELL: v_positive_r="<<v_positive_r<<std::endl;
+        std::cout<<" SUPERCELL: v_integer_r="<<v_integer_r<<std::endl;
+#endif
+        // using the neighbour list
+        // searching inside the neighbour cells
+        for (int _m=0; _m<get_neighbor_cells(); _m++){
+          v_neighbor_cell = iVAdd(v_integer_r,get_neighbor_cells_xyz(_m));
+#ifdef _SUPERCELL_DEBUG_BONDS_
+          std::cout<<" SUPERCELL: v_neighbor_cell="<<v_neighbor_cell<<std::endl;
+#endif
+          // Used to apply PCB to cells in each dimension
+          /////////////////////////////////////////////////////////////////////////////////
+          for (uint coord=0; coord<3; coord++){
+            if(v_neighbor_cell[coord] >= v_cell_side[coord]){ // check if  PBC is necessary
+              v_neighbor_cell[coord]= 0;                      // apply PBC to each  cell
+              //if(is_pbc) use_pbc = false;
+            }else if(v_neighbor_cell[coord] < 0){             // check if  PBC is necessary
+              v_neighbor_cell[coord]= v_cell_side[coord]-1;   // apply PBC to each cell
+              //if(is_pbc) use_pbc = false;
+            }
+          }
+          /////////////////////////////////////////////////////////////////////////////////
+          u_icell = iVLinear(v_neighbor_cell,v_cell_side);    // head atom index in the the cell
+#ifdef _SUPERCELL_DEBUG_BONDS_
+          std::cout<<" SUPERCELL: v_neighbor_cell="<<v_neighbor_cell<<std::endl;
+          std::cout<<" SUPERCELL: u_icell ="<<u_icell<<std::endl;
+#endif
+          if(u_icell>=0 && u_icell < (int)get_cell_number()){          // inside of a cells
+            j = get_cell_head(u_icell);                         // head atom in the actual cell
+          }else{                                              // out of the box
+            j = -1;                                           // outside of a cells
+          }
+          while(1){                                           // over all the particles in the cell
+            if(j<0) break;                                    // stop searching in the cell
+            //if(_m!=0 || j>i){                               // avoid self-interaction
+            if((j>i) && (v_ft[j] == v_ft[i])){                // avoid self-interaction and double bond
+            //if(j>i){                                        // avoid self-interaction and double bond
+#ifdef _SUPERCELL_DEBUG_BONDS_
+              std::cout<<" FL_GL_SUPERCELL: test bond for [i-j]="<<i<<","<<j<<std::endl;
+#endif
+              r2 = 0;                                         // set distance to cero
+              vj = get_cartesian(j);  //m_atom_coordinates[j];
+              vj_uvw = vj*get_inv_bbox();
+              rj = m_radius_color[j][0];
+              r = (ri+rj);
+              rr = 1.2*(r*r);
+              use_pbc = false;
+              vij_uvw = (vj_uvw-vi_uvw);
+              for(uint coord=0; coord<3; coord++){
+                v_pbc[coord] = 0;
+                if(vij_uvw[coord] <= -get_bbox(coord)){
+                  vj += get_uvw_to_xyz(coord); //2.0*m_bbox[coord];       // PBC
+                  use_pbc = true;
+                  v_pbc[coord] = 1;
+                }else if(vij_uvw[coord] > get_bbox(coord)){
+                  vj -= get_uvw_to_xyz(coord); //2.0*m_bbox[coord];       // PBC
+                  use_pbc = true;
+                  v_pbc[coord] = -1;
+                }
+              }
+              vij = (vj-vi);
+              r2 = vij.norm();
+              if(r2 < rr){                                    // atoms inside de cut radius
+#ifdef _SUPERCELL_DEBUG_BONDS_
+                std::cout<<" FL_GL_SUPERCELL: Bond found [i-j]="<<i<<","<<j<<std::endl;
+#endif
+                vidx[0]=i;
+                vidx[1]=j;
+                r = sqrt(r2);
+                vij = (vj-vi);
+                rlz = vij[2];
+                vij[2] = 0;
+                rlxy = vij.magnitude();
+                vang[0] = RAD_DEG*atan2(vij[1],vij[0]);       // bond precession
+                vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz));      // bond tilt
+                k = get_bond_index(r);
+                if(use_pbc){
+                  v_bond_number_pbc[i_number_of_bonds_pbc]=check_bond(k);
+                  m_bond_indices_pbc[i_number_of_bonds_pbc]=vidx;
+                  m_bond_boundary_pbc[i_number_of_bonds_pbc]=v_pbc;
+                  i_number_of_bonds_pbc++;
+                }else{
+                  v_bond_number[i_number_of_bonds]=check_bond(k);
+                  m_bond_indices[i_number_of_bonds]=vidx;
+                  i_number_of_bonds++;
+                }
+              }
+            }
+            j = get_cell_list(j);
+          }
+        }
+      }else{
+#ifdef _SUPERCELL_DEBUG_BONDS_
+        std::cout<<" FL_GL_SUPERCELL: NOT LINKED CELL USED"<<std::endl;
+#endif
+        // the code below can be used for small number of atoms.
+        // searching inside the neighbour cells
+        for (int _m=0; _m<27; _m++){
+          for(int j=i+1; j<get_total_atoms(); j++){
+            if(v_ft[j] == v_ft[i]){  // avoid bonds between fragments
+#ifdef _SUPERCELL_DEBUG_BONDS_
+            std::cout<<" SUPERCELL: j="<<j<<" i="<<i<<" m="<<_m<<std::endl;
+#endif
+            if(strcmp(get_atomic_symbol_table(get_atom_table(j)).c_str(),"X")){
+              vj = get_cartesian(j); //m_atom_coordinates[j];
+              for(uint coord=0; coord<3; coord++){
+                vj += neighbor_cells[_m][coord]*get_uvw_to_xyz(coord); //  2.0*m_bbox[coord];       // PBC
+                v_pbc[coord] = neighbor_cells[_m][coord];
+              }
+              rj = m_radius_color[j][0];
+              vj_uvw = vj*get_inv_bbox();
+              vij = (vj-vi);
+              r = (ri+rj);
+              rr = 1.2*(r*r);
+              rl = vij.norm();
+              if( (rl <= rr) &&  (rl > 0.1) ){
+#ifdef _SUPERCELL_DEBUG_BONDS_
+                std::cout<<" SUPERCELL: j="<<j<<" i="<<i<<" bonded"<<std::endl;
+#endif
+                vidx[0]=i;
+                vidx[1]=j;
+                rlz = vij[2];
+                vij[2] = 0;
+                rlxy = vij.magnitude();
+                vang[0] = RAD_DEG*atan2(vij[1],vij[0]);  // precession
+                vang[1] = RAD_DEG*fabs(atan2(rlxy,rlz)); // tilt
+                r = sqrt(rl);
+                uint k = get_bond_index(r);
+                if(_m>0){
+                  v_bond_number_pbc[i_number_of_bonds_pbc]=check_bond(k);
+                  m_bond_indices_pbc[i_number_of_bonds_pbc]=vidx;
+                  m_bond_boundary_pbc[i_number_of_bonds_pbc]=v_pbc;
+                  i_number_of_bonds_pbc++;
+#ifdef _SUPERCELL_DEBUG_BONDS_
+                  std::cout<<" SUPERCELL: bond pcb type: "<<check_bond(k)<<std::endl;
+#endif
+                }else{
+                  v_bond_number[i_number_of_bonds]=check_bond(k);
+                  m_bond_indices[i_number_of_bonds]=vidx;
+                  i_number_of_bonds++;
+#ifdef _SHOW_DEBUG_NOPBC_BONDS_
+                  std::cout<<" SUPERCELL: bond type: "<<check_bond(k)<<std::endl;
+#endif
+                }
+              }
+            }
+            }
+          }
+        }
+      }
+    }
+  }
+  //m_bond_rcolor_0.resize(i_number_of_bonds,4);
+  //m_bond_rcolor_1.resize(i_number_of_bonds,4);
+  //m_bond_rcolor_pbc_0.resize(i_number_of_bonds_pbc,4);
+  //m_bond_rcolor_pbc_1.resize(i_number_of_bonds_pbc,4);
+  //
+  //m_bond_angles.resize(i_number_of_bonds,2);
+  //m_bond_angles_pbc.resize(i_number_of_bonds_pbc,2);
+  //m_bond_position.resize(i_number_of_bonds,3);
+  //m_bond_position_pbc.resize(i_number_of_bonds_pbc,3);
+#ifdef _SUPERCELL_DEBUG_BONDS_
+  std::cout<<" SUPERCELL: i_number_of_bonds="<<i_number_of_bonds<<std::endl;
+  std::cout<<" SUPERCELL: i_number_of_bonds_pbc="<<i_number_of_bonds_pbc<<std::endl;
+  std::cout<<" SUPERCELL: v_bond_number="<<v_bond_number;
+  std::cout<<" SUPERCELL: v_bond_number_pbc="<<v_bond_number_pbc;
+  std::cout<<" SUPERCELL: v_bond_table="<<v_bond_table;
+  //std::cout<<" SUPERCELL: m_bond_position_pbc="<<m_bond_position_pbc;
+#endif
+  //u_bond_types=v_bond_table.size();
+#ifdef _SUPERCELL_DEBUG_MESSAGES_
+  std::cout<<" SUPERCELL: max number of bonds "<<max_bonds<<std::endl;
+  std::cout<<" SUPERCELL: number of bonds "<<i_number_of_bonds<<std::endl;
+  std::cout<<" SUPERCELL: number of PBC bonds "<<i_number_of_bonds_pbc<<std::endl;
+  std::cout<<" SUPERCELL: eval_atomic_bonds "<<std::endl;
+#endif
+  //update_atomic_bonds();
+#ifdef _SHOW_TIME_
+  gl_atom_clock.stop();
+  gl_atom_clock.show();
+#endif
+  // send update color flag
+  //update_bonds_color=true;
 }
 
 // SUPERCELL END
