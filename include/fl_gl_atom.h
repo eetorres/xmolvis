@@ -195,7 +195,6 @@ protected:
   bool is_update_atomic_properties;
   bool is_update_radius;
   bool is_update_bonds;
-  //bool is_linked_cell;
   bool is_update_mask_rcolor;
   bool update_coordinates;
   //
@@ -207,10 +206,8 @@ protected:
   int  __sphere_strip_length;
   int  __cylinder_strip_length;
   int  u_cylinder_resolution;
-  //int  i_neighbor_cells;
   //
   uint u_bond_types;
-  //uint __fragment_total;
   uint __fragment_active;
   //
   real f_atom_bond_delta;
@@ -243,37 +240,25 @@ protected:
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
-  //TVector<uint> v_atom_numbers; // <-----------------
-  //TVector<uint> v_atom_table;
   TVector<uint> v_bond_number;
   TVector<uint> v_bond_number_pbc;
   TVector<uint> v_bond_table;
-  //TVector<uint> v_fragment_table_gl;
-  //TVector<uint> v_atomic_number_table_gl;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
   //
   TVector<real> _vu, _vv, _vw;
   //
-  // linked cell variables
-  //uint u_cell_number;
   uint u_particle_number;
   real r_cut_radius, r_cut_radius_2;
-  // TVector<real> v_cell_frac, v_box_size, v_box_middle;
   TVector<uint> v_cell_number;
-  //TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TVector<int>  v_neighbor_cell, v_md_pbc;
   //
-  //TVector<std::string> v_atom_labels; // <--------------
-  //TVector<std::string> v_atom_symbols; // <--------------
-  //TVector<std::string> v_atomic_symbol_table_gl;
   //
   TMatrix<uint> m_bond_indices;
   TMatrix<uint> m_bond_indices_pbc;
   // bonds with PBC
   TMatrix<int>  m_bond_boundary_pbc;
-  //TMatrix<int>  neighbor_cells_xyz;
   //
   TMatrix<real> m_sphere;
   TMatrix<real> m_cylinder;
@@ -282,8 +267,7 @@ protected:
   TMatrix<real> m_cylinder_e1;
   // this may be useful?
   TMatrix<real> m_cylinder_texture1;
-  // atoms
-  //TMatrix<real> m_atom_coordinates;
+  // Atoms for visualization
   TMatrix<real> m_atom_position;
   TMatrix<real> m_radius_color;
   TMatrix<real> m_atom_rcolor;
@@ -301,7 +285,6 @@ protected:
   // bounding box
   TMatrix<real> m_bbox;
   TMatrix<real> u_bbox;
-  //TMatrix<real> u_inv_bbox;
   //
   private:
     CTimer gl_atom_clock;
