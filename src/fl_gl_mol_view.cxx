@@ -328,9 +328,9 @@ void Fl_Gl_Mol_View::create_cylinder_dl(void){
   v_cylinder_list.resize(u_bond_types);
   for(uint i=0; i<u_bond_types; i++){
 #ifdef _SHOW_DEBUG_CYLINDERS_
-    std::cout<<" bond length: "<<v_bond_table[i]<<std::endl;
+    std::cout<<" bond length: "<<supercell.get_bond_table(i)<<std::endl;
 #endif
-    length = 0.5*f_atom_bond_delta*(real)v_bond_table[i];
+    length = 0.5*f_atom_bond_delta*(real)supercell.get_bond_table(i);
     v_cylinder_list[i]=glGenLists(2);
     // start list
     glNewList(v_cylinder_list[i],GL_COMPILE);
@@ -372,8 +372,8 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   update_bonds_color=true;
   if(update_bonds_color){
     for(uint i=0; i<i_number_of_bonds; i++){
-      int idx0 = m_bond_indices[i][0];
-      int idx1 = m_bond_indices[i][1];
+      int idx0 = supercell.get_bond_indices(i,0); //m_bond_indices[i][0];
+      int idx1 = supercell.get_bond_indices(i,1); //m_bond_indices[i][1];
       if(is_mode_atom){
         m_bond_rcolor_0[i][1] = f_atom_brightness*m_radius_color[idx0][1];
         m_bond_rcolor_0[i][2] = f_atom_brightness*m_radius_color[idx0][2];
@@ -399,8 +399,8 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond number = "<<i<<std::endl;
 #endif
-      int idx0 = m_bond_indices_pbc[i][0];
-      int idx1 = m_bond_indices_pbc[i][1];
+      int idx0 = supercell.get_bond_indices_pbc(i,0); //m_bond_indices_pbc[i][0];
+      int idx1 = supercell.get_bond_indices_pbc(i,1); //m_bond_indices_pbc[i][1];
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" (idx0,idx1) = ("<<idx0<<","<<idx1<<")"<<std::endl;
 #endif
@@ -437,7 +437,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   std::cout<<" Bond colors = "<<m_bond_rcolor_0;
   std::cout<<" Fragment table = "<<v_fragment_table_gl;
   //std::cout<<" Radius color = "<<m_radius_color;
-  std::cout<<" Bond index = "<<m_bond_indices;
+  //std::cout<<" Bond index = "<<m_bond_indices;
 #endif
   // testing
   if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
@@ -537,12 +537,12 @@ void Fl_Gl_Mol_View::draw_bonds(void){
           glRotatef(_ang[0],0,0,1); // rotation arround the z axis
           glRotatef(_ang[1],0,1,0); // rotation arround the y asis
           glColor3f(m_bond_rcolor_0[i][1],m_bond_rcolor_0[i][2],m_bond_rcolor_0[i][3]);
-          //glCallList(v_cylinder_list[supercell.get_bond_number(i)]);
-          glCallList(v_cylinder_list[v_bond_number[i]]);
+          glCallList(v_cylinder_list[supercell.get_bond_number(i)]);
+          //glCallList(v_cylinder_list[v_bond_number[i]]);
           //
           glColor3f(m_bond_rcolor_1[i][1],m_bond_rcolor_1[i][2],m_bond_rcolor_1[i][3]);
-          //glCallList(v_cylinder_list[supercell.get_bond_number(i)]+1);
-          glCallList(v_cylinder_list[v_bond_number[i]]+1);
+          glCallList(v_cylinder_list[supercell.get_bond_number(i)]+1);
+          //glCallList(v_cylinder_list[v_bond_number[i]]+1);
           glPopMatrix();
         }
       }
@@ -579,11 +579,11 @@ void Fl_Gl_Mol_View::draw_bonds(void){
 #endif
         if(!(pos_x_cells==0 && pos_y_cells==0 && pos_z_cells==0)){  // avoid incomplete bonds in the unit cell
           for(uint i=0; i<i_number_of_bonds_pbc; i++){
-            if((m_bond_boundary_pbc[i][0]==0 || (m_bond_boundary_pbc[i][0]!=xu && xu!=2)) \
-            && (m_bond_boundary_pbc[i][1]==0 || (m_bond_boundary_pbc[i][1]!=yu && yu!=2)) \
-            && (m_bond_boundary_pbc[i][2]==0 || (m_bond_boundary_pbc[i][2]!=zu && zu!=2))){
+            if((supercell.get_bond_boundary_pbc(i,0)==0 || (supercell.get_bond_boundary_pbc(i,0)!=xu && xu!=2)) \
+            && (supercell.get_bond_boundary_pbc(i,1)==0 || (supercell.get_bond_boundary_pbc(i,1)!=yu && yu!=2)) \
+            && (supercell.get_bond_boundary_pbc(i,2)==0 || (supercell.get_bond_boundary_pbc(i,2)!=zu && zu!=2))){
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
-              std::cout<<" bond = "<<m_bond_boundary_pbc[i];
+              //std::cout<<" bond = "<<m_bond_boundary_pbc[i];
               std::cout<<" ("<<x<<","<<y<<","<<z<<")"<<std::endl;
               //std::cout<<" ("<<_vu<<","<<_vv<<","<<_vw<<")"<<std::endl;
 #endif
@@ -599,12 +599,12 @@ void Fl_Gl_Mol_View::draw_bonds(void){
               glRotatef(_ang[0],0,0,1); // rotation arround the z axis
               glRotatef(_ang[1],0,1,0); // rotation arround the y asis
               glColor3f(m_bond_rcolor_pbc_0[i][1],m_bond_rcolor_pbc_0[i][2],m_bond_rcolor_pbc_0[i][3]);
-              //glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]);
-              glCallList(v_cylinder_list[v_bond_number_pbc[i]]);
+              glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]);
+              //glCallList(v_cylinder_list[v_bond_number_pbc[i]]);
               //
               glColor3f(m_bond_rcolor_pbc_1[i][1],m_bond_rcolor_pbc_1[i][2],m_bond_rcolor_pbc_1[i][3]);
-              //glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]+1);
-              glCallList(v_cylinder_list[v_bond_number_pbc[i]]+1);
+              glCallList(v_cylinder_list[supercell.get_bond_number_pbc(i)]+1);
+              //glCallList(v_cylinder_list[v_bond_number_pbc[i]]+1);
               glPopMatrix();
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
               std::cout<<" bond cylinder = "<<supercell.get_bond_number_pbc(i);

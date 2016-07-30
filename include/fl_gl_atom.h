@@ -240,7 +240,7 @@ protected:
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
-  TVector<uint> v_bond_number; // deprecated
+  //TVector<uint> v_bond_number; // deprecated
   TVector<uint> v_bond_number_pbc; // deprecated
   TVector<uint> v_bond_table; // deprecated
   TVector<GLuint> v_sphere_list;

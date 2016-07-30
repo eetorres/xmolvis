@@ -95,7 +95,7 @@ public:
   void eval_initial_position(void);
   void eval_fragmol_initial_orientation(void);
   //void eval_cell_table(void);
-  void eval_connections(const TMatrix<uint>&,uint);
+  void eval_connections(uint);
   bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
   bool eval_scaled_fragment(uint,bool,real);      // Create a framgent using scaled distance
   bool eval_radial_fragment(uint,bool,real);      // Create a framgent using scaled distance
@@ -250,19 +250,27 @@ public:
   TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TMatrix<real> m_inv_bbox;
   TMatrix<int>  neighbor_cells_xyz;
-  // bond variables
+  // bond fuctions
+  uint get_number_of_bonds(void){ return i_number_of_bonds;};
+  uint get_number_of_bonds_pbc(void){ return i_number_of_bonds_pbc;};
   uint get_bond_number(uint u){ return v_bond_number[u];};
   uint get_bond_number_pbc(uint u){ return v_bond_number_pbc[u];};
   uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
+  int  get_bond_boundary_pbc(uint u1, uint u2){ return m_bond_boundary_pbc[u1][u2];};
+  uint get_bond_indices(uint u1, uint u2){ return m_bond_indices[u1][u2];};
+  uint get_bond_indices_pbc(uint u1, uint u2){ return m_bond_indices_pbc[u1][u2];};
+  uint get_bond_table(uint u){ return v_bond_table[u];};
+  uint get_bond_types(void){ return v_bond_table.size();};
   uint check_bond(uint);
+  // bond variables
   real f_atom_bond_delta;
   TVector<uint> v_bond_table;
-  uint  i_number_of_bonds;
+  uint i_number_of_bonds;
+  uint i_number_of_bonds_pbc;
   TVector<uint> v_bond_number;
   TVector<uint> v_bond_number_pbc;
   TMatrix<int>  m_bond_boundary_pbc;
   TMatrix<real> m_radius_color;
-  uint i_number_of_bonds_pbc;
   TMatrix<uint> m_bond_indices;
   TMatrix<uint> m_bond_indices_pbc;
   // Temporal functions

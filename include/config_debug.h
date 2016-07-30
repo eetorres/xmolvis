@@ -29,7 +29,7 @@
 /////////////////////////////////
 // csupercell.cxx
 /////////////////////////////////
-#define _SUPERCELL_DEBUG_BONDS_
+//#define _SUPERCELL_DEBUG_BONDS_
 //#define _FRAGMENT_DEBUG_MESSAGES_
 //#define _FRAGMENT_DEBUG_NEW_FRAGMENT_
 //#define _FRAGMENT_DEBUG_DATA_

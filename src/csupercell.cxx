@@ -155,8 +155,8 @@ void CSupercell::eval_cell_table(void){
 }
 */
 
-void CSupercell::eval_connections(const TMatrix<uint>& _m, uint u){
-  gsf.eval_connections(_m,u);
+void CSupercell::eval_connections(uint u){
+  gsf.eval_connections(m_bond_indices,u);
 }
 
 void CSupercell::eval_initial_position(void){
