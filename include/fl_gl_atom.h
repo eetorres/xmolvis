@@ -81,6 +81,26 @@ static const GLfloat mat_diffuse[] = {0.5, 0.5, 0.5, 1};
 
 const uint MENU_RESERVED_IDS  = 100;
 
+class Ctrackball{
+
+public:
+
+  // begin trackball
+  GLboolean tb_tracking;
+  GLboolean tb_animate;
+  GLuint    tb_width;
+  GLuint    tb_height;
+  GLint     tb_button;
+  GLuint    tb_lasttime;
+  GLfloat   tb_angle;
+  GLfloat   tb_axis[3];
+  GLfloat   tb_transform[4][4];
+  GLfloat   rot_matrix[4][4];
+  GLfloat   tb_lastposition[3];
+  //GLfloat   scaled_light_position[4];
+  // end trackball
+};
+
 class Fl_Gl_Atom: public Fl_Gl_Window, public CViewmol{
 
 public:
@@ -110,7 +130,8 @@ public:
   void set_axis_tilt(real f){ __axis_tilt=f;};
   void set_backbone_precession(real f){ __backbone_precession=f;};
   void set_backbone_tilt(real f){ __backbone_tilt=f;};
-  uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
+  // deprecated
+  //uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
   //
   ////////////////////////////////////////////////////////////////////////////////////////
   // Evaluation functions
@@ -141,7 +162,7 @@ public:
   // OpenGL functions
   ////////////////////////////////////////////////////////////////////////////////////////
   void initialize_sphere(real);
-  void initialize_cylinder(real);
+  void initialize_cylinder(real,real);
   void add_stick(const TVector<real>&,real,real,real,real);
   void add_axis(const TVector<real>&,real,real,real,real);
   //
@@ -172,6 +193,8 @@ protected:
   //
   CPalette palette;
   CPalette index_palette;
+  // Trackball
+  Ctrackball tb;
   //
   bool is_first_structure_;
   bool is_initialize_rot;
@@ -191,7 +214,7 @@ protected:
   bool is_update_mask_rcolor;
   bool update_coordinates;
   //
-  int  __number_of_atoms;
+  //int  __number_of_atoms;
   uint u_sphere_resolution;
   int  u_sphere_rows;
   int  __sphere_strip_length;
@@ -201,32 +224,10 @@ protected:
   uint u_bond_types;
   uint __fragment_active;
   //
-  real f_atom_bond_delta;
-  //real f_atom_bond_inv_delta;
-  real f_atom_radius_scale;
-  real f_bond_radius_scale;
-  //real base_view;
-  //real r_axes_position;
-  //real zoom;
-  //
   real __axis_precession;
   real __axis_tilt;
   real __backbone_precession;
   real __backbone_tilt;
-  // begin trackball
-  GLboolean tb_tracking;
-  GLboolean tb_animate;
-  GLuint    tb_width;
-  GLuint    tb_height;
-  GLint     tb_button;
-  GLuint    tb_lasttime;
-  GLfloat   tb_angle;
-  GLfloat   tb_axis[3];
-  GLfloat   tb_transform[4][4];
-  GLfloat   rot_matrix[4][4];
-  GLfloat   tb_lastposition[3];
-  GLfloat   scaled_light_position[4];
-  // end trackball
   // Visualization details
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;

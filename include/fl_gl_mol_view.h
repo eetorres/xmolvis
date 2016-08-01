@@ -396,6 +396,11 @@ public:
 
 private:
 
+  // Gl window parameters
+  CGLWindow glview;
+  CViewsetup setup;
+  // Window tools
+  CTools tools;
   // graphic quality control
   int  __sphere_strip_size;
   int  _draw_mpts, _draw_data;
@@ -422,15 +427,14 @@ private:
   uint u_submenu_index;
   uint u_selected_index;
   uint u_unselected_atom;
-  //
   uint u_active_menu;
-  // Gl window parameters
-  CGLWindow glview;
   //
-  CViewsetup setup;
+  real f_atom_bond_delta;
+  real f_atom_radius_scale;
+  real f_bond_radius_scale;
+  
   //
-  CTools tools;
-  //
+  GLfloat  scaled_light_position[4];
   GLdouble menu_pos_cx, menu_pos_cy;
   GLdouble menu_pos_x, menu_pos_y, menu_pos_z;
   GLdouble click_pos_x, click_pos_y;
@@ -448,10 +452,6 @@ private:
   std::string legends[6];
   std::string sub_label;
   std::string sub_legends[6];
-  //
-  //GLint viewport[4];
-  //GLdouble modelview[16];
-  //GLdouble projection[16];
   // atomic spheres
   GLuint    sphere_dl;
   GLuint    cylinder_dl;

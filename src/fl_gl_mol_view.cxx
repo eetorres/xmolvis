@@ -66,10 +66,10 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   font_size_slider_label=8;
   //zoom    = 1.0;
   // TrackBall
-  tb_button   = -1;
-  tb_tracking = GL_FALSE;
-  tb_animate  = GL_TRUE;
-  tb_angle    = 0.0;
+  tb.tb_button   = -1;
+  tb.tb_tracking = GL_FALSE;
+  tb.tb_animate  = GL_TRUE;
+  tb.tb_angle    = 0.0;
   // Atom Appareance
   f_atom_radius_scale        = 0.5;
   f_bond_radius_scale        = 1.0;
@@ -259,7 +259,7 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
     // start list
     glNewList(v_sphere_list[i],GL_COMPILE);
     // call the function that contains the rendering commands
-    initialize_sphere(radius);
+    initialize_sphere(2*radius*f_atom_radius_scale);
     // end list
     glEndList();
   }
@@ -282,12 +282,12 @@ void Fl_Gl_Mol_View::create_cylinder_dl(void){
     // start list
     glNewList(v_cylinder_list[i],GL_COMPILE);
     // call the function that contains the rendering commands
-    initialize_cylinder(-length);
+    initialize_cylinder(-length,f_bond_radius_scale);
     // end list
     glEndList();
     glNewList(v_cylinder_list[i]+1,GL_COMPILE);
     // call the function that contains the rendering commands
-    initialize_cylinder(length);
+    initialize_cylinder(length,f_bond_radius_scale);
     // end list
     glEndList();
   }
@@ -617,7 +617,7 @@ void Fl_Gl_Mol_View::draw_symbols(void){
     //supercell.get_radius_color(u_unselected_atom,3)
     glTranslatef(0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),4.1*f_atom_radius_scale*supercell.get_radius_color(i,0));
     //glTranslatef(0.5*f_atom_radius_scale*m_radius_color[i][0],0.5*f_atom_radius_scale*m_radius_color[i][0],4.1*f_atom_radius_scale*m_radius_color[i][0]);
-    glMultMatrixf((GLfloat*)rot_matrix);
+    glMultMatrixf((GLfloat*)tb.rot_matrix);
     //glNormal3f(0,0,1);
     // text position
     glRasterPos3f(_xyz[0],_xyz[1],_xyz[2]);
@@ -649,7 +649,7 @@ void Fl_Gl_Mol_View::draw_selected_numbers(void){
     glScalef(glview.zoom,glview.zoom,glview.zoom);
     // set label text offset
     glTranslatef(0,0,2.0*f_atom_radius_scale*supercell.get_radius_color(v_selected_atoms[i],0)); //   m_radius_color[v_selected_atoms[i]][0]);
-    glMultMatrixf((GLfloat*)rot_matrix);
+    glMultMatrixf((GLfloat*)tb.rot_matrix);
     glNormal3f(0,0,1);
     // text position
     glRasterPos3f(_xyz[0],_xyz[1],_xyz[2]);
@@ -764,14 +764,14 @@ void Fl_Gl_Mol_View::draw_scene(void){
   glPointSize(2.0);
   glPushMatrix();
   glLoadIdentity();
-  glRotatef(tb_angle, tb_axis[0], tb_axis[1], tb_axis[2]);
+  glRotatef(tb.tb_angle, tb.tb_axis[0], tb.tb_axis[1], tb.tb_axis[2]);
   // What the line below does?
-  ////>glMultMatrixf((real*)tb_transform);  //<---------//?
-  glMultMatrixf((GLfloat*)rot_matrix);
-  glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)rot_matrix);
+  ////>glMultMatrixf((real*)tb.tb_transform);  //<---------//?
+  glMultMatrixf((GLfloat*)tb.rot_matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)tb.rot_matrix);
   glPopMatrix();
   glTranslatef(glview.x_shift, glview.y_shift, glview.z_shift);
-  glMultMatrixf((GLfloat*)rot_matrix);
+  glMultMatrixf((GLfloat*)tb.rot_matrix);
   // zoom in and zoom out
   glScalef(glview.zoom,glview.zoom,glview.zoom);
   //glTranslatef(glview.x_shift,glview.y_shift,glview.z_shift);
@@ -806,7 +806,7 @@ void Fl_Gl_Mol_View::draw_scene(void){
     glPushMatrix();
     glLoadIdentity();
     glTranslatef(0.85*glview.view_left,0.85*glview.view_bottom,700); //<----------------
-    glMultMatrixf((GLfloat*)rot_matrix); //<----------------
+    glMultMatrixf((GLfloat*)tb.rot_matrix); //<----------------
     draw_axes(); //<----------------
     // translate the world axes to the lower left corner
     glPopMatrix();
@@ -902,7 +902,7 @@ void Fl_Gl_Mol_View::draw(){
     glPopMatrix();
     glFlush();
   }
-  //glMultMatrixf(tb_transform);
+  //glMultMatrixf(tb.tb_transform);
   // new picking process using color index
   if(render_mode==MODE_SELECT){
     //process_stop_picking();
@@ -998,7 +998,7 @@ int Fl_Gl_Mol_View::handle(int event){
     // save mouse position to track drag events
     last_x = x;
     last_y = y;
-    point_to_vector(last_x, last_y, tb_width, tb_height, tb_lastposition);
+    point_to_vector(last_x, last_y, tb.tb_width, tb.tb_height, tb.tb_lastposition);
     ////>initialize_transform_matrix();
     redraw();
     return 1;
@@ -1243,25 +1243,25 @@ int Fl_Gl_Mol_View::handle(int event){
 
 void Fl_Gl_Mol_View::set_mouse_motion(int x, int y){
   GLfloat current_position[3], dx, dy, dz;
-  //assert(tb_button != -1);
-  //if (tb_tracking == GL_FALSE)
+  //assert(tb.tb_button != -1);
+  //if (tb.tb_tracking == GL_FALSE)
     //return;
-  point_to_vector(x, y, tb_width, tb_height, current_position);
+  point_to_vector(x, y, tb.tb_width, tb.tb_height, current_position);
   // calculate the angle to rotate by (directly proportional to the
   // length of the mouse movement.
-  dx = current_position[0]-tb_lastposition[0];
-  dy = current_position[1]-tb_lastposition[1];
-  dz = current_position[2]-tb_lastposition[2];
-  tb_angle=(90.0*sqrt(dx*dx+dy*dy+dz*dz));
+  dx = current_position[0]-tb.tb_lastposition[0];
+  dy = current_position[1]-tb.tb_lastposition[1];
+  dz = current_position[2]-tb.tb_lastposition[2];
+  tb.tb_angle=(90.0*sqrt(dx*dx+dy*dy+dz*dz));
   // calculate the axis of rotation (cross product)
-  tb_axis[0]=tb_lastposition[1]*current_position[2]-tb_lastposition[2]*current_position[1];
-  tb_axis[1]=tb_lastposition[2]*current_position[0]-tb_lastposition[0]*current_position[2];
-  tb_axis[2]=tb_lastposition[0]*current_position[1]-tb_lastposition[1]*current_position[0];
+  tb.tb_axis[0]=tb.tb_lastposition[1]*current_position[2]-tb.tb_lastposition[2]*current_position[1];
+  tb.tb_axis[1]=tb.tb_lastposition[2]*current_position[0]-tb.tb_lastposition[0]*current_position[2];
+  tb.tb_axis[2]=tb.tb_lastposition[0]*current_position[1]-tb.tb_lastposition[1]*current_position[0];
   // reset for next time
-  // tb_lasttime = glutGet(GLUT_ELAPSED_TIME);
-  tb_lastposition[0] = current_position[0];
-  tb_lastposition[1] = current_position[1];
-  tb_lastposition[2] = current_position[2];
+  // tb.tb_lasttime = glutGet(GLUT_ELAPSED_TIME);
+  tb.tb_lastposition[0] = current_position[0];
+  tb.tb_lastposition[1] = current_position[1];
+  tb.tb_lastposition[2] = current_position[2];
   // remember to draw new position
 }
 
@@ -1279,7 +1279,7 @@ void Fl_Gl_Mol_View::point_to_vector(int x, int y, int width, int height, GLfloa
 }
 
 void Fl_Gl_Mol_View::set_view(real x,real y,real z){
-  //init_rot_matrix();
+  //init_tb.rot_matrix();
   initialize_transform_matrix();
   //glMatrixMode(GL_PROJECTION);
   glMatrixMode(GL_MODELVIEW);
@@ -1290,14 +1290,14 @@ void Fl_Gl_Mol_View::set_view(real x,real y,real z){
   glRotatef(x,1,0,0);
   glRotatef(y,0,1,0);
   glRotatef(z,0,0,1);
-  glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat*)rot_matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat*)tb.rot_matrix);
   glPopMatrix();
 }
 
 void Fl_Gl_Mol_View::view_reshape(int width, int height){
-  //assert(tb_button != -1);
-  tb_width  = width;
-  tb_height = height;
+  //assert(tb.tb_button != -1);
+  tb.tb_width  = width;
+  tb.tb_height = height;
 }
 
 void Fl_Gl_Mol_View::set_font_size(void){

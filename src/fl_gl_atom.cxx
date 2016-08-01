@@ -332,7 +332,7 @@ real Fl_Gl_Atom::set_bounding_box(real r){
 
 void Fl_Gl_Atom::initialize_sphere(real r){
     int s;
-    real scale = 2.0*f_atom_radius_scale*r;
+    real scale = r;
     // iterate over the 20 sides of the icosahedron
     int cont = 0;
     for(s = 0; s < 20; s++){
@@ -349,10 +349,10 @@ void Fl_Gl_Atom::initialize_sphere(real r){
     }
 }
 
-void Fl_Gl_Atom::initialize_cylinder(real r){
+void Fl_Gl_Atom::initialize_cylinder(real r,real d){
   TVector<real> t(3);
   glBegin(GL_QUAD_STRIP);
-  real scale = f_bond_radius_scale*0.2;
+  real scale = 0.2*d;
   for (int i=0;i<__cylinder_strip_length;i++){
     t = m_cylinder[i];
     t[2]=0; // -r
@@ -628,22 +628,22 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
 }
 
 void Fl_Gl_Atom::initialize_transform_matrix(void){
-  tb_angle = 0.0;
+  tb.tb_angle = 0.0;
   glMatrixMode(GL_PROJECTION);
   // put the identity in the trackball transform
   glPushMatrix();
   glLoadIdentity();
-  glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)tb_transform);
+  glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)tb.tb_transform);
   glPopMatrix();
 }
 
 void Fl_Gl_Atom::initialize_rotation_matrix(void){
-  tb_angle = 0.0;
+  tb.tb_angle = 0.0;
   glMatrixMode(GL_MODELVIEW);
   /* put the identity in the trackball transform */
   glPushMatrix();
   glLoadIdentity();
-  glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat*)rot_matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat*)tb.rot_matrix);
   glPopMatrix();
   is_initialize_rot=false;
 }
