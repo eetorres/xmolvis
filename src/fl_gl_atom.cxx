@@ -307,7 +307,8 @@ void Fl_Gl_Atom::save_wysiwyg_extension(std::string _f){
   supercell.save_as_file(_fext,is_draw_symbols_,is_draw_numbers_,m_atom_position,x_cells,y_cells,z_cells,total_cells,is_draw_bbox_);
 }
 
-void Fl_Gl_Atom::set_bounding_box(void){
+real Fl_Gl_Atom::set_bounding_box(real r){
+  real r_view=r;
   TVector<real> v_bb;
   v_bb.resize(3);
   _vu = 0.5*supercell.get_uvw_to_xyz(0); //m_bbox[0];
@@ -322,10 +323,11 @@ void Fl_Gl_Atom::set_bounding_box(void){
   supercell.set_box_size(v_bb);
   supercell.set_inv_bbox();
   // set view size
-  base_view = maxi(_vu.magnitude(), _vv.magnitude());
-  base_view = maxi(base_view, _vw.magnitude());
-  r_axes_position = 0.9*base_view;
-  base_view *= 1.1;
+  r_view = maxi(_vu.magnitude(), _vv.magnitude());
+  r_view = maxi(r_view, _vw.magnitude());
+  //r_axes_position = 0.9*r_view;
+  r_view *= 1.1;
+  return r_view;
 }
 
 void Fl_Gl_Atom::initialize_sphere(real r){

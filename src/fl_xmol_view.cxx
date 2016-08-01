@@ -89,8 +89,8 @@ void message_xmol::show() {
 
 void fl_xmol_view::cb_mol3d_i(Fl_Gl_Mol_View*, void*) {
   //
-  uint a=mol3d->get_action();
-  std::cout<<" Action: "<<a<<std::endl;
+  //uint a=mol3d->get_action();
+  //std::cout<<" Action: "<<a<<std::endl;
   
   //
   //position_panel->deactivate();

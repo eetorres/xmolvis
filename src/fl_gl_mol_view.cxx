@@ -57,43 +57,25 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
 #endif // HAVE_GL
 {
   clear();
-  base_view = 10.0;
-  shift_factor = 0.05;
+  //glview.base_view = 10.0;
+  //glview.shift_factor = 0.05;
   // initialize fonts
   font_size_symbol=12;
   font_size_pie_label=12;
   font_size_panel_label=12;
   font_size_slider_label=8;
-  // View direction
-  __x_ang = 0.0;
-  __y_ang = 0.0;
-  __z_ang = 0.0;
-  // View position and scale
-  size    = 10.0;
-  x_shift = 0.0;
-  y_shift = 0.0;
-  z_shift = 0.0;
-  y_off   = 1.0;
-  zoom    = 1.0;
+  //zoom    = 1.0;
   // TrackBall
   tb_button   = -1;
   tb_tracking = GL_FALSE;
   tb_animate  = GL_TRUE;
   tb_angle    = 0.0;
   // Atom Appareance
-  setup.f_atom_brightness          = 0.8;
   f_atom_radius_scale        = 0.5;
   f_bond_radius_scale        = 1.0;
   f_atom_bond_delta          = 0.1;
-  f_atom_bond_inv_delta      = 10.0;
-  // Bond Appareance
-  setup.f_bond_brightness          = 0.8;
-  setup.f_background_brightness    = 0.0;
-  setup.f_highlight_brightness     = 1.0;
-  setup.f_select_brightness        = 1.0;
-  setup.f_highlight_brightness_max = 1.5;
-  setup.f_select_brightness_max    = 1.5;
-  setup.f_atom_brightness_max      = 1.5;
+  //f_atom_bond_inv_delta      = 10.0;
+  //
   // Mouse
   is_left_click=false;
   is_right_click=false;
@@ -117,7 +99,7 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   is_initialize_rot       = true;
   // Behaviour
   is_control_left_on      = false;
-  last_action = 0;
+  //last_action = 0;
   // Arrays
   for(uint i=0; i<NUMBER_OF_RADIOS; i++){
     is_radio_active[i]    = false;
@@ -215,7 +197,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_active_fragment_index(1);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
-    set_bounding_box(); // deprecated
+    glview.base_view=set_bounding_box(glview.base_view); // deprecated
     is_draw_bbox(is_view_periodic());
     set_atomic_cut_radius();
     set_palette(supercell.get_number_of_fragments());
@@ -628,9 +610,9 @@ void Fl_Gl_Mol_View::draw_symbols(void){
         sprintf(buff,"%i-%i",supercell.get_fragment_table(i),i+1);
     }
     glLoadIdentity();
-    glTranslatef(x_shift, y_shift, z_shift);
+    glTranslatef(glview.x_shift, glview.y_shift, glview.z_shift);
     // zoom in and zoom out
-    glScalef(zoom,zoom,zoom);
+    glScalef(glview.zoom,glview.zoom,glview.zoom);
     // set label text offset
     //supercell.get_radius_color(u_unselected_atom,3)
     glTranslatef(0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),4.1*f_atom_radius_scale*supercell.get_radius_color(i,0));
@@ -662,9 +644,9 @@ void Fl_Gl_Mol_View::draw_selected_numbers(void){
     _xyz=m_atom_position[v_selected_atoms[i]];
     sprintf(buff,"%i",i+1);
     glLoadIdentity();
-    glTranslatef(x_shift, y_shift, z_shift);
+    glTranslatef(glview.x_shift, glview.y_shift, glview.z_shift);
     // zoom in and zoom out
-    glScalef(zoom,zoom,zoom);
+    glScalef(glview.zoom,glview.zoom,glview.zoom);
     // set label text offset
     glTranslatef(0,0,2.0*f_atom_radius_scale*supercell.get_radius_color(v_selected_atoms[i],0)); //   m_radius_color[v_selected_atoms[i]][0]);
     glMultMatrixf((GLfloat*)rot_matrix);
@@ -679,8 +661,8 @@ void Fl_Gl_Mol_View::draw_selected_numbers(void){
 
 // draw world axes
 void Fl_Gl_Mol_View::draw_axes(void){
-  real length = base_view/10.0;
-  real width = base_view/80.0;
+  real length = glview.base_view/10.0;
+  real width = glview.base_view/80.0;
   //std::cout<<" world axis = "<<v_axes_position;
   //std::cout<<" v_axes_position = "<<v_axes_position;
   //std::cout<<" length = "<<length<<std::endl;
@@ -788,11 +770,11 @@ void Fl_Gl_Mol_View::draw_scene(void){
   glMultMatrixf((GLfloat*)rot_matrix);
   glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)rot_matrix);
   glPopMatrix();
-  glTranslatef(x_shift, y_shift, z_shift);
+  glTranslatef(glview.x_shift, glview.y_shift, glview.z_shift);
   glMultMatrixf((GLfloat*)rot_matrix);
   // zoom in and zoom out
-  glScalef(zoom,zoom,zoom);
-  //glTranslatef(x_shift,y_shift,z_shift);
+  glScalef(glview.zoom,glview.zoom,glview.zoom);
+  //glTranslatef(glview.x_shift,glview.y_shift,glview.z_shift);
   if(is_draw_atoms_){
     eval_system_properties();
     draw_atoms();
@@ -835,12 +817,12 @@ void Fl_Gl_Mol_View::draw_scene(void){
   // draw the pie menu
   //if(is_draw_pie_menu && render_mode!=MODE_SELECT){
   //if(is_draw_pie_menu){
-    //draw_pie_menu(cursorX,cursorY, 792,base_view/4.0,100);
+    //draw_pie_menu(cursorX,cursorY, 792,glview.base_view/4.0,100);
   //}
   // draw the subpie
   //if(is_draw_pie_submenu && render_mode!=MODE_SELECT){
   //if(is_draw_pie_submenu){
-    //draw_pie_submenu(792,base_view/4.0,100);
+    //draw_pie_submenu(792,glview.base_view/4.0,100);
   //}
   if(is_draw_tools_ && render_mode!=MODE_SELECT){
     draw_tools(790);
@@ -887,19 +869,19 @@ void Fl_Gl_Mol_View::draw(){
   //std::cout<<" W="<<w()<<" H="<<h()<<std::endl;
   if(w() <= h()){
         glview.y_factor=(real)h()/(real)w();
-        glview.view_left   = -base_view;
-        glview.view_right  =  base_view;
-        glview.view_bottom = -base_view*glview.y_factor;
-        glview.view_top    =  base_view*glview.y_factor;
+        glview.view_left   = -glview.base_view;
+        glview.view_right  =  glview.base_view;
+        glview.view_bottom = -glview.base_view*glview.y_factor;
+        glview.view_top    =  glview.base_view*glview.y_factor;
         glview.view_axis_x =  glview.view_left+6.0;
         glview.view_axis_y =  glview.view_bottom+6.0;
         glOrtho(glview.view_left, glview.view_right, glview.view_bottom, glview.view_top, glview.view_near, glview.view_far);
   }else{
         glview.x_factor=(real)w()/(real)h();
-        glview.view_left   = -base_view*glview.x_factor;
-        glview.view_right  =  base_view*glview.x_factor;
-        glview.view_bottom = -base_view;
-        glview.view_top    =  base_view;
+        glview.view_left   = -glview.base_view*glview.x_factor;
+        glview.view_right  =  glview.base_view*glview.x_factor;
+        glview.view_bottom = -glview.base_view;
+        glview.view_top    =  glview.base_view;
         glview.view_axis_x =  glview.view_left+6.0;
         glview.view_axis_y =  glview.view_bottom+6.0;
         glOrtho(glview.view_left, glview.view_right, glview.view_bottom, glview.view_top, glview.view_near, glview.view_far);
@@ -1027,9 +1009,9 @@ int Fl_Gl_Mol_View::handle(int event){
       last_x = x;
       last_y = y;
       if(Fl::event_shift()){
-        x_shift += shift_factor*delta_x*cos(DEG_RAD*__x_ang);
-        y_shift -= shift_factor*(delta_y*cos(DEG_RAD*__y_ang)-delta_x*sin(DEG_RAD*__x_ang)*sin(DEG_RAD*__y_ang));
-        z_shift += shift_factor*(delta_x*sin(DEG_RAD*__x_ang)*cos(DEG_RAD*__y_ang)+delta_y*sin(DEG_RAD*__y_ang));
+        glview.x_shift += glview.shift_factor*delta_x*cos(DEG_RAD*glview.__x_ang);
+        glview.y_shift -= glview.shift_factor*(delta_y*cos(DEG_RAD*glview.__y_ang)-delta_x*sin(DEG_RAD*glview.__x_ang)*sin(DEG_RAD*glview.__y_ang));
+        glview.z_shift += glview.shift_factor*(delta_x*sin(DEG_RAD*glview.__x_ang)*cos(DEG_RAD*glview.__y_ang)+delta_y*sin(DEG_RAD*glview.__y_ang));
       }else{
         set_mouse_motion(last_x,last_y);
       }
@@ -1054,9 +1036,9 @@ int Fl_Gl_Mol_View::handle(int event){
     return 1;
   case FL_MOUSEWHEEL:
     if(Fl::event_shift()){
-      set_zoom(zoom-0.01*Fl::event_dy());
+      set_zoom(glview.zoom-0.01*Fl::event_dy());
     }else{
-      set_zoom(zoom-0.1*Fl::event_dy());
+      set_zoom(glview.zoom-0.1*Fl::event_dy());
     }
     is_draw_pie_menu=false;
     is_draw_line=false;
@@ -1304,7 +1286,7 @@ void Fl_Gl_Mol_View::set_view(real x,real y,real z){
   // put the identity in the trackball transform
   glPushMatrix();
   glLoadIdentity();
-  //glRotatef(__x_ang,1,0,0);
+  //glRotatef(glview.__x_ang,1,0,0);
   glRotatef(x,1,0,0);
   glRotatef(y,0,1,0);
   glRotatef(z,0,0,1);
@@ -1358,9 +1340,9 @@ void Fl_Gl_Mol_View::initialize_opengl(void){
     glEnable(GL_LIGHT0);
     glEnable(GL_NORMALIZE);
     //glEnable(GL_CULL_FACE);
-    scaled_light_position[0]=base_view*light_position[0];
-    scaled_light_position[1]=base_view*light_position[1];
-    scaled_light_position[2]=base_view*light_position[2];
+    scaled_light_position[0]=glview.base_view*light_position[0];
+    scaled_light_position[1]=glview.base_view*light_position[1];
+    scaled_light_position[2]=glview.base_view*light_position[2];
     scaled_light_position[3]=light_position[3];
     //  Enable Lighting
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -1521,7 +1503,7 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
 void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   char buff[10];
   GLfloat y_hight = 0.33*glview.view_bottom;
-  GLfloat x_width = 0.8*base_view;
+  GLfloat x_width = 0.8*glview.base_view;
   GLfloat x_pos = -0.5*x_width;//0.8*glview.view_left;
   GLfloat y_pos = 0.65*glview.view_bottom;
   GLfloat z_pos = z;
@@ -1573,31 +1555,31 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   // slider bar 1 /////////////////////////////////////////////////////////////////
   draw_slider(x_pos, y_pos, y_pos_end, z, f_atom_radius_scale, is_slider_active[0], (char*)" ");
   // slider bar 2 /////////////////////////////////////////////////////////////////
-  draw_slider(x_pos+0.10*base_view, y_pos, y_pos_end, z, f_bond_radius_scale, is_slider_active[1], (char*)" ");
+  draw_slider(x_pos+0.10*glview.base_view, y_pos, y_pos_end, z, f_bond_radius_scale, is_slider_active[1], (char*)" ");
   // slider bar 3 /////////////////////////////////////////////////////////////////
-  draw_slider(x_pos+0.20*base_view, y_pos, y_pos_end, z, setup.f_atom_brightness/setup.f_atom_brightness_max, is_slider_active[2], (char*)" ");
+  draw_slider(x_pos+0.20*glview.base_view, y_pos, y_pos_end, z, setup.f_atom_brightness/setup.f_atom_brightness_max, is_slider_active[2], (char*)" ");
   // slider bar 4 /////////////////////////////////////////////////////////////////
-  draw_slider(x_pos+0.30*base_view, y_pos, y_pos_end, z, setup.f_select_brightness/setup.f_select_brightness_max, is_slider_active[3], (char*)" ");
+  draw_slider(x_pos+0.30*glview.base_view, y_pos, y_pos_end, z, setup.f_select_brightness/setup.f_select_brightness_max, is_slider_active[3], (char*)" ");
   /////////////////////////////////////////////////////////////////////////////////
   // Draw the radios for keyboard shortcuts
   // Radio 1 (axis)    [a]
-  draw_radio_button(x_pos+0.40*base_view, y_pos, y_pos_end, z, 1.0, is_radio_active[0], (char*)"a");
+  draw_radio_button(x_pos+0.40*glview.base_view, y_pos, y_pos_end, z, 1.0, is_radio_active[0], (char*)"a");
   // Radio 2 (bonds)   [b]
-  draw_radio_button(x_pos+0.50*base_view, y_pos, y_pos_end, z, 1.0, is_radio_active[1], (char*)"b");
+  draw_radio_button(x_pos+0.50*glview.base_view, y_pos, y_pos_end, z, 1.0, is_radio_active[1], (char*)"b");
   // Radio 3 (symbols) [s]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[2], (char*)"s");
+  draw_radio_button(x_pos+0.40*glview.base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[2], (char*)"s");
   // Radio 4 (volume)  [v]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[3], (char*)"v");
+  draw_radio_button(x_pos+0.50*glview.base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[3], (char*)"v");
   // Radio 5 (numbers) [n]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[4], (char*)"n");
+  draw_radio_button(x_pos+0.40*glview.base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[4], (char*)"n");
   // Radio 6 (tools)   [t]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[5], (char*)"t");
+  draw_radio_button(x_pos+0.50*glview.base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[5], (char*)"t");
   // Radio 7 (labels)  [l]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[6], (char*)"l");
+  draw_radio_button(x_pos+0.40*glview.base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[6], (char*)"l");
   // Radio 8 (tools)   [t]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[7], (char*)"j");
+  draw_radio_button(x_pos+0.50*glview.base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[7], (char*)"j");
   // Radio 9 (labels)  [m]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.20*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[8], (char*)"k");
+  draw_radio_button(x_pos+0.40*glview.base_view, y_pos+0.20*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[8], (char*)"k");
   //glDisable(GL_BLEND);
   //glEnable(GL_DEPTH_TEST);           // Enable Depth testing
   //glDisable(GL_POLYGON_SMOOTH);
@@ -1606,7 +1588,7 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
 void Fl_Gl_Mol_View::draw_message(GLfloat z){
   char buff[50];
   GLfloat y_hight = 0.1*glview.view_bottom;
-  GLfloat x_width = 0.5*base_view;
+  GLfloat x_width = 0.5*glview.base_view;
   GLfloat x_pos = -0.5*x_width;//0.8*glview.view_left;
   GLfloat y_pos = 0.06*glview.view_top;
   GLfloat z_pos = z;
@@ -1644,8 +1626,8 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
   //GLdouble winX=200, winY=0, winZ=791;
   //GLdouble posX, posY, posZ;
   //gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-  GLfloat y_hight = -0.26*base_view;
-  //GLfloat x_width = 0.45*base_view;
+  GLfloat y_hight = -0.26*glview.base_view;
+  //GLfloat x_width = 0.45*glview.base_view;
   //GLfloat x_width = -0.45*glview.view_left;
   //GLfloat x_width = 5*glview.x_factor;
   //GLfloat x_width = posX;
@@ -1687,9 +1669,9 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
   gl_draw(buff, strlen(buff));
   // widgets
   // text output 1
-  GLfloat y_delta = 0.04*base_view;
+  GLfloat y_delta = 0.04*glview.base_view;
   y_pos-=y_delta;
-  x_pos+=(0.03*base_view);
+  x_pos+=(0.03*glview.base_view);
   int a = v_selected_atoms[0] + 1;
   int b = v_selected_atoms[1] + 1;
   widget_float_output_xy(x_pos, y_pos, y_pos_end, z, a, b, tools.r_distance1, (char*)"Distance (1,2):");
@@ -1713,7 +1695,7 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
 
 void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   char buff[10];
-  GLfloat y_hight = -0.26*base_view;
+  GLfloat y_hight = -0.26*glview.base_view;
   GLfloat x_pos = 0.95*glview.view_left;//0.8*glview.view_left;
 #ifdef PLATFORM_MAC
   GLfloat y_pos = 0.52*glview.view_top;
@@ -1747,8 +1729,8 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   gl_draw(buff, strlen(buff));
   // widgets
   // text output 1
-  GLfloat y_delta = 0.04*base_view;
-  x_pos+=(0.03*base_view);
+  GLfloat y_delta = 0.04*glview.base_view;
+  x_pos+=(0.03*glview.base_view);
   // slider bar 1 /////////////////////////////////////////////////////////////////
   y_pos-=y_delta;
   widget_float_output(x_pos, y_pos, y_pos_end, z, f_atom_radius_scale, (char*)"Atom Radius:");
@@ -1781,7 +1763,7 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
 
 void Fl_Gl_Mol_View::draw_information(GLfloat z){
   char buff[20];
-  GLfloat y_hight = -0.26*base_view;
+  GLfloat y_hight = -0.26*glview.base_view;
   GLfloat x_pos = 0.95*glview.view_left;//0.8*glview.view_left;
 #ifdef PLATFORM_MAC
   GLfloat y_pos = -0.03*glview.view_top;
@@ -1812,7 +1794,7 @@ void Fl_Gl_Mol_View::draw_information(GLfloat z){
   sprintf(buff,"%s","Information");
   glRasterPos3f(x_pos, y_pos,z);
   gl_draw(buff, strlen(buff));
-  GLfloat y_delta = 0.04*base_view;
+  GLfloat y_delta = 0.04*glview.base_view;
   x_pos+=y_delta;
   y_pos-=1.5*y_delta;
   widget_int_output(x_pos, y_pos, y_pos_end, z, get_total_atoms(), (char*)"Atoms:");
@@ -1832,8 +1814,8 @@ void Fl_Gl_Mol_View::draw_slider(GLfloat x1, GLfloat y1, GLfloat y2, GLfloat z, 
   else
     glColor4f(0.98,0.87,0.64,0.7);
   // slider bar
-  side_x1 = x1+0.11*base_view;
-  side_x2 = x1+0.14*base_view;
+  side_x1 = x1+0.11*glview.base_view;
+  side_x2 = x1+0.14*glview.base_view;
   side_y1 = y1+0.30*glview.view_bottom;
   side_y2 = (side_y1-val*0.24*glview.view_bottom);
   glBegin(GL_POLYGON);
@@ -1843,8 +1825,8 @@ void Fl_Gl_Mol_View::draw_slider(GLfloat x1, GLfloat y1, GLfloat y2, GLfloat z, 
   glVertex3f(side_x1, side_y1, z);
   glEnd();
   // slider box
-  side_x1 = x1+0.10*base_view;
-  side_x2 = x1+0.15*base_view;
+  side_x1 = x1+0.10*glview.base_view;
+  side_x2 = x1+0.15*glview.base_view;
   side_y1 = y1+0.31*glview.view_bottom;
   side_y2 = (side_y1-0.26*glview.view_bottom);
   glRasterPos3f(side_x1, 0.69*glview.view_bottom,z);
@@ -1864,11 +1846,11 @@ void Fl_Gl_Mol_View::draw_radio_button(GLfloat x1, GLfloat y1, GLfloat y2, GLflo
   GLfloat side_y1, side_y2;
   glNormal3f(0,0,1);
   // lower left corner
-  side_x1 = x1+0.11*base_view;
-  side_x2 = x1+0.13*base_view;
+  side_x1 = x1+0.11*glview.base_view;
+  side_x2 = x1+0.13*glview.base_view;
   // uper right corner
   side_y1 = y1+0.09*glview.view_bottom;
-  side_y2 = (side_y1+0.02*base_view);
+  side_y2 = (side_y1+0.02*glview.base_view);
   if(active)
     glColor4f(0.08,0.08,0.08,0.8);
   else
@@ -1890,7 +1872,7 @@ void Fl_Gl_Mol_View::draw_radio_button(GLfloat x1, GLfloat y1, GLfloat y2, GLflo
   glEnd();
   //
   // radio label
-  glRasterPos3f(side_x2+0.01*base_view, side_y1/*+0.3*(side_y2-side_y1)*/,z);
+  glRasterPos3f(side_x2+0.01*glview.base_view, side_y1/*+0.3*(side_y2-side_y1)*/,z);
   //gl_font(FL_COURIER,font_size_slider_label); // text font
   gl_draw(l, strlen(l));
 }
@@ -1933,10 +1915,10 @@ void Fl_Gl_Mol_View::widget_float_output(GLfloat x1, GLfloat y1, GLfloat y2, GLf
   // radio box
   // lower left corner
   side_x1 = x1;
-  //side_x2 = x1+0.14*base_view;
+  //side_x2 = x1+0.14*glview.base_view;
   // uper right corner
   side_y1 = y1;
-  //side_y2 = (side_y1+0.04*base_view);
+  //side_y2 = (side_y1+0.04*glview.base_view);
   //
   //glColor4f(0.98,0.87,0.64,0.7);
   //glBegin(GL_LINE_LOOP);
@@ -1960,10 +1942,10 @@ void Fl_Gl_Mol_View::widget_float_output(GLfloat x1, GLfloat y1, GLfloat y2, GLf
   glRasterPos3f(side_x1, side_y1,z);
   gl_draw(buff, strlen(buff));
   // radio mark
-  //side_x1 = x1+0.11*base_view;
-  //side_x2 = x1+0.13*base_view;
+  //side_x1 = x1+0.11*glview.base_view;
+  //side_x2 = x1+0.13*glview.base_view;
   //side_y1 = y1+0.09*glview.view_bottom;
-  //side_y2 = (side_y1+val*0.02*base_view);
+  //side_y2 = (side_y1+val*0.02*glview.base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
   //glVertex3f(side_x2, side_y2, z);
@@ -1981,10 +1963,10 @@ void Fl_Gl_Mol_View::widget_float_output_xy(GLfloat x1, GLfloat y1, GLfloat y2, 
   // radio box
   // lower left corner
   side_x1 = x1;
-  //side_x2 = x1+0.14*base_view;
+  //side_x2 = x1+0.14*glview.base_view;
   // uper right corner
   side_y1 = y1;
-  //side_y2 = (side_y1+0.04*base_view);
+  //side_y2 = (side_y1+0.04*glview.base_view);
   //
   //glColor4f(0.98,0.87,0.64,0.7);
   //glBegin(GL_LINE_LOOP);
@@ -2008,10 +1990,10 @@ void Fl_Gl_Mol_View::widget_float_output_xy(GLfloat x1, GLfloat y1, GLfloat y2, 
   glRasterPos3f(side_x1, side_y1,z);
   gl_draw(buff, strlen(buff));
   // radio mark
-  //side_x1 = x1+0.11*base_view;
-  //side_x2 = x1+0.13*base_view;
+  //side_x1 = x1+0.11*glview.base_view;
+  //side_x2 = x1+0.13*glview.base_view;
   //side_y1 = y1+0.09*glview.view_bottom;
-  //side_y2 = (side_y1+val*0.02*base_view);
+  //side_y2 = (side_y1+val*0.02*glview.base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
   //glVertex3f(side_x2, side_y2, z);
@@ -2028,10 +2010,10 @@ void Fl_Gl_Mol_View::widget_text_output(GLfloat x1, GLfloat y1, GLfloat y2, GLfl
   // radio box
   // lower left corner
   side_x1 = x1;
-  //side_x2 = x1+0.14*base_view;
+  //side_x2 = x1+0.14*glview.base_view;
   // uper right corner
   side_y1 = y1;
-  //side_y2 = (side_y1+0.04*base_view);
+  //side_y2 = (side_y1+0.04*glview.base_view);
   //
   //glColor4f(0.98,0.87,0.64,0.7);
   //glBegin(GL_LINE_LOOP);
@@ -2055,10 +2037,10 @@ void Fl_Gl_Mol_View::widget_text_output(GLfloat x1, GLfloat y1, GLfloat y2, GLfl
   glRasterPos3f(side_x1, side_y1,z);
   gl_draw(buff, strlen(buff));
   // radio mark
-  //side_x1 = x1+0.11*base_view;
-  //side_x2 = x1+0.13*base_view;
+  //side_x1 = x1+0.11*glview.base_view;
+  //side_x2 = x1+0.13*glview.base_view;
   //side_y1 = y1+0.09*glview.view_bottom;
-  //side_y2 = (side_y1+val*0.02*base_view);
+  //side_y2 = (side_y1+val*0.02*glview.base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
   //glVertex3f(side_x2, side_y2, z);
@@ -2466,9 +2448,9 @@ void Fl_Gl_Mol_View::clear_scene(void){
   is_draw_pie_menu=false;
   is_draw_line=false;
   is_draw_point=false;
-  x_shift=0;
-  y_shift=0;
-  z_shift=0;
+  glview.x_shift=0;
+  glview.y_shift=0;
+  glview.z_shift=0;
   u_active_menu=NOT_MENU;
   if(!is_lock_controls)
     is_draw_controls=false;

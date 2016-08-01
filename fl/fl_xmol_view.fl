@@ -11,13 +11,12 @@ decl {\#include <version.h>} {public local
 decl {\#include <fl_gl_mol_view.h>} {public local
 }
 
-class help_xmol {open
-} {
+class help_xmol {} {
   Function {help_xmol()} {open
   } {
     Fl_Window help_win {
       label {About XMolView} open
-      xywh {825 888 455 160} type Double
+      xywh {968 810 455 160} type Double
       code3 {o->resizable(NULL);} modal visible
     } {
       Fl_Box {} {
@@ -57,8 +56,7 @@ Copyright 2002-2015 by Edmanuel Torres}
   }
 }
 
-class message_xmol {open
-} {
+class message_xmol {} {
   Function {message_xmol()} {open
   } {
     Fl_Window message_win {
@@ -143,8 +141,8 @@ class fl_xmol_view {open
   
   update_coordinates=false;} {}
     Fl_Window main_window {
-      label {Molecular eXplorer Visualizer (XMolVis)}
-      xywh {667 359 945 675} type Double color 8 selection_color 8 labelsize 12 labelcolor 7 align 80 resizable visible
+      label {Molecular eXplorer Visualizer (XMolVis)} open
+      xywh {688 68 945 675} type Double color 8 selection_color 8 labelsize 12 labelcolor 7 align 80 resizable visible
     } {
       Fl_Group {} {open
         xywh {-5 -1 955 678} box FLAT_BOX color 8 selection_color 8 labelsize 12
@@ -152,11 +150,11 @@ class fl_xmol_view {open
         Fl_Box mol3d {
           label {There is not OpenGL available... :P}
           callback {//
-  uint a=mol3d->get_action();
-  std::cout<<" Action: "<<a<<std::endl;
+  //uint a=mol3d->get_action();
+  //std::cout<<" Action: "<<a<<std::endl;
   
   //
-  //position_panel->deactivate();}
+  //position_panel->deactivate();} selected
           xywh {205 1 742 674} box BORDER_BOX color 0 selection_color 0 labelsize 12 labelcolor 15 resizable
           class Fl_Gl_Mol_View
         }
@@ -446,8 +444,7 @@ exit(0);}
   } {
     code {//
   strcpy(dir_name,d);
-  std::cout<<" dir name: "<<dir_name<<std::endl;} {selected
-    }
+  std::cout<<" dir name: "<<dir_name<<std::endl;} {}
   }
   Function {open_file()} {open
   } {

@@ -210,6 +210,16 @@ public:
     bgred   = 0.0;
     bggreen = 0.0;
     bgblue  = 0.1;
+    // Appareance
+    f_bond_brightness          = 0.8;
+    f_background_brightness    = 0.0;
+    f_highlight_brightness     = 1.0;
+    f_select_brightness        = 1.0;
+    f_highlight_brightness_max = 1.5;
+    f_select_brightness_max    = 1.5;
+    f_atom_brightness          = 0.8;
+    f_atom_brightness_max      = 1.5;
+
   }
 
   void set_background(real r1, real r2, real r3){
@@ -247,6 +257,19 @@ class CGLWindow {
     view_far    =  1000;
     view_axis_x = -base_view+8.0;
     view_axis_y = -base_view+2.0;
+    zoom        = 1.0;
+    shift_factor = 0.05;
+    //
+    // View direction
+    __x_ang = 0.0;
+    __y_ang = 0.0;
+    __z_ang = 0.0;
+    // View position and scale
+    //size    = 10.0;
+    x_shift = 0.0;
+    y_shift = 0.0;
+    z_shift = 0.0;
+    y_off   = 1.0;
   }
 
   // Gl window parameters
@@ -259,6 +282,13 @@ class CGLWindow {
   real view_far;
   real x_factor, y_factor;
   real view_axis_x, view_axis_y;
+  //
+  real x_shift, y_shift, z_shift;
+  real __x_ang, __y_ang, __z_ang;
+  real y_off; //, _scl, 
+  real zoom_step;
+  real zoom;
+  real shift_factor;
 };
 
 
@@ -266,7 +296,7 @@ class Fl_Gl_Mol_View : public Fl_Gl_Atom{
 
 public:
 
-  real size;
+  //real size;
   //gm_rgb oldrgb, rgb;
   Fl_Gl_Mol_View();
   Fl_Gl_Mol_View(int,int,int,int,const char* l=0);
@@ -279,21 +309,21 @@ public:
   void set_background_color(real,real,real);
   void set_foreground_color(real,real,real);
   // Scale function
-  void set_zoom(real f){ if(f>0.0001) zoom = f;};
-  void set_zoom_step(real f){ if(f>0.0001) zoom_step = f;};
+  void set_zoom(real f){ if(f>0.0001) glview.zoom = f;};
+  void set_zoom_step(real f){ if(f>0.0001) glview.zoom_step = f;};
   // the rotation about the vertical (x) axis
-  void x_angle(real f){ __x_ang = f;redraw();};
-  real x_angle(){return __x_ang;};
+  void x_angle(real f){ glview.__x_ang = f;redraw();};
+  real x_angle(){return glview.__x_ang;};
   // the rotation about the horizontal (y) axis
-  void y_angle(real f){ __y_ang = f;redraw();};
-  real y_angle(){return __y_ang ;};
+  void y_angle(real f){ glview.__y_ang = f;redraw();};
+  real y_angle(){return glview.__y_ang ;};
   // the rotation about the (z) axis
-  void z_angle(real f){ __z_ang = f;redraw();};
-  real z_angle(){return __z_ang ;};
+  void z_angle(real f){ glview.__z_ang = f;redraw();};
+  real z_angle(){return glview.__z_ang ;};
   // Begin GUI controls
-  void set_position_x(real f){x_shift=f;};
-  void set_position_y(real f){y_shift=f;};
-  void set_position_z(real f){z_shift=f;};
+  void set_position_x(real f){glview.x_shift=f;};
+  void set_position_y(real f){glview.y_shift=f;};
+  void set_position_z(real f){glview.z_shift=f;};
   //
   void set_view_xy_front(void);
   void set_view_yz_front(void);
@@ -329,7 +359,7 @@ public:
   void set_atomic_cut_radius(void);
   //
   uint get_highlight_atom(void);
-  uint get_action(void){ return last_action;};
+  //uint get_action(void){ return last_action;};
   //
   void is_graphics(bool);
   void is_highlight_atom(bool);
@@ -382,7 +412,7 @@ private:
   int u_slider_index;
   int u_radio_index;
   //
-  uint last_action;
+  //uint last_action;
   uint __highlight_atom;
   uint __last_highlight_atom;
   //
@@ -398,11 +428,6 @@ private:
   CGLWindow glview;
   //
   CViewsetup setup;
-  //
-  real x_shift, y_shift, z_shift;
-  real __x_ang, __y_ang, __z_ang;
-  real y_off, _scl, zoom_step;
-  real shift_factor;
   //
   CTools tools;
   //

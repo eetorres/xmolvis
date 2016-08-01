@@ -93,7 +93,7 @@ public:
   void initialize_transform_matrix(void);
   void initialize_rotation_matrix(void);
   void initialize_atomic_coordinates(void);
-  void set_bounding_box(void);
+  real set_bounding_box(real);
   //
   void set_x_cells(int);
   void set_y_cells(int);
@@ -202,12 +202,12 @@ protected:
   uint __fragment_active;
   //
   real f_atom_bond_delta;
-  real f_atom_bond_inv_delta;
+  //real f_atom_bond_inv_delta;
   real f_atom_radius_scale;
   real f_bond_radius_scale;
-  real base_view;
-  real r_axes_position;
-  real zoom;
+  //real base_view;
+  //real r_axes_position;
+  //real zoom;
   //
   real __axis_precession;
   real __axis_tilt;
