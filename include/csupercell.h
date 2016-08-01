@@ -197,7 +197,7 @@ public:
   TVector<real> get_position_direct(void);
   TVector<real> get_fragmol_position_uvw(void);
   TVector<real> get_position_cartesian(void);
-  TVector<real> get_fragmol_centered_position_cartesian(void);
+  TVector<real> get_centered_position_cartesian(void);
   //
   TVector<real> get_cartesian(uint);
   TVector<real> get_direct(uint);
