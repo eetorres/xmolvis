@@ -160,6 +160,107 @@ const std::string l_edit[6]  = { "delete",   "copy", "symbol", "color", "cancel"
 //#define FRAGMENT_MENU 3
 #define AUTO_SUBMENU           11
 
+class CTools {
+
+public:
+
+  CTools(void){
+    v_distance1.resize(3);
+    v_distance2.resize(3);
+    v_distance3.resize(3);
+  }
+
+  void clear(void){
+    r_distance1=0.0;
+    r_distance2=0.0;
+    r_distance3=0.0;
+    v_distance1.zero();
+    v_distance2.zero();
+    v_distance3.zero();
+    r_angle1=0.0;
+    r_angle2=0.0;
+    r_dihedral=0.0;
+  }
+
+  //private:
+
+  real r_distance1;
+  real r_distance2;
+  real r_distance3;
+  real r_angle1;
+  real r_angle2;
+  real r_dihedral;
+
+  TVector<real> v_distance1;
+  TVector<real> v_distance2;
+  TVector<real> v_distance3;
+};
+
+
+class CViewsetup {
+
+public:
+
+  CViewsetup(void){
+    // Foreground colors
+    fgred   = 1.0; //0.5;
+    fggreen = 1.0;
+    fgblue  = 1.0; //0.5;
+    // Background colors
+    bgred   = 0.0;
+    bggreen = 0.0;
+    bgblue  = 0.1;
+  }
+
+  void set_background(real r1, real r2, real r3){
+    bgred=r1; bggreen=r2; bgblue=r3;
+  }
+
+  void set_forekground(real r1, real r2, real r3){
+    fgred=r1; fggreen=r2; fgblue=r3;
+  }
+
+  real fgred, fggreen, fgblue;
+  real bgred, bggreen, bgblue;
+  real f_atom_brightness;
+  real f_atom_brightness_max;
+  real f_bond_brightness;
+  real f_select_brightness;
+  real f_select_brightness_max;
+  real f_highlight_brightness;
+  real f_highlight_brightness_max;
+  real f_background_brightness;
+};
+
+
+class CGLWindow {
+
+  public:
+
+  CGLWindow(void){
+    base_view   =  10.0;
+    view_left   =  base_view;
+    view_right  =  base_view;
+    view_bottom =  base_view;
+    view_top    =  base_view;
+    view_near   = -1000;
+    view_far    =  1000;
+    view_axis_x = -base_view+8.0;
+    view_axis_y = -base_view+2.0;
+  }
+
+  // Gl window parameters
+  real base_view;
+  real view_left;
+  real view_right;
+  real view_bottom;
+  real view_top;
+  real view_near;
+  real view_far;
+  real x_factor, y_factor;
+  real view_axis_x, view_axis_y;
+};
+
 
 class Fl_Gl_Mol_View : public Fl_Gl_Atom{
 
@@ -266,8 +367,10 @@ public:
 private:
 
   // graphic quality control
-  int  __sphere_strip_size, _draw_mpts, _draw_data;
+  int  __sphere_strip_size;
+  int  _draw_mpts, _draw_data;
   int  i_sphere_resolution;
+  //
   int  __highlight_atom_a, __highlight_atom_b;
   int  __select_begin, __select_end;
   //
@@ -292,41 +395,16 @@ private:
   //
   uint u_active_menu;
   // Gl window parameters
-  real view_left;
-  real view_right;
-  real view_bottom;
-  real view_top;
-  real view_near;
-  real view_far;
-  real x_factor, y_factor;
-  real view_axis_x, view_axis_y;
+  CGLWindow glview;
   //
-  real fgred, fggreen, fgblue;
-  real bgred, bggreen, bgblue;
-  real f_atom_brightness;
-  real f_bond_brightness;
-  real f_background_brightness;
-  real f_highlight_brightness;
-  real f_select_brightness;
-  real f_atom_brightness_max;
-  real f_highlight_brightness_max;
-  real f_select_brightness_max;
+  CViewsetup setup;
   //
   real x_shift, y_shift, z_shift;
   real __x_ang, __y_ang, __z_ang;
   real y_off, _scl, zoom_step;
   real shift_factor;
   //
-  real r_distance1;
-  real r_distance2;
-  real r_distance3;
-  real r_angle1;
-  real r_angle2;
-  real r_dihedral;
-  //
-  TVector<real> v_distance1;
-  TVector<real> v_distance2;
-  TVector<real> v_distance3;
+  CTools tools;
   //
   GLdouble menu_pos_cx, menu_pos_cy;
   GLdouble menu_pos_x, menu_pos_y, menu_pos_z;

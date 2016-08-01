@@ -75,42 +75,25 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   z_shift = 0.0;
   y_off   = 1.0;
   zoom    = 1.0;
-  // Foreground colors
-  fgred   = 1.0; //0.5;
-  fggreen = 1.0;
-  fgblue  = 1.0; //0.5;
-  // Background colors
-  bgred   = 0.0;
-  bggreen = 0.0;
-  bgblue  = 0.1;
   // TrackBall
   tb_button   = -1;
   tb_tracking = GL_FALSE;
   tb_animate  = GL_TRUE;
   tb_angle    = 0.0;
   // Atom Appareance
-  f_atom_brightness          = 0.8;
+  setup.f_atom_brightness          = 0.8;
   f_atom_radius_scale        = 0.5;
   f_bond_radius_scale        = 1.0;
   f_atom_bond_delta          = 0.1;
   f_atom_bond_inv_delta      = 10.0;
   // Bond Appareance
-  f_bond_brightness          = 0.8;
-  f_background_brightness    = 0.0;
-  f_highlight_brightness     = 1.0;
-  f_select_brightness        = 1.0;
-  f_highlight_brightness_max = 1.5;
-  f_select_brightness_max    = 1.5;
-  f_atom_brightness_max      = 1.5;
-  // Locations
-  view_left   =  base_view;
-  view_right  =  base_view;
-  view_bottom =  base_view;
-  view_top    =  base_view;
-  view_near   = -1000;
-  view_far    =  1000;
-  view_axis_x = -base_view+8.0;
-  view_axis_y = -base_view+2.0;
+  setup.f_bond_brightness          = 0.8;
+  setup.f_background_brightness    = 0.0;
+  setup.f_highlight_brightness     = 1.0;
+  setup.f_select_brightness        = 1.0;
+  setup.f_highlight_brightness_max = 1.5;
+  setup.f_select_brightness_max    = 1.5;
+  setup.f_atom_brightness_max      = 1.5;
   // Mouse
   is_left_click=false;
   is_right_click=false;
@@ -136,10 +119,6 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   is_control_left_on      = false;
   last_action = 0;
   // Arrays
-  //v_bbox.resize(3);
-  v_distance1.resize(3);
-  v_distance2.resize(3);
-  v_distance3.resize(3);
   for(uint i=0; i<NUMBER_OF_RADIOS; i++){
     is_radio_active[i]    = false;
   }
@@ -242,10 +221,6 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_palette(supercell.get_number_of_fragments());
     initialize_atomic_coordinates();
     // End GUI functions
-//#ifdef _ATOM_DATA_MESSAGES_
-//    std::cout<<" GLMOL: atom labels = "<<v_atom_labels;
-//    std::cout<<" GLMOL: atom symbols = "<<v_atom_symbols;
-//#endif
     // allow to display the OpenGL scene
     is_graphics(true);
     set_update_coordinates(true);
@@ -344,14 +319,14 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   if(update_normal_color){
     for(int i=0; i<get_total_atoms(); i++){
       if(is_mode_atom){
-        m_atom_rcolor[i][1] = f_atom_brightness*supercell.get_radius_color(i,1); //m_radius_color[i][1];
-        m_atom_rcolor[i][2] = f_atom_brightness*supercell.get_radius_color(i,2); //m_radius_color[i][2];
-        m_atom_rcolor[i][3] = f_atom_brightness*supercell.get_radius_color(i,3); //m_radius_color[i][3];
+        m_atom_rcolor[i][1] = setup.f_atom_brightness*supercell.get_radius_color(i,1); //m_radius_color[i][1];
+        m_atom_rcolor[i][2] = setup.f_atom_brightness*supercell.get_radius_color(i,2); //m_radius_color[i][2];
+        m_atom_rcolor[i][3] = setup.f_atom_brightness*supercell.get_radius_color(i,3); //m_radius_color[i][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(i));
-        m_atom_rcolor[i][1] = f_atom_brightness*color.r;
-        m_atom_rcolor[i][2] = f_atom_brightness*color.g;
-        m_atom_rcolor[i][3] = f_atom_brightness*color.b;
+        m_atom_rcolor[i][1] = setup.f_atom_brightness*color.r;
+        m_atom_rcolor[i][2] = setup.f_atom_brightness*color.g;
+        m_atom_rcolor[i][3] = setup.f_atom_brightness*color.b;
       }
     }
     update_normal_color=false;
@@ -365,20 +340,20 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       int idx0 = supercell.get_bond_indices(i,0); //m_bond_indices[i][0];
       int idx1 = supercell.get_bond_indices(i,1); //m_bond_indices[i][1];
       if(is_mode_atom){
-        m_bond_rcolor_0[i][1] = f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
-        m_bond_rcolor_0[i][2] = f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
-        m_bond_rcolor_0[i][3] = f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
-        m_bond_rcolor_1[i][1] = f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
-        m_bond_rcolor_1[i][2] = f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
-        m_bond_rcolor_1[i][3] = f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
+        m_bond_rcolor_0[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
+        m_bond_rcolor_0[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
+        m_bond_rcolor_0[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
+        m_bond_rcolor_1[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
+        m_bond_rcolor_1[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
+        m_bond_rcolor_1[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(idx0));
-        m_bond_rcolor_0[i][1] = f_atom_brightness*color.r;
-        m_bond_rcolor_0[i][2] = f_atom_brightness*color.g;
-        m_bond_rcolor_0[i][3] = f_atom_brightness*color.b;
-        m_bond_rcolor_1[i][1] = f_atom_brightness*color.r;
-        m_bond_rcolor_1[i][2] = f_atom_brightness*color.g;
-        m_bond_rcolor_1[i][3] = f_atom_brightness*color.b;
+        m_bond_rcolor_0[i][1] = setup.f_atom_brightness*color.r;
+        m_bond_rcolor_0[i][2] = setup.f_atom_brightness*color.g;
+        m_bond_rcolor_0[i][3] = setup.f_atom_brightness*color.b;
+        m_bond_rcolor_1[i][1] = setup.f_atom_brightness*color.r;
+        m_bond_rcolor_1[i][2] = setup.f_atom_brightness*color.g;
+        m_bond_rcolor_1[i][3] = setup.f_atom_brightness*color.b;
       }
     }
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
@@ -395,26 +370,26 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         std::cout<<" (idx0,idx1) = ("<<idx0<<","<<idx1<<")"<<std::endl;
 #endif
       if(is_mode_atom){
-        m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
-        m_bond_rcolor_pbc_0[i][2] = f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
-        m_bond_rcolor_pbc_0[i][3] = f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
-        m_bond_rcolor_pbc_1[i][1] = f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
-        m_bond_rcolor_pbc_1[i][2] = f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
-        m_bond_rcolor_pbc_1[i][3] = f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
+        m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
+        m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
+        m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
+        m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
+        m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
+        m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
       }else{
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
 #endif
         color = palette.get_color(supercell.get_fragment_table(idx0));
         //vcolor = palette.get_vcolor(v_fragment_table_gl[idx0]);
-        //m_bond_rcolor_pbc_0[i] = f_atom_brightness*vcolor;
-        m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*color.r;
-        m_bond_rcolor_pbc_0[i][2] = f_atom_brightness*color.g;
-        m_bond_rcolor_pbc_0[i][3] = f_atom_brightness*color.b;
-        //m_bond_rcolor_pbc_1[i] = f_atom_brightness*vcolor;
-        m_bond_rcolor_pbc_1[i][1] = f_atom_brightness*color.r;
-        m_bond_rcolor_pbc_1[i][2] = f_atom_brightness*color.g;
-        m_bond_rcolor_pbc_1[i][3] = f_atom_brightness*color.b;
+        //m_bond_rcolor_pbc_0[i] = setup.f_atom_brightness*vcolor;
+        m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*color.r;
+        m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*color.g;
+        m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*color.b;
+        //m_bond_rcolor_pbc_1[i] = setup.f_atom_brightness*vcolor;
+        m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*color.r;
+        m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*color.g;
+        m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*color.b;
       }
     }
     update_bonds_color=false;
@@ -423,59 +398,57 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
 #endif
   }
 #ifdef _ATOM_DEBUG_BOND_COLORS_
-  std::cout<<" f_bond_brightness = "<<f_bond_brightness<<std::endl;
+  std::cout<<" setup.f_bond_brightness = "<<setup.f_bond_brightness<<std::endl;
   std::cout<<" Bond colors = "<<m_bond_rcolor_0;
   std::cout<<" Fragment table = "<<v_fragment_table_gl;
-  //std::cout<<" Radius color = "<<m_radius_color;
-  //std::cout<<" Bond index = "<<m_bond_indices;
 #endif
   // testing
   if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
     if(is_mode_atom){
-      m_atom_rcolor[__last_highlight_atom][1] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,1); //m_radius_color[__last_highlight_atom][1];
-      m_atom_rcolor[__last_highlight_atom][2] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,2); //m_radius_color[__last_highlight_atom][2];
-      m_atom_rcolor[__last_highlight_atom][3] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,3); //m_radius_color[__last_highlight_atom][3];
-      m_atom_rcolor[__highlight_atom][1] = f_select_brightness*supercell.get_radius_color(__highlight_atom,1); //m_radius_color[__highlight_atom][1];
-      m_atom_rcolor[__highlight_atom][2] = f_select_brightness*supercell.get_radius_color(__highlight_atom,2); //m_radius_color[__highlight_atom][2];
-      m_atom_rcolor[__highlight_atom][3] = f_select_brightness*supercell.get_radius_color(__highlight_atom,3); //m_radius_color[__highlight_atom][3];
+      m_atom_rcolor[__last_highlight_atom][1] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,1); //m_radius_color[__last_highlight_atom][1];
+      m_atom_rcolor[__last_highlight_atom][2] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,2); //m_radius_color[__last_highlight_atom][2];
+      m_atom_rcolor[__last_highlight_atom][3] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,3); //m_radius_color[__last_highlight_atom][3];
+      m_atom_rcolor[__highlight_atom][1] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,1); //m_radius_color[__highlight_atom][1];
+      m_atom_rcolor[__highlight_atom][2] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,2); //m_radius_color[__highlight_atom][2];
+      m_atom_rcolor[__highlight_atom][3] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,3); //m_radius_color[__highlight_atom][3];
     }else{
       uint __last_fragment = supercell.get_fragment_table(__last_highlight_atom);
       color = palette.get_color(__last_fragment);
       for(int i=0; i<get_total_atoms(); i++){
         if(supercell.get_fragment_table(i)==__last_fragment){
-          m_atom_rcolor[i][1] = f_atom_brightness*color.r;
-          m_atom_rcolor[i][2] = f_atom_brightness*color.g;
-          m_atom_rcolor[i][3] = f_atom_brightness*color.b;
+          m_atom_rcolor[i][1] = setup.f_atom_brightness*color.r;
+          m_atom_rcolor[i][2] = setup.f_atom_brightness*color.g;
+          m_atom_rcolor[i][3] = setup.f_atom_brightness*color.b;
         }
       }
       uint __new_fragment  = supercell.get_fragment_table(__highlight_atom);
       color = palette.get_color(__new_fragment);
       for(int i=0; i<get_total_atoms(); i++){
         if(supercell.get_fragment_table(i)==__new_fragment){
-          m_atom_rcolor[i][1] = f_select_brightness*color.r;
-          m_atom_rcolor[i][2] = f_select_brightness*color.g;
-          m_atom_rcolor[i][3] = f_select_brightness*color.b;
+          m_atom_rcolor[i][1] = setup.f_select_brightness*color.r;
+          m_atom_rcolor[i][2] = setup.f_select_brightness*color.g;
+          m_atom_rcolor[i][3] = setup.f_select_brightness*color.b;
         }
       }
     }
     update_highlight_atom=false;
   }else if(is_draw_tools_ && update_selected_atoms){
     for(uint i=0; i<u_selected_index; i++){
-      m_atom_rcolor[v_selected_atoms[i]][1] = f_select_brightness;
+      m_atom_rcolor[v_selected_atoms[i]][1] = setup.f_select_brightness;
       m_atom_rcolor[v_selected_atoms[i]][2] = 0;
       m_atom_rcolor[v_selected_atoms[i]][3] = 0;
     }
     if(is_unselected_atom){
       // unselect if the atom was selected
       if(is_mode_atom){
-        m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,1); //m_radius_color[u_unselected_atom][1];
-        m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,2); //m_radius_color[u_unselected_atom][2];
-        m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,3); //m_radius_color[u_unselected_atom][3];
+        m_atom_rcolor[u_unselected_atom][1] = setup.f_atom_brightness*supercell.get_radius_color(u_unselected_atom,1); //m_radius_color[u_unselected_atom][1];
+        m_atom_rcolor[u_unselected_atom][2] = setup.f_atom_brightness*supercell.get_radius_color(u_unselected_atom,2); //m_radius_color[u_unselected_atom][2];
+        m_atom_rcolor[u_unselected_atom][3] = setup.f_atom_brightness*supercell.get_radius_color(u_unselected_atom,3); //m_radius_color[u_unselected_atom][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(u_unselected_atom));
-        m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*color.r;
-        m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*color.g;
-        m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*color.b;
+        m_atom_rcolor[u_unselected_atom][1] = setup.f_atom_brightness*color.r;
+        m_atom_rcolor[u_unselected_atom][2] = setup.f_atom_brightness*color.g;
+        m_atom_rcolor[u_unselected_atom][3] = setup.f_atom_brightness*color.b;
       }
       is_unselected_atom=false;
     }
@@ -850,7 +823,7 @@ void Fl_Gl_Mol_View::draw_scene(void){
     // world coordinate axes
     glPushMatrix();
     glLoadIdentity();
-    glTranslatef(0.85*view_left,0.85*view_bottom,700); //<----------------
+    glTranslatef(0.85*glview.view_left,0.85*glview.view_bottom,700); //<----------------
     glMultMatrixf((GLfloat*)rot_matrix); //<----------------
     draw_axes(); //<----------------
     // translate the world axes to the lower left corner
@@ -913,28 +886,28 @@ void Fl_Gl_Mol_View::draw(){
   glViewport(0,0,w(),h());
   //std::cout<<" W="<<w()<<" H="<<h()<<std::endl;
   if(w() <= h()){
-        y_factor=(real)h()/(real)w();
-        view_left   = -base_view;
-        view_right  =  base_view;
-        view_bottom = -base_view*y_factor;
-        view_top    =  base_view*y_factor;
-        view_axis_x =  view_left+6.0;
-        view_axis_y =  view_bottom+6.0;
-        glOrtho(view_left, view_right, view_bottom, view_top, view_near, view_far);
+        glview.y_factor=(real)h()/(real)w();
+        glview.view_left   = -base_view;
+        glview.view_right  =  base_view;
+        glview.view_bottom = -base_view*glview.y_factor;
+        glview.view_top    =  base_view*glview.y_factor;
+        glview.view_axis_x =  glview.view_left+6.0;
+        glview.view_axis_y =  glview.view_bottom+6.0;
+        glOrtho(glview.view_left, glview.view_right, glview.view_bottom, glview.view_top, glview.view_near, glview.view_far);
   }else{
-        x_factor=(real)w()/(real)h();
-        view_left   = -base_view*x_factor;
-        view_right  =  base_view*x_factor;
-        view_bottom = -base_view;
-        view_top    =  base_view;
-        view_axis_x =  view_left+6.0;
-        view_axis_y =  view_bottom+6.0;
-        glOrtho(view_left, view_right, view_bottom, view_top, view_near, view_far);
+        glview.x_factor=(real)w()/(real)h();
+        glview.view_left   = -base_view*glview.x_factor;
+        glview.view_right  =  base_view*glview.x_factor;
+        glview.view_bottom = -base_view;
+        glview.view_top    =  base_view;
+        glview.view_axis_x =  glview.view_left+6.0;
+        glview.view_axis_y =  glview.view_bottom+6.0;
+        glOrtho(glview.view_left, glview.view_right, glview.view_bottom, glview.view_top, glview.view_near, glview.view_far);
   }
   //set_font_size();
-  scaled_light_position[0]=view_left*light_position[0];
-  scaled_light_position[1]=view_top*light_position[1];
-  scaled_light_position[2]=view_far*light_position[2];
+  scaled_light_position[0]=glview.view_left*light_position[0];
+  scaled_light_position[1]=glview.view_top*light_position[1];
+  scaled_light_position[2]=glview.view_far*light_position[2];
   scaled_light_position[3]=light_position[3];
   glLightfv(GL_LIGHT0, GL_POSITION, scaled_light_position);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -961,7 +934,7 @@ void Fl_Gl_Mol_View::draw(){
     glEnable (GL_LIGHTING);
     glShadeModel(GL_SMOOTH);           // Use smooth shading
     render_mode=MODE_RENDER;
-    glClearColor(bgred,bggreen,bgblue,1.0);   // Background Color
+    glClearColor(setup.bgred,setup.bggreen,setup.bgblue,1.0);   // Background Color
     draw();
     //if(is_handle_atom_){
       //handle_atom_menu();
@@ -1114,11 +1087,11 @@ int Fl_Gl_Mol_View::handle(int event){
             set_bond_radius_scale(f_bond_radius_scale+0.05);
             break;
           case 2:
-            //set_highlihght_brightness(f_highlight_brightness+0.05);
-            set_atom_brightness(f_atom_brightness+0.05);
+            //set_highlihght_brightness(setup.f_highlight_brightness+0.05);
+            set_atom_brightness(setup.f_atom_brightness+0.05);
             break;
           case 3:
-            set_select_brightness(f_select_brightness+0.05);
+            set_select_brightness(setup.f_select_brightness+0.05);
             break;
           default:
             break;
@@ -1137,11 +1110,11 @@ int Fl_Gl_Mol_View::handle(int event){
             set_bond_radius_scale(f_bond_radius_scale-0.05);
             break;
           case 2:
-            //set_highlihght_brightness(f_highlight_brightness-0.1);
-            set_atom_brightness(f_atom_brightness-0.05);
+            //set_highlihght_brightness(setup.f_highlight_brightness-0.1);
+            set_atom_brightness(setup.f_atom_brightness-0.05);
             break;
           case 3:
-            set_select_brightness(f_select_brightness-0.05);
+            set_select_brightness(setup.f_select_brightness-0.05);
             break;
           default:
             break;
@@ -1368,7 +1341,7 @@ void Fl_Gl_Mol_View::set_font_size(void){
 // Initialize GL
 void Fl_Gl_Mol_View::initialize_opengl(void){
   if(!valid()) {
-    glClearColor(bgred,bggreen,bgblue,1.0);   // Background Color
+    glClearColor(setup.bgred,setup.bggreen,setup.bgblue,1.0);   // Background Color
     glClearDepth(1.0f);
     //if(gm_depth)
     glEnable(GL_DEPTH_TEST);           // Enable Depth testing
@@ -1518,15 +1491,7 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
 #endif
         if(is_draw_tools_){
           u_selected_index=0;
-          r_distance1=0.0;
-          r_distance2=0.0;
-          r_distance3=0.0;
-          v_distance1.zero();
-          v_distance2.zero();
-          v_distance3.zero();
-          r_angle1=0.0;
-          r_angle2=0.0;
-          r_dihedral=0.0;
+          tools.clear();
           update_normal_color=true;
           is_update_mask_rcolor=true;
         }
@@ -1555,10 +1520,10 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
 // control box
 void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   char buff[10];
-  GLfloat y_hight = 0.33*view_bottom;
+  GLfloat y_hight = 0.33*glview.view_bottom;
   GLfloat x_width = 0.8*base_view;
-  GLfloat x_pos = -0.5*x_width;//0.8*view_left;
-  GLfloat y_pos = 0.65*view_bottom;
+  GLfloat x_pos = -0.5*x_width;//0.8*glview.view_left;
+  GLfloat y_pos = 0.65*glview.view_bottom;
   GLfloat z_pos = z;
   GLfloat x_pos_end = x_pos+x_width;
   GLfloat y_pos_end = y_pos+y_hight;
@@ -1593,7 +1558,7 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   //gl_font(FL_COURIER,font_size_panel_label); // text font
   glColor4f(0.0,1.0,0.0,1.0); // text color
   sprintf(buff,"%s","Controls");
-  glRasterPos3f(x_pos, 0.638*view_bottom,z);
+  glRasterPos3f(x_pos, 0.638*glview.view_bottom,z);
   gl_draw(buff, strlen(buff));
   glColor4f(0.8,0.8,0.8,1.0);
   glBegin(GL_LINE_LOOP);
@@ -1610,9 +1575,9 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   // slider bar 2 /////////////////////////////////////////////////////////////////
   draw_slider(x_pos+0.10*base_view, y_pos, y_pos_end, z, f_bond_radius_scale, is_slider_active[1], (char*)" ");
   // slider bar 3 /////////////////////////////////////////////////////////////////
-  draw_slider(x_pos+0.20*base_view, y_pos, y_pos_end, z, f_atom_brightness/f_atom_brightness_max, is_slider_active[2], (char*)" ");
+  draw_slider(x_pos+0.20*base_view, y_pos, y_pos_end, z, setup.f_atom_brightness/setup.f_atom_brightness_max, is_slider_active[2], (char*)" ");
   // slider bar 4 /////////////////////////////////////////////////////////////////
-  draw_slider(x_pos+0.30*base_view, y_pos, y_pos_end, z, f_select_brightness/f_select_brightness_max, is_slider_active[3], (char*)" ");
+  draw_slider(x_pos+0.30*base_view, y_pos, y_pos_end, z, setup.f_select_brightness/setup.f_select_brightness_max, is_slider_active[3], (char*)" ");
   /////////////////////////////////////////////////////////////////////////////////
   // Draw the radios for keyboard shortcuts
   // Radio 1 (axis)    [a]
@@ -1620,19 +1585,19 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
   // Radio 2 (bonds)   [b]
   draw_radio_button(x_pos+0.50*base_view, y_pos, y_pos_end, z, 1.0, is_radio_active[1], (char*)"b");
   // Radio 3 (symbols) [s]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.05*view_bottom, y_pos_end, z, 1.0, is_radio_active[2], (char*)"s");
+  draw_radio_button(x_pos+0.40*base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[2], (char*)"s");
   // Radio 4 (volume)  [v]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.05*view_bottom, y_pos_end, z, 1.0, is_radio_active[3], (char*)"v");
+  draw_radio_button(x_pos+0.50*base_view, y_pos+0.05*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[3], (char*)"v");
   // Radio 5 (numbers) [n]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.10*view_bottom, y_pos_end, z, 1.0, is_radio_active[4], (char*)"n");
+  draw_radio_button(x_pos+0.40*base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[4], (char*)"n");
   // Radio 6 (tools)   [t]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.10*view_bottom, y_pos_end, z, 1.0, is_radio_active[5], (char*)"t");
+  draw_radio_button(x_pos+0.50*base_view, y_pos+0.10*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[5], (char*)"t");
   // Radio 7 (labels)  [l]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.15*view_bottom, y_pos_end, z, 1.0, is_radio_active[6], (char*)"l");
+  draw_radio_button(x_pos+0.40*base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[6], (char*)"l");
   // Radio 8 (tools)   [t]
-  draw_radio_button(x_pos+0.50*base_view, y_pos+0.15*view_bottom, y_pos_end, z, 1.0, is_radio_active[7], (char*)"j");
+  draw_radio_button(x_pos+0.50*base_view, y_pos+0.15*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[7], (char*)"j");
   // Radio 9 (labels)  [m]
-  draw_radio_button(x_pos+0.40*base_view, y_pos+0.20*view_bottom, y_pos_end, z, 1.0, is_radio_active[8], (char*)"k");
+  draw_radio_button(x_pos+0.40*base_view, y_pos+0.20*glview.view_bottom, y_pos_end, z, 1.0, is_radio_active[8], (char*)"k");
   //glDisable(GL_BLEND);
   //glEnable(GL_DEPTH_TEST);           // Enable Depth testing
   //glDisable(GL_POLYGON_SMOOTH);
@@ -1640,10 +1605,10 @@ void Fl_Gl_Mol_View::draw_controls(GLfloat z){
 
 void Fl_Gl_Mol_View::draw_message(GLfloat z){
   char buff[50];
-  GLfloat y_hight = 0.1*view_bottom;
+  GLfloat y_hight = 0.1*glview.view_bottom;
   GLfloat x_width = 0.5*base_view;
-  GLfloat x_pos = -0.5*x_width;//0.8*view_left;
-  GLfloat y_pos = 0.06*view_top;
+  GLfloat x_pos = -0.5*x_width;//0.8*glview.view_left;
+  GLfloat y_pos = 0.06*glview.view_top;
   GLfloat z_pos = z;
   GLfloat x_pos_end = x_pos+x_width;
   //GLfloat y_pos_end = y_pos+y_hight;
@@ -1681,14 +1646,14 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
   //gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
   GLfloat y_hight = -0.26*base_view;
   //GLfloat x_width = 0.45*base_view;
-  //GLfloat x_width = -0.45*view_left;
-  //GLfloat x_width = 5*x_factor;
+  //GLfloat x_width = -0.45*glview.view_left;
+  //GLfloat x_width = 5*glview.x_factor;
   //GLfloat x_width = posX;
-  GLfloat x_pos = 0.95*view_left;//0.8*view_left;
+  GLfloat x_pos = 0.95*glview.view_left;//0.8*glview.view_left;
 #ifdef PLATFORM_MAC
-  GLfloat y_pos = 0.94*view_top;
+  GLfloat y_pos = 0.94*glview.view_top;
 #else
-  GLfloat y_pos = 0.955*view_top;
+  GLfloat y_pos = 0.955*glview.view_top;
 #endif
   //GLfloat x_pos_end = x_pos+x_width;
   GLfloat y_pos_end = y_pos+y_hight;
@@ -1727,33 +1692,33 @@ void Fl_Gl_Mol_View::draw_tools(GLfloat z){
   x_pos+=(0.03*base_view);
   int a = v_selected_atoms[0] + 1;
   int b = v_selected_atoms[1] + 1;
-  widget_float_output_xy(x_pos, y_pos, y_pos_end, z, a, b, r_distance1, (char*)"Distance (1,2):");
+  widget_float_output_xy(x_pos, y_pos, y_pos_end, z, a, b, tools.r_distance1, (char*)"Distance (1,2):");
   y_pos-=y_delta;
-  widget_vector_output(x_pos, y_pos, y_pos_end, z, v_distance1, (char*)"Cartesian (1,2):");
+  widget_vector_output(x_pos, y_pos, y_pos_end, z, tools.v_distance1, (char*)"Cartesian (1,2):");
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, r_distance2, (char*)"Distance (2,3):");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, tools.r_distance2, (char*)"Distance (2,3):");
   y_pos-=y_delta;
-  widget_vector_output(x_pos, y_pos, y_pos_end, z, v_distance2, (char*)"Cartesian (2,3):");
+  widget_vector_output(x_pos, y_pos, y_pos_end, z, tools.v_distance2, (char*)"Cartesian (2,3):");
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, r_distance3, (char*)"Distance (3,4):");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, tools.r_distance3, (char*)"Distance (3,4):");
   y_pos-=y_delta;
-  widget_vector_output(x_pos, y_pos, y_pos_end, z, v_distance3, (char*)"Cartesian (3,4):");
+  widget_vector_output(x_pos, y_pos, y_pos_end, z, tools.v_distance3, (char*)"Cartesian (3,4):");
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, r_angle1, (char*)"Angle  (1,2,3):");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, tools.r_angle1, (char*)"Angle  (1,2,3):");
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, r_angle2, (char*)"Angle  (2,3,4):");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, tools.r_angle2, (char*)"Angle  (2,3,4):");
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, r_dihedral, (char*)"Dihedral:      ");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, tools.r_dihedral, (char*)"Dihedral:      ");
 }
 
 void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   char buff[10];
   GLfloat y_hight = -0.26*base_view;
-  GLfloat x_pos = 0.95*view_left;//0.8*view_left;
+  GLfloat x_pos = 0.95*glview.view_left;//0.8*glview.view_left;
 #ifdef PLATFORM_MAC
-  GLfloat y_pos = 0.52*view_top;
+  GLfloat y_pos = 0.52*glview.view_top;
 #else
-  GLfloat y_pos = 0.55*view_top;
+  GLfloat y_pos = 0.55*glview.view_top;
 #endif
   //GLfloat z_pos = z;
   //GLfloat x_pos_end = x_pos+x_width;
@@ -1792,10 +1757,10 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
   widget_float_output(x_pos, y_pos, y_pos_end, z, f_bond_radius_scale, (char*)"Bond Radius:");
   // slider bar 3 /////////////////////////////////////////////////////////////////
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, f_atom_brightness/f_atom_brightness_max, (char*)"Brightness:");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, setup.f_atom_brightness/setup.f_atom_brightness_max, (char*)"Brightness:");
   // slider bar 4 /////////////////////////////////////////////////////////////////
   y_pos-=y_delta;
-  widget_float_output(x_pos, y_pos, y_pos_end, z, f_select_brightness/f_select_brightness_max, (char*)"Selection:");
+  widget_float_output(x_pos, y_pos, y_pos_end, z, setup.f_select_brightness/setup.f_select_brightness_max, (char*)"Selection:");
   y_pos-=y_delta;
   draw_switch_output(x_pos, y_pos, y_pos_end, z,  is_radio_active[0],(char*)"Axes:    <A>");
   y_pos-=y_delta;
@@ -1817,11 +1782,11 @@ void Fl_Gl_Mol_View::draw_settings(GLfloat z){
 void Fl_Gl_Mol_View::draw_information(GLfloat z){
   char buff[20];
   GLfloat y_hight = -0.26*base_view;
-  GLfloat x_pos = 0.95*view_left;//0.8*view_left;
+  GLfloat x_pos = 0.95*glview.view_left;//0.8*glview.view_left;
 #ifdef PLATFORM_MAC
-  GLfloat y_pos = -0.03*view_top;
+  GLfloat y_pos = -0.03*glview.view_top;
 #else
-  GLfloat y_pos = 0.03*view_top;
+  GLfloat y_pos = 0.03*glview.view_top;
 #endif
   //GLfloat z_pos = z;
   //GLfloat x_pos_end = x_pos+x_width;
@@ -1869,8 +1834,8 @@ void Fl_Gl_Mol_View::draw_slider(GLfloat x1, GLfloat y1, GLfloat y2, GLfloat z, 
   // slider bar
   side_x1 = x1+0.11*base_view;
   side_x2 = x1+0.14*base_view;
-  side_y1 = y1+0.30*view_bottom;
-  side_y2 = (side_y1-val*0.24*view_bottom);
+  side_y1 = y1+0.30*glview.view_bottom;
+  side_y2 = (side_y1-val*0.24*glview.view_bottom);
   glBegin(GL_POLYGON);
   glVertex3f(side_x1, side_y2, z);
   glVertex3f(side_x2, side_y2, z);
@@ -1880,9 +1845,9 @@ void Fl_Gl_Mol_View::draw_slider(GLfloat x1, GLfloat y1, GLfloat y2, GLfloat z, 
   // slider box
   side_x1 = x1+0.10*base_view;
   side_x2 = x1+0.15*base_view;
-  side_y1 = y1+0.31*view_bottom;
-  side_y2 = (side_y1-0.26*view_bottom);
-  glRasterPos3f(side_x1, 0.69*view_bottom,z);
+  side_y1 = y1+0.31*glview.view_bottom;
+  side_y2 = (side_y1-0.26*glview.view_bottom);
+  glRasterPos3f(side_x1, 0.69*glview.view_bottom,z);
   //gl_font(FL_COURIER,font_size_slider_label); // text font
   gl_draw(l, strlen(l));
   glBegin(GL_LINE_LOOP);
@@ -1902,7 +1867,7 @@ void Fl_Gl_Mol_View::draw_radio_button(GLfloat x1, GLfloat y1, GLfloat y2, GLflo
   side_x1 = x1+0.11*base_view;
   side_x2 = x1+0.13*base_view;
   // uper right corner
-  side_y1 = y1+0.09*view_bottom;
+  side_y1 = y1+0.09*glview.view_bottom;
   side_y2 = (side_y1+0.02*base_view);
   if(active)
     glColor4f(0.08,0.08,0.08,0.8);
@@ -1997,7 +1962,7 @@ void Fl_Gl_Mol_View::widget_float_output(GLfloat x1, GLfloat y1, GLfloat y2, GLf
   // radio mark
   //side_x1 = x1+0.11*base_view;
   //side_x2 = x1+0.13*base_view;
-  //side_y1 = y1+0.09*view_bottom;
+  //side_y1 = y1+0.09*glview.view_bottom;
   //side_y2 = (side_y1+val*0.02*base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
@@ -2045,7 +2010,7 @@ void Fl_Gl_Mol_View::widget_float_output_xy(GLfloat x1, GLfloat y1, GLfloat y2, 
   // radio mark
   //side_x1 = x1+0.11*base_view;
   //side_x2 = x1+0.13*base_view;
-  //side_y1 = y1+0.09*view_bottom;
+  //side_y1 = y1+0.09*glview.view_bottom;
   //side_y2 = (side_y1+val*0.02*base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
@@ -2092,7 +2057,7 @@ void Fl_Gl_Mol_View::widget_text_output(GLfloat x1, GLfloat y1, GLfloat y2, GLfl
   // radio mark
   //side_x1 = x1+0.11*base_view;
   //side_x2 = x1+0.13*base_view;
-  //side_y1 = y1+0.09*view_bottom;
+  //side_y1 = y1+0.09*glview.view_bottom;
   //side_y2 = (side_y1+val*0.02*base_view);
   //glBegin(GL_POLYGON);
   //glVertex3f(side_x1, side_y2, z);
@@ -2230,20 +2195,20 @@ void Fl_Gl_Mol_View::set_selected_atom(uint u){
       //std::cout<<" selected: "<<u<<std::endl;
       u_selected_index++;
       if(u_selected_index==2){
-        v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
-        r_distance1=v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
-        //std::cout<<" distance = "<<r_distance1<<std::endl;
+        tools.v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
+        tools.r_distance1=tools.v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
+        //std::cout<<" distance = "<<tools.r_distance1<<std::endl;
       }else if(u_selected_index==3){
-        v_distance2=supercell.get_vector_diff(v_selected_atoms[1],v_selected_atoms[2]);
-        r_distance2=v_distance2.magnitude();  //get_distance(v_selected_atoms[1],v_selected_atoms[2]);
-        r_angle1=supercell.get_angle(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2]);
-        //std::cout<<" angle = "<<r_angle1<<std::endl;
+        tools.v_distance2=supercell.get_vector_diff(v_selected_atoms[1],v_selected_atoms[2]);
+        tools.r_distance2=tools.v_distance2.magnitude();  //get_distance(v_selected_atoms[1],v_selected_atoms[2]);
+        tools.r_angle1=supercell.get_angle(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2]);
+        //std::cout<<" angle = "<<tools.r_angle1<<std::endl;
       }else if(u_selected_index==4){
-        v_distance3=supercell.get_vector_diff(v_selected_atoms[2],v_selected_atoms[3]);
-        r_distance3=v_distance3.magnitude();  //get_distance(v_selected_atoms[2],v_selected_atoms[3]);
-        r_angle2=supercell.get_angle(v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
-        r_dihedral=supercell.get_dihedral(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
-        //std::cout<<" dihedral = "<<r_dihedral<<std::endl;
+        tools.v_distance3=supercell.get_vector_diff(v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_distance3=tools.v_distance3.magnitude();  //get_distance(v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_angle2=supercell.get_angle(v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_dihedral=supercell.get_dihedral(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
+        //std::cout<<" dihedral = "<<tools.r_dihedral<<std::endl;
       }
       update_selected_atoms=true;
     }
@@ -2253,20 +2218,20 @@ void Fl_Gl_Mol_View::set_selected_atom(uint u){
 void Fl_Gl_Mol_View::eval_tool_parameters(void){
   for(uint uindex=0; uindex<=u_selected_index; uindex++){
     if(uindex==2){
-        v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
-        r_distance1=v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
-        //std::cout<<" distance = "<<r_distance1<<std::endl;
+        tools.v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
+        tools.r_distance1=tools.v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
+        //std::cout<<" distance = "<<tools.r_distance1<<std::endl;
     }else if(uindex==3){
-        v_distance2=supercell.get_vector_diff(v_selected_atoms[1],v_selected_atoms[2]);
-        r_distance2=v_distance2.magnitude();  //get_distance(v_selected_atoms[1],v_selected_atoms[2]);
-        r_angle1=supercell.get_angle(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2]);
-        //std::cout<<" angle = "<<r_angle1<<std::endl;
+        tools.v_distance2=supercell.get_vector_diff(v_selected_atoms[1],v_selected_atoms[2]);
+        tools.r_distance2=tools.v_distance2.magnitude();  //get_distance(v_selected_atoms[1],v_selected_atoms[2]);
+        tools.r_angle1=supercell.get_angle(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2]);
+        //std::cout<<" angle = "<<tools.r_angle1<<std::endl;
     }else if(uindex==4){
-        v_distance3=supercell.get_vector_diff(v_selected_atoms[2],v_selected_atoms[3]);
-        r_distance3=v_distance3.magnitude();  //get_distance(v_selected_atoms[2],v_selected_atoms[3]);
-        r_angle2=supercell.get_angle(v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
-        r_dihedral=supercell.get_dihedral(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
-        //std::cout<<" dihedral = "<<r_dihedral<<std::endl;
+        tools.v_distance3=supercell.get_vector_diff(v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_distance3=tools.v_distance3.magnitude();  //get_distance(v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_angle2=supercell.get_angle(v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
+        tools.r_dihedral=supercell.get_dihedral(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
+        //std::cout<<" dihedral = "<<tools.r_dihedral<<std::endl;
     }
   }
   //update_selected_atoms=true;
@@ -2306,43 +2271,43 @@ void Fl_Gl_Mol_View::set_fragment_total(uint u){
 }*/
 
 void Fl_Gl_Mol_View::set_bond_brightness(real f){
-  f_bond_brightness = f;
+  setup.f_bond_brightness = f;
   update_bonds_color=true;
 }
 
 void Fl_Gl_Mol_View::set_background_brightness(real f){
-  f_background_brightness = f;
+  setup.f_background_brightness = f;
 }
 
 void Fl_Gl_Mol_View::set_highlihght_brightness(real f){
-  if(f >= 0.0 && f<=f_highlight_brightness_max)
-    f_highlight_brightness = f;
+  if(f >= 0.0 && f<=setup.f_highlight_brightness_max)
+    setup.f_highlight_brightness = f;
   else if(f>1.0)
-    f_highlight_brightness = f_highlight_brightness_max;
+    setup.f_highlight_brightness = setup.f_highlight_brightness_max;
   else
-    f_highlight_brightness = 0.0;
+    setup.f_highlight_brightness = 0.0;
 }
 
 void Fl_Gl_Mol_View::set_atom_brightness(real f){
-  f_atom_brightness = f;
-  if(f >= 0.0 && f<=f_atom_brightness_max)
-    f_atom_brightness = f;
+  setup.f_atom_brightness = f;
+  if(f >= 0.0 && f<=setup.f_atom_brightness_max)
+    setup.f_atom_brightness = f;
   else if(f>1.0)
-    f_atom_brightness = f_atom_brightness_max;
+    setup.f_atom_brightness = setup.f_atom_brightness_max;
   else
-    f_atom_brightness = 0.0;
+    setup.f_atom_brightness = 0.0;
   update_normal_color=true;
   is_update_mask_rcolor=true;
 }
 
 void Fl_Gl_Mol_View::set_select_brightness(real f){
-  real f_select_brightness_max = 1.5;
-  if(f >= 0.0 && f<=f_select_brightness_max)
-    f_select_brightness = f;
-  else if(f>f_select_brightness_max)
-    f_select_brightness = f_select_brightness_max;
+  //real f_select_brightness_max = 1.5;
+  if(f >= 0.0 && f<=setup.f_select_brightness_max)
+    setup.f_select_brightness = f;
+  else if(f>setup.f_select_brightness_max)
+    setup.f_select_brightness = setup.f_select_brightness_max;
   else
-    f_select_brightness = 0.0;
+    setup.f_select_brightness = 0.0;
   update_highlight_atom=true;
   is_update_mask_rcolor=true;
 }
@@ -2449,12 +2414,7 @@ void Fl_Gl_Mol_View::is_draw_tools(bool b){
   is_draw_tools_ = b;
   if(!is_draw_tools_){
     u_selected_index=0;
-    r_distance1=0.0;
-    r_distance2=0.0;
-    r_distance3=0.0;
-    r_angle1=0.0;
-    r_angle2=0.0;
-    r_dihedral=0.0;
+    tools.clear();
     update_normal_color=true;
     is_update_mask_rcolor=true;
   }
@@ -2472,27 +2432,6 @@ void Fl_Gl_Mol_View::set_lock_controls(bool b){
   set_active_radio(8,is_lock_controls);
 }
 
-// Deprecated
-//void Fl_Gl_Mol_View::set_atomic_labels(const TVector<std::string>& v){
-//  v_atom_labels = v;
-//}
-// Deprecated
-//void Fl_Gl_Mol_View::set_atomic_symbols(const TVector<std::string>& v){
-//  v_atom_symbols = v;
-//}
-// Deprecated
-//void Fl_Gl_Mol_View::set_atomic_symbol_table(const TVector<std::string>& v){
-//  v_atomic_symbol_table_gl = v;
-//}
-// Deprecated
-//void Fl_Gl_Mol_View::set_atomic_numbers(const TVector<uint>& v){
-//  v_atom_numbers = v;
-//}
-// Deprecated
-//void Fl_Gl_Mol_View::set_atom_table(const TVector<uint>& v){
-//  v_atom_table = v;
-//}
-
 void Fl_Gl_Mol_View::set_atomic_cut_radius(void){
   //v_atomic_number_table_gl = v;
   real r_cut_radius=0;
@@ -2508,17 +2447,14 @@ void Fl_Gl_Mol_View::set_atomic_cut_radius(void){
 #endif
 }
 
-/*
-void Fl_Gl_Mol_View::set_fragment_table(const TVector<uint>& v){
-  v_fragment_table_gl = v;
-}*/
-
 void Fl_Gl_Mol_View::set_background_color(real r,real g,real b){
-  bgred=r; bggreen=g; bgblue=b;
+  //bgred=r; bggreen=g; bgblue=b;
+  setup.set_background(r,b,g);
 }
 
 void Fl_Gl_Mol_View::set_foreground_color(real r,real g,real b){
-  fgred=r; fggreen=g; fgblue=b;
+  //fgred=r; fggreen=g; fgblue=b;
+  setup.set_background(r,b,g);
 }
 
 void Fl_Gl_Mol_View::clear_all(void){
@@ -2543,12 +2479,7 @@ void Fl_Gl_Mol_View::clear_scene(void){
   is_draw_point=false;
   if(is_draw_tools_){
     u_selected_index=0;
-    r_distance1=0.0;
-    r_distance2=0.0;
-    r_distance3=0.0;
-    r_angle1=0.0;
-    r_angle2=0.0;
-    r_dihedral=0.0;
+    tools.clear();
     //update_normal_color=true;
     //update_bonds_color=true;
     //is_update_mask_rcolor=true;
