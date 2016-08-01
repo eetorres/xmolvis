@@ -69,7 +69,7 @@ public:
   void set_tilt_map(const bool);
   void set_precession_map(const bool);
   //
-  void set_map_active_fragment(const unsigned int);
+  void set_active_fragment(const unsigned int);
   void set_map_translation_steps_1d(const unsigned int);
   void set_map_translation_steps_2d(const unsigned int);
   void set_map_twist_steps(const unsigned int);
@@ -129,10 +129,10 @@ public:
   TVector<uint> get_map_atomic_table(void);
   TVector<real> get_map_axis_angles(void);
   TVector<real> get_map_basis_direct(void);
-  TVector<real> get_map_position_direct(void);
+  TVector<real> get_position_direct(void);
   TVector<real> get_map_position_uvw(void);
   //
-  TVector<real> get_map_position_cartesian(void);
+  TVector<real> get_position_cartesian(void);
   TVector<real> get_centered_position_cartesian(void);
   TVector<real> get_map_axis_direct_origin(void);
   TVector<real> get_map_axis_cartesian_origin(void);

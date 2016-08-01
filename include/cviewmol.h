@@ -103,14 +103,14 @@ public:
   //
   TVector<real> get_view_axis_angles(void);
   TVector<real> get_view_basis_direct(void);
-  TVector<real> get_view_position_direct(void);
+  //TVector<real> get_position_direct(void);
   TVector<real> get_view_position_uvw(void);
-  TVector<real> get_view_position_cartesian(void);
+  //TVector<real> get_view_position_cartesian(void);
   TVector<real> get_view_position_spheric(void);
   //TVector<real> get_view_centered_position_cartesian(void);
   TVector<real> get_view_axis_cartesian_origin(void);
   //
-  TMatrix<real> get_view_bounding_box(void);
+  //TMatrix<real> get_view_bounding_box(void);
   //TMatrix<real> get_view_cartesian(void);
   TMatrix<real> get_view_direct(void);
   // Conditionals

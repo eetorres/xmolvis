@@ -166,9 +166,9 @@ void CSupercell::eval_initial_position(void){
   gsf.v_fragments[__active_fragment].eval_initial_position();
 }
 
-void CSupercell::eval_fragmol_initial_orientation(void){
+void CSupercell::eval_initial_orientation(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGMOL: eval_fragmol_initial_orientation"<<std::endl;
+  std::cout<<" FRAGMOL: eval_initial_orientation"<<std::endl;
 #endif
   gsf.v_fragments[__active_fragment].eval_initial_orientation();
 }
@@ -248,7 +248,7 @@ void CSupercell::update_fragmol_direct(void){
 #endif
 }
 
-void CSupercell::compute_fragmol_position_cartesian(void){
+void CSupercell::compute_position_cartesian(void){
   gsf.v_fragments[__active_fragment].compute_origin_cartesian();
 }
 
@@ -260,6 +260,25 @@ void CSupercell::apply_pbc(bool b){
   gsf.v_fragments[__active_fragment].is_pbc(b);
 }
 
+void CSupercell::set_radius_color(void){
+  int i_z=0;
+  TVector<real> _rcolor(4);
+  m_radius_color.resize(get_total_atoms(),4);
+  for(int i=0; i<get_total_atoms(); i++){
+      i_z=gsf.get_atomic_number(i);
+      _rcolor[0] = atom_rrgb[i_z][0];
+      _rcolor[1] = atom_rrgb[i_z][1];
+      _rcolor[2] = atom_rrgb[i_z][2];
+      _rcolor[3] = atom_rrgb[i_z][3];
+      m_radius_color[i]=_rcolor;
+  }
+  //m_radius_color=m;
+}
+
+TMatrix<real> CSupercell::get_radius_color(void){
+  return m_radius_color;
+}
+
 void CSupercell::set_gsf_modified(const bool b){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: the gsf was modified"<<std::endl;
@@ -267,7 +286,7 @@ void CSupercell::set_gsf_modified(const bool b){
   gsf.set_modified(b);
 }
 
-void CSupercell::set_fragmol_active_fragment(const uint i){
+void CSupercell::set_active_fragment(const uint i){
   __active_fragment=i;
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: active fragment= "<<__active_fragment<<std::endl;
@@ -312,7 +331,7 @@ void CSupercell::set_fragment_axis(const uint idx, const uint val){
   gsf.v_fragments[__active_fragment].set_axis_index(idx,gsf.get_atom_table(val));
 }
 
-void CSupercell::set_fragmol_fragment_twist(const real r){
+void CSupercell::set_fragment_twist(const real r){
   gsf.v_fragments[__active_fragment].set_axis_twist(r);
 }
 
@@ -435,7 +454,7 @@ TVector<real> CSupercell::get_fragmol_basis_direct(void){
   return gsf.v_fragments[__active_fragment].get_basis_direct();
 }
 
-TVector<real> CSupercell::get_fragmol_position_direct(void){
+TVector<real> CSupercell::get_position_direct(void){
   return gsf.v_fragments[__active_fragment].get_origin_direct();
 }
 
@@ -443,7 +462,7 @@ TVector<real> CSupercell::get_fragmol_position_uvw(void){
   return gsf.v_fragments[__active_fragment].get_origin_uvw();
 }
 
-TVector<real> CSupercell::get_fragmol_position_cartesian(void){
+TVector<real> CSupercell::get_position_cartesian(void){
   return gsf.v_fragments[__active_fragment].get_origin_cartesian();
 }
 
@@ -634,6 +653,12 @@ TVector<real> CSupercell::get_uvw_to_xyz(uint u){
 // deprecated
 TMatrix<real> CSupercell::get_bounding_box(void){
   return gsf.get_uvw_to_xyz();
+}
+
+void CSupercell::set_inv_bbox(void){
+  TMatrix<real> u_bbox;
+  u_bbox=get_unit_uvw_to_xyz();
+  m_inv_bbox=u_bbox.inverse();
 }
 
 TMatrix<real> CSupercell::get_cartesian(void){

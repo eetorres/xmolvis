@@ -159,7 +159,7 @@ Fl_Gl_Mol_View::~Fl_Gl_Mol_View(){
 void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
   //m_atom_coordinates.clear();
-  m_radius_color.clear();
+  //m_radius_color.clear();  // deprecated
   //v_atom_symbols.clear();
   //
   is_eval_bonds           = true;
@@ -207,8 +207,6 @@ void Fl_Gl_Mol_View::clear(void){
   __highlight_atom_b      = 0;
   __select_begin          = -1;
   __select_end            = -1;
-  i_number_of_bonds       = 0;
-  i_number_of_bonds_pbc   = 0;
   __axis_precession       = 0;
   __axis_tilt             = 0;
   v_axes_position.resize(3);
@@ -230,7 +228,6 @@ bool Fl_Gl_Mol_View::initialize(void){
   bool res=false;
   res = read_files_view();
   if(res){
-    // initialize_fragments();
     // initialize data to visualize
     initialize_view();
     set_view_active_fragment(0);
@@ -239,17 +236,10 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_active_fragment_index(1);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
-    set_bounding_box(get_view_bounding_box()); // deprecated
+    set_bounding_box(); // deprecated
     is_draw_bbox(is_view_periodic());
-    // deprecated
-    //set_atomic_labels(get_atomic_labels());
-    //set_atomic_symbols(get_view_atomic_symbols());
-    //set_atomic_numbers(get_view_atomic_numbers());
-    //set_atom_table(get_view_atom_table());
     set_atomic_cut_radius();
-    //set_atomic_symbol_table(get_view_atomic_symbol_table());
     set_palette(supercell.get_number_of_fragments());
-    //set_fragment_table(get_view_fragment_table());
     initialize_atomic_coordinates();
     // End GUI functions
 #ifdef _ATOM_DATA_MESSAGES_
@@ -354,9 +344,9 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   if(update_normal_color){
     for(int i=0; i<get_total_atoms(); i++){
       if(is_mode_atom){
-        m_atom_rcolor[i][1] = f_atom_brightness*m_radius_color[i][1];
-        m_atom_rcolor[i][2] = f_atom_brightness*m_radius_color[i][2];
-        m_atom_rcolor[i][3] = f_atom_brightness*m_radius_color[i][3];
+        m_atom_rcolor[i][1] = f_atom_brightness*supercell.get_radius_color(i,1); //m_radius_color[i][1];
+        m_atom_rcolor[i][2] = f_atom_brightness*supercell.get_radius_color(i,2); //m_radius_color[i][2];
+        m_atom_rcolor[i][3] = f_atom_brightness*supercell.get_radius_color(i,3); //m_radius_color[i][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(i));
         m_atom_rcolor[i][1] = f_atom_brightness*color.r;
@@ -369,18 +359,18 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
   std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (1)"<<std::endl;
 #endif
-  update_bonds_color=true;
+  //update_bonds_color=true;
   if(update_bonds_color){
-    for(uint i=0; i<i_number_of_bonds; i++){
+    for(uint i=0; i<supercell.get_number_of_bonds(); i++){
       int idx0 = supercell.get_bond_indices(i,0); //m_bond_indices[i][0];
       int idx1 = supercell.get_bond_indices(i,1); //m_bond_indices[i][1];
       if(is_mode_atom){
-        m_bond_rcolor_0[i][1] = f_atom_brightness*m_radius_color[idx0][1];
-        m_bond_rcolor_0[i][2] = f_atom_brightness*m_radius_color[idx0][2];
-        m_bond_rcolor_0[i][3] = f_atom_brightness*m_radius_color[idx0][3];
-        m_bond_rcolor_1[i][1] = f_atom_brightness*m_radius_color[idx1][1];
-        m_bond_rcolor_1[i][2] = f_atom_brightness*m_radius_color[idx1][2];
-        m_bond_rcolor_1[i][3] = f_atom_brightness*m_radius_color[idx1][3];
+        m_bond_rcolor_0[i][1] = f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
+        m_bond_rcolor_0[i][2] = f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
+        m_bond_rcolor_0[i][3] = f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
+        m_bond_rcolor_1[i][1] = f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
+        m_bond_rcolor_1[i][2] = f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
+        m_bond_rcolor_1[i][3] = f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(idx0));
         m_bond_rcolor_0[i][1] = f_atom_brightness*color.r;
@@ -392,10 +382,10 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       }
     }
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
-  std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (2)"<<std::endl;
-  std::cout<<" PBC bonds: "<<i_number_of_bonds_pbc<<std::endl;
+    std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (2)"<<std::endl;
+    std::cout<<" PBC bonds: "<<supercell.get_number_of_bonds_pbc()<<std::endl;
 #endif
-    for(uint i=0; i<i_number_of_bonds_pbc; i++){
+    for(uint i=0; i<supercell.get_number_of_bonds_pbc(); i++){
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond number = "<<i<<std::endl;
 #endif
@@ -405,12 +395,12 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         std::cout<<" (idx0,idx1) = ("<<idx0<<","<<idx1<<")"<<std::endl;
 #endif
       if(is_mode_atom){
-        m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*m_radius_color[idx0][1];
-        m_bond_rcolor_pbc_0[i][2] = f_atom_brightness*m_radius_color[idx0][2];
-        m_bond_rcolor_pbc_0[i][3] = f_atom_brightness*m_radius_color[idx0][3];
-        m_bond_rcolor_pbc_1[i][1] = f_atom_brightness*m_radius_color[idx1][1];
-        m_bond_rcolor_pbc_1[i][2] = f_atom_brightness*m_radius_color[idx1][2];
-        m_bond_rcolor_pbc_1[i][3] = f_atom_brightness*m_radius_color[idx1][3];
+        m_bond_rcolor_pbc_0[i][1] = f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
+        m_bond_rcolor_pbc_0[i][2] = f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
+        m_bond_rcolor_pbc_0[i][3] = f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
+        m_bond_rcolor_pbc_1[i][1] = f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
+        m_bond_rcolor_pbc_1[i][2] = f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
+        m_bond_rcolor_pbc_1[i][3] = f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
       }else{
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
@@ -442,12 +432,12 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   // testing
   if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
     if(is_mode_atom){
-      m_atom_rcolor[__last_highlight_atom][1] = f_atom_brightness*m_radius_color[__last_highlight_atom][1];
-      m_atom_rcolor[__last_highlight_atom][2] = f_atom_brightness*m_radius_color[__last_highlight_atom][2];
-      m_atom_rcolor[__last_highlight_atom][3] = f_atom_brightness*m_radius_color[__last_highlight_atom][3];
-      m_atom_rcolor[__highlight_atom][1] = f_select_brightness*m_radius_color[__highlight_atom][1];
-      m_atom_rcolor[__highlight_atom][2] = f_select_brightness*m_radius_color[__highlight_atom][2];
-      m_atom_rcolor[__highlight_atom][3] = f_select_brightness*m_radius_color[__highlight_atom][3];
+      m_atom_rcolor[__last_highlight_atom][1] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,1); //m_radius_color[__last_highlight_atom][1];
+      m_atom_rcolor[__last_highlight_atom][2] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,2); //m_radius_color[__last_highlight_atom][2];
+      m_atom_rcolor[__last_highlight_atom][3] = f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,3); //m_radius_color[__last_highlight_atom][3];
+      m_atom_rcolor[__highlight_atom][1] = f_select_brightness*supercell.get_radius_color(__highlight_atom,1); //m_radius_color[__highlight_atom][1];
+      m_atom_rcolor[__highlight_atom][2] = f_select_brightness*supercell.get_radius_color(__highlight_atom,2); //m_radius_color[__highlight_atom][2];
+      m_atom_rcolor[__highlight_atom][3] = f_select_brightness*supercell.get_radius_color(__highlight_atom,3); //m_radius_color[__highlight_atom][3];
     }else{
       uint __last_fragment = supercell.get_fragment_table(__last_highlight_atom);
       color = palette.get_color(__last_fragment);
@@ -478,9 +468,9 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     if(is_unselected_atom){
       // unselect if the atom was selected
       if(is_mode_atom){
-        m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*m_radius_color[u_unselected_atom][1];
-        m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*m_radius_color[u_unselected_atom][2];
-        m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*m_radius_color[u_unselected_atom][3];
+        m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,1); //m_radius_color[u_unselected_atom][1];
+        m_atom_rcolor[u_unselected_atom][2] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,2); //m_radius_color[u_unselected_atom][2];
+        m_atom_rcolor[u_unselected_atom][3] = f_atom_brightness*supercell.get_radius_color(u_unselected_atom,3); //m_radius_color[u_unselected_atom][3];
       }else{
         color = palette.get_color(supercell.get_fragment_table(u_unselected_atom));
         m_atom_rcolor[u_unselected_atom][1] = f_atom_brightness*color.r;
@@ -528,7 +518,7 @@ void Fl_Gl_Mol_View::draw_bonds(void){
   for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
     for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
       for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
-        for(uint i=0; i<i_number_of_bonds; i++){
+        for(uint i=0; i<supercell.get_number_of_bonds(); i++){
           _ang = m_bond_angles[i];
           _xyz = m_bond_position[i];
           _xyz=_xyz+2.0*(x*_vu+y*_vv+z*_vw);
@@ -578,7 +568,7 @@ void Fl_Gl_Mol_View::draw_bonds(void){
         std::cout<<" ("<<xu<<","<<yu<<","<<zu<<")"<<std::endl;
 #endif
         if(!(pos_x_cells==0 && pos_y_cells==0 && pos_z_cells==0)){  // avoid incomplete bonds in the unit cell
-          for(uint i=0; i<i_number_of_bonds_pbc; i++){
+          for(uint i=0; i<supercell.get_number_of_bonds_pbc(); i++){
             if((supercell.get_bond_boundary_pbc(i,0)==0 || (supercell.get_bond_boundary_pbc(i,0)!=xu && xu!=2)) \
             && (supercell.get_bond_boundary_pbc(i,1)==0 || (supercell.get_bond_boundary_pbc(i,1)!=yu && yu!=2)) \
             && (supercell.get_bond_boundary_pbc(i,2)==0 || (supercell.get_bond_boundary_pbc(i,2)!=zu && zu!=2))){
@@ -669,7 +659,9 @@ void Fl_Gl_Mol_View::draw_symbols(void){
     // zoom in and zoom out
     glScalef(zoom,zoom,zoom);
     // set label text offset
-    glTranslatef(0.5*f_atom_radius_scale*m_radius_color[i][0],0.5*f_atom_radius_scale*m_radius_color[i][0],4.1*f_atom_radius_scale*m_radius_color[i][0]);
+    //supercell.get_radius_color(u_unselected_atom,3)
+    glTranslatef(0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),0.5*f_atom_radius_scale*supercell.get_radius_color(i,0),4.1*f_atom_radius_scale*supercell.get_radius_color(i,0));
+    //glTranslatef(0.5*f_atom_radius_scale*m_radius_color[i][0],0.5*f_atom_radius_scale*m_radius_color[i][0],4.1*f_atom_radius_scale*m_radius_color[i][0]);
     glMultMatrixf((GLfloat*)rot_matrix);
     //glNormal3f(0,0,1);
     // text position
@@ -701,7 +693,7 @@ void Fl_Gl_Mol_View::draw_selected_numbers(void){
     // zoom in and zoom out
     glScalef(zoom,zoom,zoom);
     // set label text offset
-    glTranslatef(0,0,2.0*f_atom_radius_scale*m_radius_color[v_selected_atoms[i]][0]);
+    glTranslatef(0,0,2.0*f_atom_radius_scale*supercell.get_radius_color(v_selected_atoms[i],0)); //   m_radius_color[v_selected_atoms[i]][0]);
     glMultMatrixf((GLfloat*)rot_matrix);
     glNormal3f(0,0,1);
     // text position

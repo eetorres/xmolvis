@@ -86,14 +86,14 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   // Compute functions
   /////////////////////////////////////////////////////////////////////////////////
-  void compute_fragmol_direct(void);
-  void compute_fragmol_position_cartesian(void);
+  //void compute_position_direct(void);
+  void compute_position_cartesian(void);
   //
   /////////////////////////////////////////////////////////////////////////////////
   // Evaluation functions
   /////////////////////////////////////////////////////////////////////////////////
   void eval_initial_position(void);
-  void eval_fragmol_initial_orientation(void);
+  void eval_initial_orientation(void);
   //void eval_cell_table(void);
   void eval_connections(uint);
   bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
@@ -122,14 +122,14 @@ public:
   //
   void set_gsf_modified(const bool);
   //
-  void set_fragmol_active_fragment(const uint);
+  void set_active_fragment(const uint);
   void set_input_file_type(const uint);
   void set_input_file_units(const uint);
   void set_output_file_type(const uint);
   void set_output_file_format(const uint);
   void set_export_format(const uint);
   //
-  void set_fragmol_fragment_twist(const real);
+  void set_fragment_twist(const real);
   void set_fragmol_fragment_precession(const real);
   void set_fragmol_fragment_tilt(const real);
   //
@@ -194,9 +194,9 @@ public:
   //
   TVector<real> get_fragmol_axis_angles(void);
   TVector<real> get_fragmol_basis_direct(void);
-  TVector<real> get_fragmol_position_direct(void);
+  TVector<real> get_position_direct(void);
   TVector<real> get_fragmol_position_uvw(void);
-  TVector<real> get_fragmol_position_cartesian(void);
+  TVector<real> get_position_cartesian(void);
   TVector<real> get_fragmol_centered_position_cartesian(void);
   //
   TVector<real> get_cartesian(uint);
@@ -238,13 +238,17 @@ public:
   void set_bbox(const TVector<real>& v){ v_bbox = v;};
   real get_bbox(uint u){ return v_bbox[u];};
   TVector<real> get_bbox(void){ return v_bbox;};
+  TVector<real> get_radius_color(uint u){ return m_radius_color[u];};
+  real get_radius_color(uint u1, uint u2){ return m_radius_color[u1][u2];};
   void set_box_size(const TVector<real>& v){ v_box_size = 2.0*v;};
   TVector<real> get_box_size(void){ return v_box_size;};
   TVector<real> get_cell_frac(void){ return v_cell_frac;};
   TVector<int>  get_neighbor_cells_xyz(uint u){ return neighbor_cells_xyz[u];};
   TMatrix<real> get_inv_bbox(void){ return m_inv_bbox;};
-  void set_inv_bbox(const TMatrix<real>& m){ m_inv_bbox=m;};
-  void set_radius_color(const TMatrix<real>& m){ m_radius_color=m;};
+
+  void set_inv_bbox(void);
+  void set_radius_color(void);
+  TMatrix<real> get_radius_color(void);
   // Temporal pbulic variables
   TVector<real> v_bbox;
   TVector<int>  v_cell_side, v_cell_list, v_cell_head;
@@ -261,7 +265,7 @@ public:
   uint get_bond_indices_pbc(uint u1, uint u2){ return m_bond_indices_pbc[u1][u2];};
   uint get_bond_table(uint u){ return v_bond_table[u];};
   uint get_bond_types(void){ return v_bond_table.size();};
-  uint check_bond(uint);
+  inline uint check_bond(uint);
   // bond variables
   real f_atom_bond_delta;
   TVector<uint> v_bond_table;

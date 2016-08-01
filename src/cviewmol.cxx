@@ -48,7 +48,7 @@ void CViewmol::update_view(void){
 }
 
 void CViewmol::set_view_active_fragment(const unsigned int ui){
-  set_map_active_fragment(ui);
+  set_active_fragment(ui);
 }
 
 void CViewmol::set_view_bounding_box(void){
@@ -289,9 +289,9 @@ TVector<real> CViewmol::get_view_basis_direct(void){
   return supercell.get_fragmol_basis_direct();
 }
 
-TVector<real> CViewmol::get_view_position_direct(void){
-  return get_map_position_direct();
-}
+//TVector<real> CViewmol::get_view_position_direct(void){
+//  return get_map_position_direct();
+//}
 
 TVector<real> CViewmol::get_view_position_uvw(void){
   return get_map_position_uvw();
@@ -306,20 +306,21 @@ TVector<real> CViewmol::get_view_position_spheric(void){
   return _rpt;
 }
 
-TVector<real> CViewmol::get_view_position_cartesian(void){
-  return get_map_position_cartesian();
-}
+//TVector<real> CViewmol::get_view_position_cartesian(void){
+//  return get_map_position_cartesian();
+//}
 
+// deprecated
 //TVector<real> CViewmol::get_view_centered_position_cartesian(void){
 //  return get_map_centered_position_cartesian();
 //}
-
-TMatrix<real> CViewmol::get_view_bounding_box(void){
+// deprecated
+//TMatrix<real> CViewmol::get_view_bounding_box(void){
   // becausee of the symetry only half is needed for the visualization
   //return 0.5*m_view_bbox;
-  return 0.5*supercell.get_uvw_to_xyz();
-}
-
+  //return 0.5*supercell.get_uvw_to_xyz();
+//}
+// deprecated
 // This function return the coordinates showed by the rendering
 //TMatrix<real> CViewmol::get_view_cartesian(void){
  //return get_map_cartesian();

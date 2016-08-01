@@ -209,11 +209,8 @@ public:
   //
   void set_selected_atom(uint);
   void set_active_slider(uint);
-  //void set_active_fragment(uint);
-  //void set_new_fragment(uint);
   void set_active_radio(uint,bool);
   //
-  //void set_fragment_total(uint);
   void set_update_active_fragment(void);
   //
   void set_atom_brightness(real);
@@ -228,13 +225,7 @@ public:
   //
   //void set_basis_vectors(const TVector<real>&,const TVector<real>&,const TVector<real>&);
   // End GUI controls
-  //void set_atomic_labels(const TVector<std::string>&);
-  //void set_atomic_symbols(const TVector<std::string>&);
-  //void set_atomic_symbol_table(const TVector<std::string>&);
-  //void set_atomic_numbers(const TVector<uint>&);
-  //void set_atom_table(const TVector<uint>&);
   void set_atomic_cut_radius(void);
-  //void set_fragment_table(const TVector<uint>&);
   //
   uint get_highlight_atom(void);
   uint get_action(void){ return last_action;};

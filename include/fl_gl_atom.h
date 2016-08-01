@@ -93,7 +93,7 @@ public:
   void initialize_transform_matrix(void);
   void initialize_rotation_matrix(void);
   void initialize_atomic_coordinates(void);
-  void set_bounding_box(const TMatrix<real>&);
+  void set_bounding_box(void);
   //
   void set_x_cells(int);
   void set_y_cells(int);
@@ -105,12 +105,6 @@ public:
   void set_fragment_active(uint);
   void set_active_fragment_index(const uint u){ __fragment_active=u;};
   void set_active_fragment(const uint);
-  //void set_new_fragment(const uint);
-  //void set_atom_fragment(const uint);
-  //
-  //void set_fragment_table(const TVector<uint>&);
-  // Tue Feb 26 12:25:32 MST 2013
-  // Migrated from fl_gl_mol_view.h
   void set_axis_position(const TVector<real>&);
   void set_axis_precession(real f){ __axis_precession=f;};
   void set_axis_tilt(real f){ __axis_tilt=f;};
@@ -151,7 +145,6 @@ public:
   void add_stick(const TVector<real>&,real,real,real,real);
   void add_axis(const TVector<real>&,real,real,real,real);
   //
-  inline uint check_bond(uint);
   inline void linearly_interpolate(point*,point*,float,point*);
   inline void normalize_point(point*);
   //
@@ -199,8 +192,6 @@ protected:
   bool update_coordinates;
   //
   int  __number_of_atoms;
-  uint  i_number_of_bonds; // deprecated
-  uint i_number_of_bonds_pbc;// deprecated
   uint u_sphere_resolution;
   int  u_sphere_rows;
   int  __sphere_strip_length;
@@ -240,9 +231,6 @@ protected:
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
-  //TVector<uint> v_bond_number; // deprecated
-  TVector<uint> v_bond_number_pbc; // deprecated
-  TVector<uint> v_bond_table; // deprecated
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
@@ -254,12 +242,6 @@ protected:
   TVector<uint> v_cell_number;
   TVector<int>  v_neighbor_cell, v_md_pbc;
   //
-  //
-  TMatrix<uint> m_bond_indices; // deprecated
-  TMatrix<uint> m_bond_indices_pbc; // deprecated
-  // bonds with PBC
-  TMatrix<int>  m_bond_boundary_pbc; // deprecated
-  //
   TMatrix<real> m_sphere;
   TMatrix<real> m_cylinder;
   // cylinder
@@ -269,7 +251,6 @@ protected:
   TMatrix<real> m_cylinder_texture1;
   // Atoms for visualization
   TMatrix<real> m_atom_position;
-  TMatrix<real> m_radius_color; // deprecated
   TMatrix<real> m_atom_rcolor;
   //
   TMatrix<real> m_bond_rcolor_0;
@@ -283,8 +264,7 @@ protected:
   TMatrix<real> m_bond_position_pbc;
   TMatrix<real> m_bond_angles_pbc;
   // bounding box
-  TMatrix<real> m_bbox;
-  TMatrix<real> u_bbox;
+  // TMatrix<real> u_bbox;
   //
   private:
     CTimer gl_atom_clock;

@@ -1130,12 +1130,12 @@ void fl_xmol_view::update_information(void) {
       
       TVector<real> _v1;
       // Cartesian coordinate position
-      _v1 = mol3d->get_view_position_cartesian();
+      _v1 = mol3d->get_position_cartesian();
       //cartesian_x_coordinate->value(_v1[0]);
       //cartesian_y_coordinate->value(_v1[1]);
       //cartesian_z_coordinate->value(_v1[2]);
       // Reduced direct coordinate position
-      _v1 =  mol3d->get_view_position_direct();
+      _v1 =  mol3d->get_position_direct();
       //direct_ru_coordinate->value(_v1[0]);
       //direct_rv_coordinate->value(_v1[1]);
       //direct_rw_coordinate->value(_v1[2]);

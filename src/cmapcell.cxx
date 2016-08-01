@@ -114,12 +114,12 @@ void CMapcell::eval_map_properties(void){
 }
 
 // This function have to be called everytime the axis are changed
-void CMapcell::set_map_active_fragment(const unsigned int i){
+void CMapcell::set_active_fragment(const unsigned int i){
   __active_fragment=i;
 #ifdef _debugging_messages_
   std::cout<<"MAPMOL: active fragment ="<<__active_fragment<<std::endl;
 #endif
-  supercell.set_fragmol_active_fragment(i);
+  supercell.set_active_fragment(i);
   if(!supercell.is_fragmol_initialized()){
 #ifdef _debugging_messages_
     std::cout<<"MAPMOL: initializing the fragment"<<std::endl;
@@ -127,19 +127,19 @@ void CMapcell::set_map_active_fragment(const unsigned int i){
     supercell.eval_initial_position();
     // this is now done inside cfragment
     // compute_fragmol_axis_angles();
-    supercell.eval_fragmol_initial_orientation();
+    supercell.eval_initial_orientation();
     supercell.is_fragmol_initialized(true);
 #ifdef _debugging_messages_
     std::cout<<"MAPMOL: fragment initialized"<<std::endl;
 #endif
   }
-  supercell.compute_fragmol_position_cartesian();
+  supercell.compute_position_cartesian();
   eval_map_cartesian();
   eval_map_direct();
 }
 
 void CMapcell::map_update_active_fragment(void){
-  supercell.compute_fragmol_position_cartesian();
+  supercell.compute_position_cartesian();
   eval_map_cartesian();
   eval_map_direct();
 }
@@ -200,7 +200,7 @@ void CMapcell::set_map_precession_steps(const unsigned int i){
 
 void CMapcell::set_map_fragment_twist(const real r){
   supercell.set_gsf_modified(true);
-  supercell.set_fragmol_fragment_twist(r);
+  supercell.set_fragment_twist(r);
 }
 
 void CMapcell::set_map_fragment_precession(const real r){
@@ -367,16 +367,16 @@ TVector<real> CMapcell::get_map_basis_direct(void){
   return supercell.get_fragmol_basis_direct();
 }
 
-TVector<real> CMapcell::get_map_position_direct(void){
-  return supercell.get_fragmol_position_direct();
+TVector<real> CMapcell::get_position_direct(void){
+  return supercell.get_position_direct();
 }
 
 TVector<real> CMapcell::get_map_position_uvw(void){
   return supercell.get_fragmol_position_uvw();
 }
 
-TVector<real> CMapcell::get_map_position_cartesian(void){
-  return supercell.get_fragmol_position_cartesian();
+TVector<real> CMapcell::get_position_cartesian(void){
+  return supercell.get_position_cartesian();
 }
 
 TVector<real> CMapcell::get_centered_position_cartesian(void){

@@ -28,10 +28,7 @@ Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Box(x,y,w,h,l
   neg_z_cells = 0;
   u_sphere_resolution = 0;
   u_cylinder_resolution = 10;
-  i_number_of_bonds = 0;
-  i_number_of_bonds_pbc = 0;
   is_eval_sphere=true;
-
   total_cells = 1;
   x_cells = 1;
   y_cells = 1;
@@ -64,7 +61,6 @@ void Fl_Gl_Atom::eval_initial_properties(void){
   real _radius;
   TVector<real> _atom_xyz;
   TVector<real> _rcolor(4);
-  m_radius_color.resize(get_total_atoms(),4);
   index_palette.set_color(0);
   index_palette.initialize(0,get_total_atoms()+MENU_RESERVED_IDS,get_total_atoms()+MENU_RESERVED_IDS);
   index_palette.update_palette_index();
@@ -77,21 +73,9 @@ void Fl_Gl_Atom::eval_initial_properties(void){
     is_eval_sphere=false;
   }
   if(is_draw_atoms_){
-    for(int i=0; i<get_total_atoms(); i++){
-      //i_z=v_atom_numbers[i];
-      i_z=get_atomic_number(i);
-      //_radius=atom_rrgb[i_z][0];
-      //_rcolor[0]=_radius;
-      _rcolor[0] = atom_rrgb[i_z][0];
-      _rcolor[1] = atom_rrgb[i_z][1];
-      _rcolor[2] = atom_rrgb[i_z][2];
-      _rcolor[3] = atom_rrgb[i_z][3];
-      m_radius_color[i]=_rcolor;
-      //m_radius_color[i]=atom_rrgb[i_z];
-    }
+    supercell.set_radius_color();
   }
-  m_atom_rcolor = m_radius_color;
-  supercell.set_radius_color( m_radius_color);
+  m_atom_rcolor = supercell.get_radius_color();
 }
 
 void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
@@ -99,7 +83,6 @@ void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
 }
 
 void Fl_Gl_Atom::update_atomic_coordinates(void){
-  //m_atom_coordinates = m;
   is_update_bonds = true;
   is_update_atomic_properties = true;
   is_update_mask_rcolor = true;
@@ -111,7 +94,6 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(void){
   std::cout<<" ATOM: Initialize"<<std::endl;
 #endif
   update_atomic_coordinates();
-  //__number_of_atoms = get_total_atoms(); //m_atom_coordinates.rows();
   if(get_total_atoms()<100){
     supercell.is_linked_cell(false);
   }
@@ -160,11 +142,9 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
   TVector<real> vi, vj, vij, vang(2);
   TVector<real> vi_uvw, vj_uvw, vij_uvw;
   TVector<int>  v_pbc;
-  for(uint n=0; n<i_number_of_bonds; n++){
+  for(uint n=0; n<supercell.get_number_of_bonds(); n++){
     i=supercell.get_bond_indices(n,0); //m_bond_indices[n][0];
     j=supercell.get_bond_indices(n,1);  //m_bond_indices[n][1];
-    //vi = m_atom_coordinates[i];
-    //vj = m_atom_coordinates[j];
     vi = get_cartesian(i);
     vj = get_cartesian(j);
     vij = (vj-vi);
@@ -179,17 +159,15 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
   }
   // THERE IS A BIG BUG HERE
   // PBC BONDS DONT SHOW CORRECT
-  for(uint n=0; n<i_number_of_bonds_pbc; n++){
+  for(uint n=0; n<supercell.get_number_of_bonds_pbc(); n++){
     i=supercell.get_bond_indices_pbc(n,0);  //m_bond_indices_pbc[n][0];
     j=supercell.get_bond_indices_pbc(n,1);  //m_bond_indices_pbc[n][1];
-    //vi = m_atom_coordinates[i];
     vi = get_cartesian(i);
     vi_uvw = (vi*supercell.get_inv_bbox());
-    //vj = m_atom_coordinates[j];
     vj = get_cartesian(j);
     for(uint coord=0; coord<3; coord++){
       if ( supercell.get_bond_boundary_pbc(n,coord) != 0 )
-        vj += supercell.get_bond_boundary_pbc(n,coord)*2.0*m_bbox[coord];       // PBC
+        vj += supercell.get_bond_boundary_pbc(n,coord)*supercell.get_uvw_to_xyz(coord); //2.0*m_bbox[coord];       // PBC
     }
     vj_uvw = (vj*supercell.get_inv_bbox());
     vij = (vj-vi);
@@ -289,7 +267,7 @@ void Fl_Gl_Atom::save_wysiwyg_as(std::string _p, std::string _f){
       eval_atomic_bonds();  // <----------
       is_eval_bonds=false;
     }
-    supercell.eval_connections(i_number_of_bonds);
+    supercell.eval_connections(supercell.get_number_of_bonds());
   }
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: do save_wysiwyg_as (1)"<<std::endl;
@@ -329,36 +307,25 @@ void Fl_Gl_Atom::save_wysiwyg_extension(std::string _f){
   supercell.save_as_file(_fext,is_draw_symbols_,is_draw_numbers_,m_atom_position,x_cells,y_cells,z_cells,total_cells,is_draw_bbox_);
 }
 
-void Fl_Gl_Atom::set_bounding_box(const TMatrix<real>& m){
+void Fl_Gl_Atom::set_bounding_box(void){
   TVector<real> v_bb;
-  m_bbox = m;
-  u_bbox.resize(3,3);
   v_bb.resize(3);
-  _vu = m_bbox[0];
-  _vv = m_bbox[1];
-  _vw = m_bbox[2];
+  _vu = 0.5*supercell.get_uvw_to_xyz(0); //m_bbox[0];
+  _vv = 0.5*supercell.get_uvw_to_xyz(1); //m_bbox[1];
+  _vw = 0.5*supercell.get_uvw_to_xyz(2); //m_bbox[2];
   // set up the half box sides
   v_bb[0]=_vu.magnitude();
   v_bb[1]=_vv.magnitude();
   v_bb[2]=_vw.magnitude();
   supercell.set_bbox(v_bb);
   // the full box is used for the bond search method
-  //v_box_size = 2.0*v_bbox;
   supercell.set_box_size(v_bb);
-  u_bbox=supercell.get_unit_uvw_to_xyz();
-  supercell.set_inv_bbox(u_bbox.inverse());
+  supercell.set_inv_bbox();
   // set view size
   base_view = maxi(_vu.magnitude(), _vv.magnitude());
   base_view = maxi(base_view, _vw.magnitude());
   r_axes_position = 0.9*base_view;
   base_view *= 1.1;
-//#ifdef _ATOM_DEBUG_MESSAGES_
-  //std::cout<<" Unit cell = "<<m_bbox<<std::endl;
-  //std::cout<<" Half Box = "<<v_bbox<<std::endl;
-  //std::cout<<" Full Box = "<<v_box_size<<std::endl;
-  //std::cout<<" Unit Box = "<<u_bbox<<std::endl;
-  //std::cout<<" Unit Inv Box = "<<supercell.get_inv_bbox()<<std::endl;
-//#endif
 }
 
 void Fl_Gl_Atom::initialize_sphere(real r){
@@ -491,36 +458,28 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: estimated max bonds "<<max_bonds<<std::endl;
 #endif
-  v_bond_table.resize(0);
-  i_number_of_bonds = 0;
-  i_number_of_bonds_pbc = 0;
   ////////////////////////////////////////
   supercell.eval_atomic_bonds();
-  i_number_of_bonds = supercell.get_number_of_bonds();
-  i_number_of_bonds_pbc = supercell.get_number_of_bonds_pbc();
   //
-  m_bond_rcolor_0.resize(i_number_of_bonds,4);
-  m_bond_rcolor_1.resize(i_number_of_bonds,4);
-  m_bond_rcolor_pbc_0.resize(i_number_of_bonds_pbc,4);
-  m_bond_rcolor_pbc_1.resize(i_number_of_bonds_pbc,4);
+  m_bond_rcolor_0.resize(supercell.get_number_of_bonds(),4);
+  m_bond_rcolor_1.resize(supercell.get_number_of_bonds(),4);
+  m_bond_rcolor_pbc_0.resize(supercell.get_number_of_bonds_pbc(),4);
+  m_bond_rcolor_pbc_1.resize(supercell.get_number_of_bonds_pbc(),4);
   //
-  m_bond_angles.resize(i_number_of_bonds,2);
-  m_bond_angles_pbc.resize(i_number_of_bonds_pbc,2);
-  m_bond_position.resize(i_number_of_bonds,3);
-  m_bond_position_pbc.resize(i_number_of_bonds_pbc,3);
+  m_bond_angles.resize(supercell.get_number_of_bonds(),2);
+  m_bond_angles_pbc.resize(supercell.get_number_of_bonds_pbc(),2);
+  m_bond_position.resize(supercell.get_number_of_bonds(),3);
+  m_bond_position_pbc.resize(supercell.get_number_of_bonds_pbc(),3);
 #ifdef _ATOM_DEBUG_BONDS_
-  std::cout<<" ATOM: i_number_of_bonds="<<i_number_of_bonds<<std::endl;
-  std::cout<<" ATOM: i_number_of_bonds_pbc="<<i_number_of_bonds_pbc<<std::endl;
-  //std::cout<<" ATOM: v_bond_number="<<v_bond_number;
-  //std::cout<<" ATOM: v_bond_number_pbc="<<v_bond_number_pbc;
-  std::cout<<" ATOM: v_bond_table="<<v_bond_table;
+  std::cout<<" ATOM: i_number_of_bonds="<<supercell.get_number_of_bonds()<<std::endl;
+  std::cout<<" ATOM: i_number_of_bonds_pbc="<<supercell.get_number_of_bonds_pbc()<<std::endl;
   std::cout<<" ATOM: m_bond_position_pbc="<<m_bond_position_pbc;
 #endif
   u_bond_types=supercell.get_bond_types();
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: max number of bonds "<<max_bonds<<std::endl;
-  std::cout<<" ATOM: number of bonds "<<i_number_of_bonds<<std::endl;
-  std::cout<<" ATOM: number of PBC bonds "<<i_number_of_bonds_pbc<<std::endl;
+  std::cout<<" ATOM: number of bonds "<<supercell.get_number_of_bonds()<<std::endl;
+  std::cout<<" ATOM: number of PBC bonds "<<supercell.get_number_of_bonds_pbc()<<std::endl;
   std::cout<<" ATOM: eval_atomic_bonds "<<std::endl;
 #endif
   update_atomic_bonds();
@@ -533,36 +492,24 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
 }
 
 void Fl_Gl_Atom::set_palette(uint u){
-  //__fragment_total=u;
   palette.set(u);
   palette.set_color(4);
   palette.initialize(0,u,u);
   palette.update_palette_real();
 }
 
-// Deprecated
-//void Fl_Gl_Atom::set_fragment_table(const TVector<uint>& v){
-//  v_fragment_table_gl = v;
-//#ifdef _SHOW_DEBUG_FRAGMENTS_
-//  std::cout<<" FL_GL_ATOM: fragment table: "<<v_fragment_table_gl;
-//#endif
-//}
-
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
   set_palette(supercell.get_number_of_fragments());
-  //set_fragment_table(supercell.get_fragment_table());
-  //__fragment_active=v_fragment_table_gl[_u];
   if(_sw)
     set_active_fragment_index(supercell.get_fragment_table(_u));
   else
     set_active_fragment_index(_u);
 #ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" total fragments: "<<__fragment_total<<std::endl;
+  std::cout<<" total fragments: "<<supercell.get_number_of_fragments()<<std::endl;
 #endif
   set_update_coordinates(true);
   // fragments are counted from 1
-  set_map_active_fragment(__fragment_active-1);
-  //set_fragment_active(_af); // the same as zero above.
+  set_active_fragment(__fragment_active-1);
   is_eval_bonds=true;
   is_update_bonds=true;
   //update_bonds_color=true;
@@ -586,18 +533,11 @@ void Fl_Gl_Atom::compute_vdw_fragment(const uint _u){
 void Fl_Gl_Atom::compute_atom_fragments(void){
   // Use fragment number
   update_fragments(1,false);
-#ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" total fragments: "<<__fragment_total<<std::endl;
-#endif
 }
 
 void Fl_Gl_Atom::compute_vdw_fragments(void){
   // Use fragment number
   update_fragments(1,false);
-  //set_fragment_total(get_view_total_fragments());
-#ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" total fragments: "<<__fragment_total<<std::endl;
-#endif
 }
 
 void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
@@ -611,20 +551,9 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
   _af= supercell.get_fragment_table(_a);
   __fragment_active=_af;
   // fragments are counted from 1
-  set_map_active_fragment(_af-1);
+  set_active_fragment(_af-1);
   set_update_coordinates(true);
   update_data(); //<-------------------------
-}
-
-uint Fl_Gl_Atom::check_bond(uint u){
-  uint size = v_bond_table.size();
-  for(uint i=0; i<size; i++){
-    if(v_bond_table[i]==u){
-      return i;
-    }
-  }
-  v_bond_table.push_back(u);
-  return size;
 }
 
 void Fl_Gl_Atom::eval_sphere(uint maxlevel){
