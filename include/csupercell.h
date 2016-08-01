@@ -197,7 +197,7 @@ public:
   TVector<real> get_position_direct(void);
   TVector<real> get_fragmol_position_uvw(void);
   TVector<real> get_position_cartesian(void);
-  TVector<real> get_centered_position_cartesian(void);
+  TVector<real> get_fragment_centered_position_cartesian(void);
   //
   TVector<real> get_cartesian(uint);
   TVector<real> get_direct(uint);
@@ -249,12 +249,12 @@ public:
   void set_inv_bbox(void);
   void set_radius_color(void);
   TMatrix<real> get_radius_color(void);
-  // Temporal pbulic variables
+  // Temporal public variables
   TVector<real> v_bbox;
   TVector<int>  v_cell_side, v_cell_list, v_cell_head;
   TMatrix<real> m_inv_bbox;
   TMatrix<int>  neighbor_cells_xyz;
-  // bond fuctions
+  // bond functions
   uint get_number_of_bonds(void){ return i_number_of_bonds;};
   uint get_number_of_bonds_pbc(void){ return i_number_of_bonds_pbc;};
   uint get_bond_number(uint u){ return v_bond_number[u];};
@@ -301,20 +301,9 @@ private:
   std::ofstream otopmol;
   ///
   TVector<real> v_cell_frac, v_box_size, v_box_middle;
-  //TVector<CFragment> v_fragments;
-  //TVector<uint> v_atomic_composition_table;
-  //TVector<uint> v_atomic_number_table;
-  //TVector<uint> v_atomic_numbers;
-  //TVector<uint> v_atom_type_table;
-  //TVector<uint> v_atom_cell_table;
-  //TVector<std::string> v_atomic_labels;
-  //TVector<std::string> v_atomic_symbols;
-  //TVector<std::string> v_atomic_symbol_table;
   //
   TMatrix<real> m_xyz;
   TMatrix<real> m_uvw;
-  //TMatrix<real> m_uvw_to_xyz;
-  //TMatrix<real> m_uvw_to_xyz_u;
   //
   std::string inputfile, output_filename, potmolfile, __sdir;
   //

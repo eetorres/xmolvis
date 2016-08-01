@@ -242,10 +242,10 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_palette(supercell.get_number_of_fragments());
     initialize_atomic_coordinates();
     // End GUI functions
-#ifdef _ATOM_DATA_MESSAGES_
-    std::cout<<" GLMOL: atom labels = "<<v_atom_labels;
-    std::cout<<" GLMOL: atom symbols = "<<v_atom_symbols;
-#endif
+//#ifdef _ATOM_DATA_MESSAGES_
+//    std::cout<<" GLMOL: atom labels = "<<v_atom_labels;
+//    std::cout<<" GLMOL: atom symbols = "<<v_atom_symbols;
+//#endif
     // allow to display the OpenGL scene
     is_graphics(true);
     set_update_coordinates(true);

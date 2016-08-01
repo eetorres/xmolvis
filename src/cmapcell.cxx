@@ -379,8 +379,8 @@ TVector<real> CMapcell::get_position_cartesian(void){
   return supercell.get_position_cartesian();
 }
 
-TVector<real> CMapcell::get_centered_position_cartesian(void){
-  return supercell.get_centered_position_cartesian();
+TVector<real> CMapcell::get_fragment_centered_position_cartesian(void){
+  return supercell.get_fragment_centered_position_cartesian();
 }
 
 TVector<real> CMapcell::get_cartesian(uint u){

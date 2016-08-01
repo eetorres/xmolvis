@@ -466,7 +466,7 @@ TVector<real> CSupercell::get_position_cartesian(void){
   return gsf.v_fragments[__active_fragment].get_origin_cartesian();
 }
 
-TVector<real> CSupercell::get_centered_position_cartesian(void){
+TVector<real> CSupercell::get_fragment_centered_position_cartesian(void){
   return gsf.v_fragments[__active_fragment].get_centered_origin_cartesian();
 }
 

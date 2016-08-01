@@ -123,7 +123,7 @@ void Fl_Gl_Atom::update_data(void){
   update_view();
   if(update_coordinates){
     update_atomic_coordinates();
-    set_axis_position(get_centered_position_cartesian());
+    set_axis_position(get_fragment_centered_position_cartesian());
     set_axis_precession(get_axis_precession());
     set_axis_tilt(get_axis_tilt());
     set_backbone_precession(get_backbone_precession());
@@ -137,11 +137,12 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: start - update_atomic_bonds(void)"<<std::endl;
 #endif
-  uint i, j;//,  nbonds;
+  uint i, j;
   real rlz, rlxy;
   TVector<real> vi, vj, vij, vang(2);
   TVector<real> vi_uvw, vj_uvw, vij_uvw;
   TVector<int>  v_pbc;
+  // IN CELL BONDS
   for(uint n=0; n<supercell.get_number_of_bonds(); n++){
     i=supercell.get_bond_indices(n,0); //m_bond_indices[n][0];
     j=supercell.get_bond_indices(n,1);  //m_bond_indices[n][1];
@@ -157,8 +158,7 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
     m_bond_angles[n]=vang;
     m_bond_position[n]=vij;
   }
-  // THERE IS A BIG BUG HERE
-  // PBC BONDS DONT SHOW CORRECT
+  // PBC BONDS
   for(uint n=0; n<supercell.get_number_of_bonds_pbc(); n++){
     i=supercell.get_bond_indices_pbc(n,0);  //m_bond_indices_pbc[n][0];
     j=supercell.get_bond_indices_pbc(n,1);  //m_bond_indices_pbc[n][1];
@@ -442,9 +442,6 @@ void Fl_Gl_Atom::add_axis(const TVector<real>& c,real l, real r, real a1, real a
   glEnd();
 }
 
-// Fri Jan 13 16:55:51 MST 2012
-// beta version
-// find bonds between atoms closer than the sum of their van der Waals radius
 void Fl_Gl_Atom::eval_atomic_bonds(void){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: eval_atomic_bonds "<<std::endl;

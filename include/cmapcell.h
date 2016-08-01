@@ -133,7 +133,7 @@ public:
   TVector<real> get_map_position_uvw(void);
   //
   TVector<real> get_position_cartesian(void);
-  TVector<real> get_centered_position_cartesian(void);
+  TVector<real> get_fragment_centered_position_cartesian(void);
   TVector<real> get_map_axis_direct_origin(void);
   TVector<real> get_map_axis_cartesian_origin(void);
   //

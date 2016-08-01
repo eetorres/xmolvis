@@ -227,7 +227,7 @@ protected:
   GLfloat   tb_lastposition[3];
   GLfloat   scaled_light_position[4];
   // end trackball
-  // axis
+  // Visualization details
   TVector<real> v_axes_position;
   TVector<real> v_axis_position;
   TVector<real> v_bond_length;
@@ -263,8 +263,6 @@ protected:
   // bonds with PBC
   TMatrix<real> m_bond_position_pbc;
   TMatrix<real> m_bond_angles_pbc;
-  // bounding box
-  // TMatrix<real> u_bbox;
   //
   private:
     CTimer gl_atom_clock;

@@ -171,8 +171,9 @@ private:
   inline void cb_5_i(Fl_Button*, void*);
   static void cb_5(Fl_Button*, void*);
 public:
+  void open_directory(const char *d);
   void open_file();
-  void open_file(const char *df);
+  void open_file(const char *f,const char *d);
   void initialise_select(const char *p, const char *d);
   void readDefault();
   void readDefault(char* p);
@@ -186,7 +187,7 @@ public:
   void update_information(void);
   virtual void view_redraw(void);
   void show();
-  void show_view(const char *df);
+  void show_view();
   void resize(int x, int y, int w, int h);
 };
 #endif

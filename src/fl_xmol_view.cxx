@@ -704,6 +704,12 @@ fl_xmol_view::fl_xmol_view() {
   //
 }
 
+void fl_xmol_view::open_directory(const char *d) {
+  //
+    strcpy(dir_name,d);
+    std::cout<<" dir name: "<<dir_name<<std::endl;
+}
+
 void fl_xmol_view::open_file() {
   //
     ffmt=0;
@@ -782,9 +788,83 @@ void fl_xmol_view::open_file() {
     }
 }
 
-void fl_xmol_view::open_file(const char *df) {
+void fl_xmol_view::open_file(const char *f,const char *d) {
   //
-    strcpy(dir_name,(char*)df);
+    ffmt=0;
+    save_as_file_button->deactivate();
+    std::cout<<" dir name: "<<dir_name<<std::endl;
+    Fl_File_Chooser * p;
+    p = new Fl_File_Chooser(d,"*",0,"Open file");
+    p->directory(d);
+    //p->filter(filter1.c_str());
+    //p->show();
+    //while( p->visible()) Fl::wait();
+    //
+    p->value(f);
+    if(p->value()){
+      p_path_filename = (char*)p->value();
+      p_dir  = (char*)p->directory();
+      p_filename = fl_filename_name(p->value());
+  #ifdef __FL_MOL_VIEW__
+      std::cout<<" path_filename: "<<p_path_filename<<std::endl;
+      std::cout<<" dir: "<<p_dir<<std::endl;
+      std::cout<<" filename: "<<p_filename<<std::endl;
+  #endif
+      //
+      mol3d->supercell.set_input_file(p_filename);
+      ffmt = mol3d->get_view_file_type(p_filename);
+      if(ffmt !=INPUT_FILE_TYPE_UNKNOWN ){
+        //input_file_type->deactivate();
+        input_file_type->value(ffmt);
+        output_file_type->value(ffmt);
+        if(ffmt==1){ // XYZ only
+          input_file_units->activate();
+        }else{
+          input_file_units->deactivate();
+        }
+      }else{
+        //choice_format->value(choice_format->size()-1);
+        input_file_type->value(6);
+        output_file_type->value(6);
+        //input_file_type->activate();
+        input_file_units->deactivate();
+      }
+      //mol3d->clear();
+      //mol3d->set_dir(p_dir);
+      //mol3d->topmol_dir(p_dir);
+      //
+      strcpy(dir_name,p_dir);
+      strcpy(file_name,p_filename);
+      //    
+  #ifdef __FL_MOL_VIEW__
+      std::cout<<"======================================================================"<<std::endl;
+      std::cout<<" File Name = "<<p_filename<<std::endl;
+      std::cout<<" Dir Name = "<<p_dir<<std::endl;
+      std::cout<<"======================================================================"<<std::endl;
+  #endif
+      //fn->value(file_name);
+      //filename_box->value(p_filename);
+      // Name bar
+      sprintf(title_bar, "XMV - %s", p_path_filename);
+      main_window->label(title_bar);
+      if(ffmt != INPUT_FILE_TYPE_UNKNOWN){
+        load_file_button->activate();
+        load_file_button->color((Fl_Color)5);
+        load_file_button->redraw();
+      }else{
+        load_file_button->deactivate();
+      }
+      //fragment_button->deactivate();
+      sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+  #ifdef __FL_MOL_VIEW__
+      printf("%s\n",str_cmd);
+  #endif
+      std::ofstream offile(str_cmd, std::ofstream::trunc | std::ofstream::out | std::ofstream::in);
+      if (offile.is_open() && offile.good()){
+        offile<<p_dir;
+        offile.close();
+      }
+    }
 }
 
 void fl_xmol_view::initialise_select(const char *p, const char *d) {
@@ -1196,13 +1276,13 @@ void fl_xmol_view::show() {
     main_window->show();
 }
 
-void fl_xmol_view::show_view(const char *df) {
+void fl_xmol_view::show_view() {
   //
     static char verbuff[16];
     sprintf(verbuff,"XMV %s",AutoVersion::UBUNTU_VERSION_STYLE);
     vernum->label((const char*) verbuff);
     main_window->show();
-    open_file(df);
+    //open_file(df);
     load_file();
 }
 

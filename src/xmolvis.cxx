@@ -32,25 +32,36 @@
 //======================================================================//
 
 #include<fl_xmol_view.h>
+#include<limits.h>
+#include<unistd.h>
+
+std::string getexepath()
+{
+  char result[ PATH_MAX ];
+  char* bf = getcwd(result, PATH_MAX);
+  //ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+  //return std::string(result, (count > 0) ? count : 0 );
+  return result;
+}
 
 int main(int argc, char* argv[]){
 #if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
-  std::string dir_file;
-  char full_dir_file[256];
+  std::string dir_file = getexepath();
 #endif
   fl_xmol_view * mv = new fl_xmol_view();
 #if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
+  //fl_filename_absolute(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
+  //fl_filename_relative(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
+  std::cout<<" directory :"<<dir_file<<std::endl;
+  mv->open_directory(dir_file.c_str());
   //if ( argc > 1){
-    //std::cout<<" argument :"<<argv[1]<<std::endl;
-    //dir_file = argv[1];
-    dir_file = "";
-    fl_filename_absolute(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
-    std::cout<<" directory :"<<full_dir_file<<std::endl;
-    mv->open_file(full_dir_file);
+    //file_name = argv[1];
+    //std::cout<<" file :"<<file_name<<std::endl;
+    //mv->open_file(file_name.c_str(),full_dir_file);
   //}
 #endif
   mv->show();
-  //mv->show_view(full_dir_file);
+  //mv->show_view();
   Fl::run();
   return 0;
 }
