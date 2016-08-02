@@ -57,8 +57,6 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
 #endif // HAVE_GL
 {
   clear();
-  //glview.base_view = 10.0;
-  //glview.shift_factor = 0.05;
   // initialize fonts
   font_size_symbol=12;
   font_size_pie_label=12;
@@ -92,13 +90,12 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   is_lock_controls        = false;
   // Properties
   is_eval_bonds           = true;
-  is_update_bonds         = false;
-  update_bonds_color      = false;
+  //is_update_bonds         = false; // defined in gl_atom.h
+  is_update_bonds_color   = false;
   is_draw_bonds_          = false;
   is_initialize_rot       = true;
   // Behaviour
   is_control_left_on      = false;
-  //last_action = 0;
   // Arrays
   for(uint i=0; i<NUMBER_OF_RADIOS; i++){
     is_radio_active[i]    = false;
@@ -120,12 +117,11 @@ void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
   //
   is_eval_bonds           = true;
-  update_normal_color     = true;
-  update_bonds_color      = false;
-  update_dark_mask        = false;
-  update_highlight_fragment = false;
-  update_highlight_atom   = false;
-  update_coordinates      = false;
+  is_update_bonds_color   = false;
+  is_update_normal_color  = true;
+  is_update_dark_mask     = false;
+  is_update_highlight_fragment = false;
+  is_update_highlight_atom= false;
   u_active_menu           = NOT_MENU;
   //
   is_graphics_on          = false;
@@ -144,12 +140,14 @@ void Fl_Gl_Mol_View::clear(void){
   is_menu_pie_picked      = false;
   //
   is_mode_atom            = true;
+  // > defined in gl_atom.h
+  is_update_atomic_properties = false;
+  is_update_radius        = false;
+  is_update_mask_rcolor   = false;
+  is_update_coordinates   = false;
+  // < defined in gl_atom.h
   //
   is_draw_atoms_          = false;
-  is_update_mask_rcolor   = false;
-  is_update_radius        = false;
-  //
-  is_update_atomic_properties = false;
   is_normal_color_        = true;
   is_highlight_atom_      = true;
   is_highlight_fragment_  = false;
@@ -162,7 +160,6 @@ void Fl_Gl_Mol_View::clear(void){
   v_axes_position.resize(3);
   // initialize tools
   tools.clear();
-  //tools.u_selected_index        = 0;
   // initialize sliders
   u_slider_index          = 0;
   for(uint i=0; i<NUMBER_OF_SLIDERS; i++){
@@ -170,7 +167,7 @@ void Fl_Gl_Mol_View::clear(void){
   }
   // default slider
   is_slider_active[0]     = true;
-  // initialize radios
+  // initialize radio
   u_radio_index           = 0;
   label="";
 }
@@ -197,7 +194,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     is_graphics(true);
     set_update_coordinates(true);
     if(is_draw_bonds_){
-      update_bonds_color=true;
+      is_update_bonds_color=true;
       is_update_mask_rcolor=true;
     }
     //update_data();
@@ -221,7 +218,8 @@ void Fl_Gl_Mol_View::set_active_radio(uint u, bool b){
 // delete the lists if they exist
 void Fl_Gl_Mol_View::delete_sphere_dl(void){
   if(v_sphere_list.size() > 0){
-    for(uint i=0; i<supercell.get_atomic_species(); i++){
+    //for(uint i=0; i<supercell.get_atomic_species(); i++){
+    for(uint i=0; i<v_sphere_list.size(); i++){
       glDeleteLists(v_sphere_list[i],1);
     }
   }
@@ -288,7 +286,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
   std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (0)"<<std::endl;
 #endif
-  if(update_normal_color){
+  if(is_update_normal_color){
     for(int i=0; i<get_total_atoms(); i++){
       if(is_mode_atom){
         m_atom_rcolor[i][1] = setup.f_atom_brightness*supercell.get_radius_color(i,1); //m_radius_color[i][1];
@@ -301,13 +299,13 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         m_atom_rcolor[i][3] = setup.f_atom_brightness*color.b;
       }
     }
-    update_normal_color=false;
+    is_update_normal_color=false;
   }
+  //is_update_bonds_color=true;
+  if(is_update_bonds_color){
 #ifdef _GLMOL_DEBUG_BOND_COLORS_
   std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (1)"<<std::endl;
 #endif
-  //update_bonds_color=true;
-  if(update_bonds_color){
     for(uint i=0; i<supercell.get_number_of_bonds(); i++){
       int idx0 = supercell.get_bond_indices(i,0); //m_bond_indices[i][0];
       int idx1 = supercell.get_bond_indices(i,1); //m_bond_indices[i][1];
@@ -332,42 +330,44 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (2)"<<std::endl;
     std::cout<<" PBC bonds: "<<supercell.get_number_of_bonds_pbc()<<std::endl;
 #endif
-    for(uint i=0; i<supercell.get_number_of_bonds_pbc(); i++){
+    if(supercell.is_periodic()){
+      for(uint i=0; i<supercell.get_number_of_bonds_pbc(); i++){
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" bond number = "<<i<<std::endl;
 #endif
-      int idx0 = supercell.get_bond_indices_pbc(i,0); //m_bond_indices_pbc[i][0];
-      int idx1 = supercell.get_bond_indices_pbc(i,1); //m_bond_indices_pbc[i][1];
+        int idx0 = supercell.get_bond_indices_pbc(i,0); //m_bond_indices_pbc[i][0];
+        int idx1 = supercell.get_bond_indices_pbc(i,1); //m_bond_indices_pbc[i][1];
 #ifdef _ATOM_DEBUG_BOND_COLORS_
         std::cout<<" (idx0,idx1) = ("<<idx0<<","<<idx1<<")"<<std::endl;
 #endif
-      if(is_mode_atom){
-        m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
-        m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
-        m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
-        m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
-        m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
-        m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
-      }else{
+        if(is_mode_atom){
+          m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx0,1); //m_radius_color[idx0][1];
+          m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx0,2); //m_radius_color[idx0][2];
+          m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx0,3); //m_radius_color[idx0][3];
+          m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*supercell.get_radius_color(idx1,1); //m_radius_color[idx1][1];
+          m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*supercell.get_radius_color(idx1,2); //m_radius_color[idx1][2];
+          m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*supercell.get_radius_color(idx1,3); //m_radius_color[idx1][3];
+        }else{
 #ifdef _ATOM_DEBUG_BOND_COLORS_
-        std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
+          std::cout<<" bond("<<i<<")=["<<idx0<<","<<idx1<<"]="<<v_fragment_table_gl[idx0]<<std::endl;
 #endif
-        color = palette.get_color(supercell.get_fragment_table(idx0));
-        //vcolor = palette.get_vcolor(v_fragment_table_gl[idx0]);
-        //m_bond_rcolor_pbc_0[i] = setup.f_atom_brightness*vcolor;
-        m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*color.r;
-        m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*color.g;
-        m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*color.b;
-        //m_bond_rcolor_pbc_1[i] = setup.f_atom_brightness*vcolor;
-        m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*color.r;
-        m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*color.g;
-        m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*color.b;
+          color = palette.get_color(supercell.get_fragment_table(idx0));
+          //vcolor = palette.get_vcolor(v_fragment_table_gl[idx0]);
+          //m_bond_rcolor_pbc_0[i] = setup.f_atom_brightness*vcolor;
+          m_bond_rcolor_pbc_0[i][1] = setup.f_atom_brightness*color.r;
+          m_bond_rcolor_pbc_0[i][2] = setup.f_atom_brightness*color.g;
+          m_bond_rcolor_pbc_0[i][3] = setup.f_atom_brightness*color.b;
+          //m_bond_rcolor_pbc_1[i] = setup.f_atom_brightness*vcolor;
+          m_bond_rcolor_pbc_1[i][1] = setup.f_atom_brightness*color.r;
+          m_bond_rcolor_pbc_1[i][2] = setup.f_atom_brightness*color.g;
+          m_bond_rcolor_pbc_1[i][3] = setup.f_atom_brightness*color.b;
+        }
       }
-    }
-    update_bonds_color=false;
 #ifdef _ATOM_DEBUG_BOND_COLORS_
-  std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (3)"<<std::endl;
+      std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (3)"<<std::endl;
 #endif
+    }
+    is_update_bonds_color=false;
   }
 #ifdef _ATOM_DEBUG_BOND_COLORS_
   std::cout<<" setup.f_bond_brightness = "<<setup.f_bond_brightness<<std::endl;
@@ -375,7 +375,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   std::cout<<" Fragment table = "<<v_fragment_table_gl;
 #endif
   // testing
-  if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
+  if((is_highlight_atom_ || is_highlight_fragment_) && is_update_highlight_atom && !is_draw_tools_){
     if(is_mode_atom){
       m_atom_rcolor[marker.__last_highlight_atom][1] = setup.f_atom_brightness*supercell.get_radius_color(marker.__last_highlight_atom,1); //m_radius_color[marker.__last_highlight_atom][1];
       m_atom_rcolor[marker.__last_highlight_atom][2] = setup.f_atom_brightness*supercell.get_radius_color(marker.__last_highlight_atom,2); //m_radius_color[marker.__last_highlight_atom][2];
@@ -403,8 +403,8 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
         }
       }
     }
-    update_highlight_atom=false;
-  }else if(is_draw_tools_ && update_selected_atoms){
+    is_update_highlight_atom=false;
+  }else if(is_draw_tools_ && is_update_selected_atoms){
     for(uint i=0; i<tools.u_selected_index; i++){
       m_atom_rcolor[v_selected_atoms[i]][1] = setup.f_select_brightness;
       m_atom_rcolor[v_selected_atoms[i]][2] = 0;
@@ -425,6 +425,9 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
       is_unselected_atom=false;
     }
   }
+#ifdef _GLMOL_DEBUG_BOND_COLORS_
+  std::cout<<" EVAL MASK COLOR: eval_mask_rcolor (end)"<<std::endl;
+#endif
 }
 
 void Fl_Gl_Mol_View::draw_atoms(void){
@@ -1465,7 +1468,7 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
         if(is_draw_tools_){
           //tools.u_selected_index=0;
           tools.clear();
-          update_normal_color=true;
+          is_update_normal_color=true;
           is_update_mask_rcolor=true;
         }
         is_background_picked=true;
@@ -2053,22 +2056,6 @@ void Fl_Gl_Mol_View::widget_vector_output(GLfloat x1, GLfloat y1, GLfloat y2, GL
 }
 
 //////////////////////////////UTILS///////////////////////////////
-/*
-// Tue Feb 26 12:25:32 MST 2013
-// Migrated from fl_gl_mol_view.h
-void Fl_Gl_Mol_View::update_data(void){
-  map_update_active_fragment();
-  if(update_coordinates){
-    update_atomic_coordinates(get_view_cartesian());
-    set_axis_position(get_view_centered_position_cartesian());
-    set_axis_precession(get_view_axis_precession());
-    set_axis_tilt(get_view_axis_tilt());
-    set_backbone_precession(get_view_backbone_precession());
-    set_backbone_tilt(get_view_backbone_tilt());
-    update_coordinates=false;
-  }
-}*/
-
 void Fl_Gl_Mol_View::eval_system_properties(void){
 #ifdef _GLMOL_DEBUG_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (0)"<<std::endl;
@@ -2141,7 +2128,7 @@ void Fl_Gl_Mol_View::set_highlight_atom(int i){
 #endif
   marker.__last_highlight_atom=marker.__highlight_atom;
   marker.__highlight_atom = i;
-  update_highlight_atom=true;
+  is_update_highlight_atom=true;
   is_update_mask_rcolor=true;
 }
 
@@ -2157,8 +2144,8 @@ void Fl_Gl_Mol_View::set_selected_atom(uint u){
           v_selected_atoms[j]=v_selected_atoms[j+1];
         }
         tools.u_selected_index--;
-        //update_normal_color=true;
-        update_selected_atoms=true;
+        //is_update_normal_color=true;
+        is_update_selected_atoms=true;
       }
   }
   if(tools.u_selected_index<4){
@@ -2183,7 +2170,7 @@ void Fl_Gl_Mol_View::set_selected_atom(uint u){
         tools.r_dihedral=supercell.get_dihedral(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
         //std::cout<<" dihedral = "<<tools.r_dihedral<<std::endl;
       }
-      update_selected_atoms=true;
+      is_update_selected_atoms=true;
     }
   }
 }
@@ -2217,7 +2204,7 @@ uint Fl_Gl_Mol_View::get_highlight_atom(void){
 void Fl_Gl_Mol_View::set_update_active_fragment(void){
   //__fragment_active=u;
   if(is_highlight_fragment_){
-    update_normal_color=true;
+    is_update_normal_color=true;
     is_update_mask_rcolor=true;
   }
 }
@@ -2240,7 +2227,7 @@ void Fl_Gl_Mol_View::set_select_end(int i){
 
 void Fl_Gl_Mol_View::set_bond_brightness(real f){
   setup.f_bond_brightness = f;
-  update_bonds_color=true;
+  is_update_bonds_color=true;
 }
 
 void Fl_Gl_Mol_View::set_background_brightness(real f){
@@ -2264,7 +2251,7 @@ void Fl_Gl_Mol_View::set_atom_brightness(real f){
     setup.f_atom_brightness = setup.f_atom_brightness_max;
   else
     setup.f_atom_brightness = 0.0;
-  update_normal_color=true;
+  is_update_normal_color=true;
   is_update_mask_rcolor=true;
 }
 
@@ -2276,7 +2263,7 @@ void Fl_Gl_Mol_View::set_select_brightness(real f){
     setup.f_select_brightness = setup.f_select_brightness_max;
   else
     setup.f_select_brightness = 0.0;
-  update_highlight_atom=true;
+  is_update_highlight_atom=true;
   is_update_mask_rcolor=true;
 }
 
@@ -2310,19 +2297,19 @@ void Fl_Gl_Mol_View::is_graphics(bool b){
 void Fl_Gl_Mol_View::is_highlight_atom(bool b){
   is_highlight_atom_ = b;
   //if(is_highlight_atom_)
-    //update_highlight_atom=true;
+    //is_update_highlight_atom=true;
   //else
-    //update_normal_color=true;
+    //is_update_normal_color=true;
   //is_update_mask_rcolor=true;
 }
 
 void Fl_Gl_Mol_View::is_highlight_fragment(bool b){
   is_highlight_fragment_ = b;
   if(is_highlight_fragment_){
-    update_highlight_fragment=true;
+    is_update_highlight_fragment=true;
   }
-  update_bonds_color=true;
-  update_normal_color=true;
+  is_update_bonds_color=true;
+  is_update_normal_color=true;
   is_update_mask_rcolor=true;
 }
 
@@ -2356,7 +2343,7 @@ void Fl_Gl_Mol_View::is_draw_molecular_axis(bool b){
 void Fl_Gl_Mol_View::is_draw_bonds(bool b){
   is_draw_bonds_ = b;
   if(is_draw_bonds_){
-    update_bonds_color=true;
+    is_update_bonds_color=true;
     is_update_mask_rcolor=true;
     if(f_atom_radius_scale > 0.40)
       set_atom_radius_scale(0.25);
@@ -2383,11 +2370,11 @@ void Fl_Gl_Mol_View::is_draw_tools(bool b){
   if(!is_draw_tools_){
     //tools.u_selected_index=0;
     tools.clear();
-    update_normal_color=true;
+    is_update_normal_color=true;
     is_update_mask_rcolor=true;
   }
   set_active_radio(5,is_draw_tools_);
-  update_normal_color=true;
+  is_update_normal_color=true;
 }
 
 void Fl_Gl_Mol_View::is_draw_numbers(bool b){
@@ -2448,11 +2435,11 @@ void Fl_Gl_Mol_View::clear_scene(void){
   if(is_draw_tools_){
     //tools.u_selected_index=0;
     tools.clear();
-    //update_normal_color=true;
-    //update_bonds_color=true;
+    //is_update_normal_color=true;
+    //is_update_bonds_color=true;
     //is_update_mask_rcolor=true;
   }
-  update_normal_color=true;
+  is_update_normal_color=true;
   is_update_mask_rcolor=true;
 }
 

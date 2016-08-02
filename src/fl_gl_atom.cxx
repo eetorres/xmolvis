@@ -30,9 +30,10 @@ Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Box(x,y,w,h,l
   param.u_cylinder_resolution = 10;
   is_eval_sphere=true;
   cell.total_cells = 1;
-  cell.x_cells = 1;
-  cell.y_cells = 1;
-  cell.z_cells = 1;
+  cell.x_cells     = 1;
+  cell.y_cells     = 1;
+  cell.z_cells     = 1;
+  is_update_bonds  = false;
 #if !HAVE_GL
   label("OpenGL is required for this demo to operate.");
   align(FL_ALIGN_WRAP | FL_ALIGN_INSIDE);
@@ -121,14 +122,14 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(void){
 // this the function in charge of the scene actualization
 void Fl_Gl_Atom::update_data(void){
   update_view();
-  if(update_coordinates){
+  if(is_update_coordinates){
     update_atomic_coordinates();
     set_axis_position(get_fragment_centered_position_cartesian());
     set_axis_precession(get_axis_precession());
     set_axis_tilt(get_axis_tilt());
     set_backbone_precession(get_backbone_precession());
     set_backbone_tilt(get_backbone_tilt());
-    update_coordinates=false;
+    is_update_coordinates=false;
   }
   Fl::wait(0.1);
 }

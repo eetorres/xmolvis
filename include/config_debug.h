@@ -73,7 +73,6 @@
 //////////////////////////////////
 // cgau.cxx
 //////////////////////////////////
-
 //#define _GAU_DEBUG_MESSAGES_
 //#define _GAU_INFO_MESSAGES_
 //#define _GAU_DEBUG_DATA_

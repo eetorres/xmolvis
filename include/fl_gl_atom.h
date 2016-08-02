@@ -219,7 +219,7 @@ public:
   //
   // virtual functions
   virtual void update_data(void);
-  virtual void set_update_coordinates(bool b){ update_coordinates=b;};
+  virtual void set_update_coordinates(bool b){ is_update_coordinates=b;};
   virtual void save_wysiwyg_as(std::string);
   virtual void save_wysiwyg_extension(std::string);
   virtual void save_wysiwyg_as(std::string,std::string);
@@ -253,7 +253,7 @@ protected:
   bool is_update_radius;
   bool is_update_bonds;
   bool is_update_mask_rcolor;
-  bool update_coordinates;
+  bool is_update_coordinates;
   //
   // Visualization details
   TVector<real>   v_bond_length;

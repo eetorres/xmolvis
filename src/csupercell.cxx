@@ -133,7 +133,7 @@ void CSupercell::initialize_fragments(void){
 #endif
   gsf.init_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<std::endl;
+  std::cout<<" FRAGCAR:  ["<<get_number_of_fragments()<<"] fragments loaded"<<std::endl;
 #endif
 }
 

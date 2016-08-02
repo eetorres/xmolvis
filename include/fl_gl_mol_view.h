@@ -506,12 +506,12 @@ private:
   bool is_update_position;
   //
   //bool update_coordinates;
-  bool update_bonds_color;
-  bool update_normal_color;
-  bool update_dark_mask;
-  bool update_highlight_fragment;
-  bool update_highlight_atom;
-  bool update_selected_atoms;
+  bool is_update_bonds_color;
+  bool is_update_normal_color;
+  bool is_update_dark_mask;
+  bool is_update_highlight_fragment;
+  bool is_update_highlight_atom;
+  bool is_update_selected_atoms;
   //
   bool is_unselected_atom;
   //
