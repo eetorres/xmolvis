@@ -161,15 +161,15 @@ void Fl_Gl_Mol_View::clear(void){
   is_pbc                  = true;
   supercell.is_linked_cell(true);
   //
-  __fragment_active       = 1;
+  fragment.__fragment_active = 1;
   __highlight_atom        = 0;
   __last_highlight_atom   = 0;
   __highlight_atom_a      = 0;
   __highlight_atom_b      = 0;
   __select_begin          = -1;
   __select_end            = -1;
-  __axis_precession       = 0;
-  __axis_tilt             = 0;
+  fragment.__axis_precession       = 0;
+  fragment.__axis_tilt             = 0;
   v_axes_position.resize(3);
   //
   u_selected_index        = 0;
@@ -787,9 +787,9 @@ void Fl_Gl_Mol_View::draw_scene(void){
     // the same as above
     if(is_draw_molecular_axis_ && render_mode!=MODE_SELECT){
       glColor3f(0.0,0.0,1.0);  // axis
-      add_axis(v_axis_position, 5.0, 0.05, __axis_precession, __axis_tilt);
+      add_axis(fragment.v_axis_position, 5.0, 0.05, fragment.__axis_precession, fragment.__axis_tilt);
       glColor3f(1.0,0.0,0.0);  // backbone plane
-      add_axis(v_axis_position, 5.0, 0.05, __backbone_precession, __backbone_tilt);
+      add_axis(fragment.v_axis_position, 5.0, 0.05, fragment.__backbone_precession, fragment.__backbone_tilt);
     }
   }
   if((is_draw_symbols_ || is_draw_labels_ || is_draw_numbers_) && render_mode!=MODE_SELECT){

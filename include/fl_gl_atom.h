@@ -101,6 +101,30 @@ public:
   // end trackball
 };
 
+
+class CGeometry {
+
+public:
+
+  uint u_sphere_resolution;
+  int  u_sphere_rows;
+  int  __sphere_strip_length;
+  int  __cylinder_strip_length;
+  int  u_cylinder_resolution;
+};
+
+class CProperty {
+
+public:
+
+  uint __fragment_active;
+  real __axis_precession;
+  real __axis_tilt;
+  real __backbone_precession;
+  real __backbone_tilt;
+  TVector<real> v_axis_position;
+};
+
 class Fl_Gl_Atom: public Fl_Gl_Window, public CViewmol{
 
 public:
@@ -123,13 +147,13 @@ public:
   //
   void set_palette(const uint);
   void set_fragment_active(uint);
-  void set_active_fragment_index(const uint u){ __fragment_active=u;};
+  void set_active_fragment_index(const uint u){ fragment.__fragment_active=u;};
   void set_active_fragment(const uint);
   void set_axis_position(const TVector<real>&);
-  void set_axis_precession(real f){ __axis_precession=f;};
-  void set_axis_tilt(real f){ __axis_tilt=f;};
-  void set_backbone_precession(real f){ __backbone_precession=f;};
-  void set_backbone_tilt(real f){ __backbone_tilt=f;};
+  void set_axis_precession(real f){ fragment.__axis_precession=f;};
+  void set_axis_tilt(real f){ fragment.__axis_tilt=f;};
+  void set_backbone_precession(real f){ fragment.__backbone_precession=f;};
+  void set_backbone_tilt(real f){ fragment.__backbone_tilt=f;};
   // deprecated
   //uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
   //
@@ -170,7 +194,7 @@ public:
   inline void normalize_point(point*);
   //
   int get_total_cells(void){ return total_cells;};
-  //
+  // build a class or struct
   int  pos_x_cells;
   int  pos_y_cells;
   int  pos_z_cells;
@@ -195,6 +219,10 @@ protected:
   CPalette index_palette;
   // Trackball
   Ctrackball tb;
+  // Geometry
+  CGeometry param;
+  // Fragment properties
+  CProperty fragment;
   //
   bool is_first_structure_;
   bool is_initialize_rot;
@@ -214,21 +242,12 @@ protected:
   bool is_update_mask_rcolor;
   bool update_coordinates;
   //
-  //int  __number_of_atoms;
-  uint u_sphere_resolution;
-  int  u_sphere_rows;
-  int  __sphere_strip_length;
-  int  __cylinder_strip_length;
-  int  u_cylinder_resolution;
-  //
-  //uint u_bond_types;
-  //
-  uint __fragment_active;
-  real __axis_precession;
-  real __axis_tilt;
-  real __backbone_precession;
-  real __backbone_tilt;
-  TVector<real> v_axis_position;
+  //uint __fragment_active;
+  //real __axis_precession;
+  //real __axis_tilt;
+  //real __backbone_precession;
+  //real __backbone_tilt;
+  //TVector<real> v_axis_position;
   // Visualization details
   TVector<real>   v_bond_length;
   TVector<GLuint> v_sphere_list;

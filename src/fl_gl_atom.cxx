@@ -26,8 +26,8 @@ Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Box(x,y,w,h,l
   neg_x_cells = 0;
   neg_y_cells = 0;
   neg_z_cells = 0;
-  u_sphere_resolution = 0;
-  u_cylinder_resolution = 10;
+  param.u_sphere_resolution = 0;
+  param.u_cylinder_resolution = 10;
   is_eval_sphere=true;
   total_cells = 1;
   x_cells = 1;
@@ -79,7 +79,7 @@ void Fl_Gl_Atom::eval_initial_properties(void){
 }
 
 void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
-  v_axis_position=v;
+  fragment.v_axis_position=v;
 }
 
 void Fl_Gl_Atom::update_atomic_coordinates(void){
@@ -222,11 +222,11 @@ void Fl_Gl_Atom::set_z_cells(int i){
 }
 
 void Fl_Gl_Atom::set_sphere_resolution(uint u){
-  if(u_sphere_resolution != u){
-    u_sphere_resolution = u;
-    eval_sphere(u_sphere_resolution);
-    u_cylinder_resolution=(5*u_sphere_resolution+10);
-    eval_cylinder(u_cylinder_resolution);
+  if(param.u_sphere_resolution != u){
+    param.u_sphere_resolution = u;
+    eval_sphere(param.u_sphere_resolution);
+    param.u_cylinder_resolution=(5*param.u_sphere_resolution+10);
+    eval_cylinder(param.u_cylinder_resolution);
   }
 }
 
@@ -336,7 +336,7 @@ void Fl_Gl_Atom::initialize_sphere(real r){
     // iterate over the 20 sides of the icosahedron
     int cont = 0;
     for(s = 0; s < 20; s++){
-        for(int i = 0; i < u_sphere_rows; i++){
+        for(int i = 0; i < param.u_sphere_rows; i++){
             // strip the ith trapezoid block
             glBegin(GL_TRIANGLE_STRIP);
             for(int j=0; j<(2*i+3); j++){
@@ -353,7 +353,7 @@ void Fl_Gl_Atom::initialize_cylinder(real r,real d){
   TVector<real> t(3);
   glBegin(GL_QUAD_STRIP);
   real scale = 0.2*d;
-  for (int i=0;i<__cylinder_strip_length;i++){
+  for (int i=0;i<param.__cylinder_strip_length;i++){
     t = m_cylinder[i];
     t[2]=0; // -r
     glNormal3f(t[0],t[1],t[2]);
@@ -371,7 +371,7 @@ void Fl_Gl_Atom::add_stick(const TVector<real>& c,real l, real r, real a1, real 
   std::cout<<" ATOM: add_stick"<<std::endl;
 #endif
   glBegin(GL_QUAD_STRIP);
-  for (int i=0;i<=u_cylinder_resolution;i++) {
+  for (int i=0;i<=param.u_cylinder_resolution;i++) {
     e = m_cylinder_e1[i];
     p[0] = r * e[0];
     p[1] = r * e[1];
@@ -420,7 +420,7 @@ void Fl_Gl_Atom::add_axis(const TVector<real>& c,real l, real r, real a1, real a
 #endif
   glBegin(GL_QUAD_STRIP);
   real tip = l/3.0;
-  for (int i=0;i<=u_cylinder_resolution;i++) {
+  for (int i=0;i<=param.u_cylinder_resolution;i++) {
     e = m_cylinder_e1[i];
     p[0] = 2.5*r* e[0];
     p[1] = 2.5*r* e[1];
@@ -508,7 +508,7 @@ void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
 #endif
   set_update_coordinates(true);
   // fragments are counted from 1
-  set_active_fragment(__fragment_active-1);
+  set_active_fragment(fragment.__fragment_active-1);
   is_eval_bonds=true;
   is_update_bonds=true;
   //update_bonds_color=true;
@@ -548,7 +548,7 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
   uint _af;
   // atoms are counted from 1 in the scene
   _af= supercell.get_fragment_table(_a);
-  __fragment_active=_af;
+  fragment.__fragment_active=_af;
   // fragments are counted from 1
   set_active_fragment(_af-1);
   set_update_coordinates(true);
@@ -556,25 +556,25 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
 }
 
 void Fl_Gl_Atom::eval_sphere(uint maxlevel){
-    u_sphere_rows = 1 << maxlevel;
+    param.u_sphere_rows = 1 << maxlevel;
     int s, cont = 0;
-    __sphere_strip_length=20*(u_sphere_rows*(u_sphere_rows-1)+(u_sphere_rows*3));
-    m_sphere.resize(__sphere_strip_length,3);
+    param.__sphere_strip_length=20*(param.u_sphere_rows*(param.u_sphere_rows-1)+(param.u_sphere_rows*3));
+    m_sphere.resize(param.__sphere_strip_length,3);
     TVector<real> vt(3);
     /* iterate over the 20 sides of the icosahedron */
     for(s = 0; s < 20; s++) {
         int i;
         triangle *t = (triangle *)&icosahedron[s];
-        for(i = 0; i < u_sphere_rows; i++) {
+        for(i = 0; i < param.u_sphere_rows; i++) {
             /* create a tstrip for each row */
             /* number of triangles in this row is number in previous +2 */
             /* strip the ith trapezoid block */
             point v0, v1, v2, v3, va, vb;
             int j;
-            linearly_interpolate(&t->pt[1], &t->pt[0], (float)(i+1)/u_sphere_rows, &v0);
-            linearly_interpolate(&t->pt[1], &t->pt[0], (float)i/u_sphere_rows, &v1);
-            linearly_interpolate(&t->pt[1], &t->pt[2], (float)(i+1)/u_sphere_rows, &v2);
-            linearly_interpolate(&t->pt[1], &t->pt[2], (float)i/u_sphere_rows, &v3);
+            linearly_interpolate(&t->pt[1], &t->pt[0], (float)(i+1)/param.u_sphere_rows, &v0);
+            linearly_interpolate(&t->pt[1], &t->pt[0], (float)i/param.u_sphere_rows, &v1);
+            linearly_interpolate(&t->pt[1], &t->pt[2], (float)(i+1)/param.u_sphere_rows, &v2);
+            linearly_interpolate(&t->pt[1], &t->pt[2], (float)i/param.u_sphere_rows, &v3);
             NORMV(v0,cont);
             cont++;
             NORMV(v1,cont);
@@ -593,8 +593,8 @@ void Fl_Gl_Atom::eval_sphere(uint maxlevel){
         }
     }
 #ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" FL_GL_ATOM: sphere rows = "<<u_sphere_rows<<std::endl;
-  std::cout<<" FL_GL_ATOM: sphere_strip_length = "<<__sphere_strip_length<<std::endl;
+  std::cout<<" FL_GL_ATOM: sphere rows = "<<param.u_sphere_rows<<std::endl;
+  std::cout<<" FL_GL_ATOM: sphere_strip_length = "<<param.__sphere_strip_length<<std::endl;
 #endif
 }
 
@@ -606,12 +606,12 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
   m_cylinder_e1.resize(0,3);
   m_cylinder_texture1.resize(0,2);
   m_cylinder.resize(0,3);
-  __cylinder_strip_length=0;
+  param.__cylinder_strip_length=0;
   // check resolution
   if(n < 4){
       n = 4;
   }
-  __cylinder_strip_length=n;
+  param.__cylinder_strip_length=n;
   for (uint i=0;i<=n;i++){
     theta3 = i * C_2PI / n;
     e[0] = cos(theta3);
@@ -624,7 +624,7 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
     m_cylinder_texture1.add_row(t1);
   }
   m_cylinder.add_row(m_cylinder[n-1]);
-  __cylinder_strip_length++;
+  param.__cylinder_strip_length++;
 }
 
 void Fl_Gl_Atom::initialize_transform_matrix(void){
