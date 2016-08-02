@@ -70,11 +70,10 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   tb.tb_tracking = GL_FALSE;
   tb.tb_animate  = GL_TRUE;
   tb.tb_angle    = 0.0;
-  // Atom Appareance
+  // Atoms and bonds appareance
   f_atom_radius_scale        = 0.5;
   f_bond_radius_scale        = 1.0;
   f_atom_bond_delta          = 0.1;
-  //f_atom_bond_inv_delta      = 10.0;
   //
   // Mouse
   is_left_click=false;
@@ -119,9 +118,6 @@ Fl_Gl_Mol_View::~Fl_Gl_Mol_View(){
 
 void Fl_Gl_Mol_View::clear(void){
   m_atom_position.clear();
-  //m_atom_coordinates.clear();
-  //m_radius_color.clear();  // deprecated
-  //v_atom_symbols.clear();
   //
   is_eval_bonds           = true;
   update_normal_color     = true;
@@ -161,18 +157,12 @@ void Fl_Gl_Mol_View::clear(void){
   is_pbc                  = true;
   supercell.is_linked_cell(true);
   //
-  fragment.__fragment_active = 1;
-  __highlight_atom        = 0;
-  __last_highlight_atom   = 0;
-  __highlight_atom_a      = 0;
-  __highlight_atom_b      = 0;
-  __select_begin          = -1;
-  __select_end            = -1;
-  fragment.__axis_precession       = 0;
-  fragment.__axis_tilt             = 0;
+  fragment.clear();
+  marker.clear();
   v_axes_position.resize(3);
-  //
-  u_selected_index        = 0;
+  // initialize tools
+  tools.clear();
+  //tools.u_selected_index        = 0;
   // initialize sliders
   u_slider_index          = 0;
   for(uint i=0; i<NUMBER_OF_SLIDERS; i++){
@@ -231,7 +221,7 @@ void Fl_Gl_Mol_View::set_active_radio(uint u, bool b){
 // delete the lists if they exist
 void Fl_Gl_Mol_View::delete_sphere_dl(void){
   if(v_sphere_list.size() > 0){
-    for(uint i=0; i<__total_species; i++){
+    for(uint i=0; i<supercell.get_atomic_species(); i++){
       glDeleteLists(v_sphere_list[i],1);
     }
   }
@@ -244,16 +234,16 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
   real radius;
   // delete the lists only if it exists
   delete_sphere_dl();
-  __total_species=supercell.get_atomic_species();  //v_atomic_number_table_gl.size();
+  //__total_species=supercell.get_atomic_species();  //v_atomic_number_table_gl.size();
 #ifdef _GLMOL_DEBUG_MESSAGES_
-  std::cout<<" total species = "<<__total_species<<std::endl;
+  std::cout<<" total species = "<<supercell.get_atomic_species()<<std::endl;
 #endif
 #ifdef _GLMOL_DEBUG_MESSAGES_
   std::cout<<" create_sphere_dl (1)"<<std::endl;
 #endif
   // Create the id for each sphere list
-  v_sphere_list.resize(__total_species);
-  for(uint i=0; i<__total_species; i++){
+  v_sphere_list.resize(supercell.get_atomic_species());
+  for(uint i=0; i<supercell.get_atomic_species(); i++){
     radius = atom_rrgb[supercell.get_atomic_number_table(i)][0];
     v_sphere_list[i]=glGenLists(1);
     // start list
@@ -387,14 +377,14 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
   // testing
   if((is_highlight_atom_ || is_highlight_fragment_) && update_highlight_atom && !is_draw_tools_){
     if(is_mode_atom){
-      m_atom_rcolor[__last_highlight_atom][1] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,1); //m_radius_color[__last_highlight_atom][1];
-      m_atom_rcolor[__last_highlight_atom][2] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,2); //m_radius_color[__last_highlight_atom][2];
-      m_atom_rcolor[__last_highlight_atom][3] = setup.f_atom_brightness*supercell.get_radius_color(__last_highlight_atom,3); //m_radius_color[__last_highlight_atom][3];
-      m_atom_rcolor[__highlight_atom][1] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,1); //m_radius_color[__highlight_atom][1];
-      m_atom_rcolor[__highlight_atom][2] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,2); //m_radius_color[__highlight_atom][2];
-      m_atom_rcolor[__highlight_atom][3] = setup.f_select_brightness*supercell.get_radius_color(__highlight_atom,3); //m_radius_color[__highlight_atom][3];
+      m_atom_rcolor[marker.__last_highlight_atom][1] = setup.f_atom_brightness*supercell.get_radius_color(marker.__last_highlight_atom,1); //m_radius_color[marker.__last_highlight_atom][1];
+      m_atom_rcolor[marker.__last_highlight_atom][2] = setup.f_atom_brightness*supercell.get_radius_color(marker.__last_highlight_atom,2); //m_radius_color[marker.__last_highlight_atom][2];
+      m_atom_rcolor[marker.__last_highlight_atom][3] = setup.f_atom_brightness*supercell.get_radius_color(marker.__last_highlight_atom,3); //m_radius_color[marker.__last_highlight_atom][3];
+      m_atom_rcolor[marker.__highlight_atom][1] = setup.f_select_brightness*supercell.get_radius_color(marker.__highlight_atom,1); //m_radius_color[marker.__highlight_atom][1];
+      m_atom_rcolor[marker.__highlight_atom][2] = setup.f_select_brightness*supercell.get_radius_color(marker.__highlight_atom,2); //m_radius_color[marker.__highlight_atom][2];
+      m_atom_rcolor[marker.__highlight_atom][3] = setup.f_select_brightness*supercell.get_radius_color(marker.__highlight_atom,3); //m_radius_color[marker.__highlight_atom][3];
     }else{
-      uint __last_fragment = supercell.get_fragment_table(__last_highlight_atom);
+      uint __last_fragment = supercell.get_fragment_table(marker.__last_highlight_atom);
       color = palette.get_color(__last_fragment);
       for(int i=0; i<get_total_atoms(); i++){
         if(supercell.get_fragment_table(i)==__last_fragment){
@@ -403,7 +393,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
           m_atom_rcolor[i][3] = setup.f_atom_brightness*color.b;
         }
       }
-      uint __new_fragment  = supercell.get_fragment_table(__highlight_atom);
+      uint __new_fragment  = supercell.get_fragment_table(marker.__highlight_atom);
       color = palette.get_color(__new_fragment);
       for(int i=0; i<get_total_atoms(); i++){
         if(supercell.get_fragment_table(i)==__new_fragment){
@@ -415,7 +405,7 @@ void Fl_Gl_Mol_View::eval_mask_rcolor(void){
     }
     update_highlight_atom=false;
   }else if(is_draw_tools_ && update_selected_atoms){
-    for(uint i=0; i<u_selected_index; i++){
+    for(uint i=0; i<tools.u_selected_index; i++){
       m_atom_rcolor[v_selected_atoms[i]][1] = setup.f_select_brightness;
       m_atom_rcolor[v_selected_atoms[i]][2] = 0;
       m_atom_rcolor[v_selected_atoms[i]][3] = 0;
@@ -640,7 +630,7 @@ void Fl_Gl_Mol_View::draw_selected_numbers(void){
   //gl_font(1,GLint(f_atom_radius_scale*24)); // text font
   glPushMatrix();
   char buff[10];
-  for(uint i=0; i<u_selected_index; i++){
+  for(uint i=0; i<tools.u_selected_index; i++){
     _xyz=m_atom_position[v_selected_atoms[i]];
     sprintf(buff,"%i",i+1);
     glLoadIdentity();
@@ -1473,7 +1463,7 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
         std::cout<<" [background picked]"<<std::endl;
 #endif
         if(is_draw_tools_){
-          u_selected_index=0;
+          //tools.u_selected_index=0;
           tools.clear();
           update_normal_color=true;
           is_update_mask_rcolor=true;
@@ -2149,8 +2139,8 @@ void Fl_Gl_Mol_View::set_highlight_atom(int i){
 #ifdef _GLMOL_DEBUG_MESSAGES_
   std::cout<<" GLMOL: Highlight atom: "<<i<<std::endl;
 #endif
-  __last_highlight_atom=__highlight_atom;
-  __highlight_atom = i;
+  marker.__last_highlight_atom=marker.__highlight_atom;
+  marker.__highlight_atom = i;
   update_highlight_atom=true;
   is_update_mask_rcolor=true;
 }
@@ -2158,35 +2148,35 @@ void Fl_Gl_Mol_View::set_highlight_atom(int i){
 void Fl_Gl_Mol_View::set_selected_atom(uint u){
   is_unselected_atom=false;
   //uint pos;
-  for(uint i=0; i<u_selected_index; i++){
+  for(uint i=0; i<tools.u_selected_index; i++){
       if(v_selected_atoms[i]==u){
         is_unselected_atom=true;
         // unselect if the atom was selected
         u_unselected_atom=v_selected_atoms[i];
-        for(uint j=i; j<u_selected_index-1; j++){
+        for(uint j=i; j<tools.u_selected_index-1; j++){
           v_selected_atoms[j]=v_selected_atoms[j+1];
         }
-        u_selected_index--;
+        tools.u_selected_index--;
         //update_normal_color=true;
         update_selected_atoms=true;
       }
   }
-  if(u_selected_index<4){
+  if(tools.u_selected_index<4){
     // add a new selected atom
     if(!is_unselected_atom){
-      v_selected_atoms[u_selected_index]=u;
+      v_selected_atoms[tools.u_selected_index]=u;
       //std::cout<<" selected: "<<u<<std::endl;
-      u_selected_index++;
-      if(u_selected_index==2){
+      tools.u_selected_index++;
+      if(tools.u_selected_index==2){
         tools.v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
         tools.r_distance1=tools.v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
         //std::cout<<" distance = "<<tools.r_distance1<<std::endl;
-      }else if(u_selected_index==3){
+      }else if(tools.u_selected_index==3){
         tools.v_distance2=supercell.get_vector_diff(v_selected_atoms[1],v_selected_atoms[2]);
         tools.r_distance2=tools.v_distance2.magnitude();  //get_distance(v_selected_atoms[1],v_selected_atoms[2]);
         tools.r_angle1=supercell.get_angle(v_selected_atoms[0],v_selected_atoms[1],v_selected_atoms[2]);
         //std::cout<<" angle = "<<tools.r_angle1<<std::endl;
-      }else if(u_selected_index==4){
+      }else if(tools.u_selected_index==4){
         tools.v_distance3=supercell.get_vector_diff(v_selected_atoms[2],v_selected_atoms[3]);
         tools.r_distance3=tools.v_distance3.magnitude();  //get_distance(v_selected_atoms[2],v_selected_atoms[3]);
         tools.r_angle2=supercell.get_angle(v_selected_atoms[1],v_selected_atoms[2],v_selected_atoms[3]);
@@ -2199,7 +2189,7 @@ void Fl_Gl_Mol_View::set_selected_atom(uint u){
 }
 
 void Fl_Gl_Mol_View::eval_tool_parameters(void){
-  for(uint uindex=0; uindex<=u_selected_index; uindex++){
+  for(uint uindex=0; uindex<=tools.u_selected_index; uindex++){
     if(uindex==2){
         tools.v_distance1=supercell.get_vector_diff(v_selected_atoms[0],v_selected_atoms[1]);
         tools.r_distance1=tools.v_distance1.magnitude();  //get_distance(v_selected_atoms[0],v_selected_atoms[1]);
@@ -2221,7 +2211,7 @@ void Fl_Gl_Mol_View::eval_tool_parameters(void){
 }
 
 uint Fl_Gl_Mol_View::get_highlight_atom(void){
-  return __highlight_atom;
+  return marker.__highlight_atom;
 }
 
 void Fl_Gl_Mol_View::set_update_active_fragment(void){
@@ -2233,25 +2223,20 @@ void Fl_Gl_Mol_View::set_update_active_fragment(void){
 }
 
 void Fl_Gl_Mol_View::set_highlight_atom_a(int i){
-  __highlight_atom_a = i;
+  marker.__highlight_atom_a = i;
 }
 
 void Fl_Gl_Mol_View::set_highlight_atom_b(int i){
-  __highlight_atom_b = i;
+  marker.__highlight_atom_b = i;
 }
 
 void Fl_Gl_Mol_View::set_select_begin(int i){
-  __select_begin=i;
+  marker.__select_begin=i;
 }
 
 void Fl_Gl_Mol_View::set_select_end(int i){
-  __select_end=i;
+  marker.__select_end=i;
 }
-
-/*
-void Fl_Gl_Mol_View::set_fragment_total(uint u){
-  __fragment_total=u;
-}*/
 
 void Fl_Gl_Mol_View::set_bond_brightness(real f){
   setup.f_bond_brightness = f;
@@ -2396,7 +2381,7 @@ void Fl_Gl_Mol_View::is_draw_symbols(bool b){
 void Fl_Gl_Mol_View::is_draw_tools(bool b){
   is_draw_tools_ = b;
   if(!is_draw_tools_){
-    u_selected_index=0;
+    //tools.u_selected_index=0;
     tools.clear();
     update_normal_color=true;
     is_update_mask_rcolor=true;
@@ -2461,7 +2446,7 @@ void Fl_Gl_Mol_View::clear_scene(void){
   is_draw_line=false;
   is_draw_point=false;
   if(is_draw_tools_){
-    u_selected_index=0;
+    //tools.u_selected_index=0;
     tools.clear();
     //update_normal_color=true;
     //update_bonds_color=true;

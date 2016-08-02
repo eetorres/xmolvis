@@ -117,6 +117,12 @@ class CProperty {
 
 public:
 
+  void clear(void){
+    __fragment_active = 1;
+    __axis_precession = 0;
+    __axis_tilt       = 0;
+  }
+
   uint __fragment_active;
   real __axis_precession;
   real __axis_tilt;

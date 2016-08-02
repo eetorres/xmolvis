@@ -160,6 +160,27 @@ const std::string l_edit[6]  = { "delete",   "copy", "symbol", "color", "cancel"
 //#define FRAGMENT_MENU 3
 #define AUTO_SUBMENU           11
 
+class CSelection {
+
+public:
+
+  void clear(void){
+    __highlight_atom        = 0;
+    __last_highlight_atom   = 0;
+    __highlight_atom_a      = 0;
+    __highlight_atom_b      = 0;
+    __select_begin          = -1;
+    __select_end            = -1;
+  }
+
+  int  __highlight_atom_a;
+  int  __highlight_atom_b;
+  int  __select_begin;
+  int  __select_end;
+  uint __highlight_atom;
+  uint __last_highlight_atom;
+};
+
 class CTools {
 
 public:
@@ -171,18 +192,20 @@ public:
   }
 
   void clear(void){
-    r_distance1=0.0;
-    r_distance2=0.0;
-    r_distance3=0.0;
+    u_selected_index = 0;
+    r_distance1      = 0.0;
+    r_distance2      = 0.0;
+    r_distance3      = 0.0;
+    r_angle1         = 0.0;
+    r_angle2         = 0.0;
+    r_dihedral       = 0.0;
     v_distance1.zero();
     v_distance2.zero();
     v_distance3.zero();
-    r_angle1=0.0;
-    r_angle2=0.0;
-    r_dihedral=0.0;
   }
 
-  //private:
+//private:
+  uint u_selected_index;
 
   real r_distance1;
   real r_distance2;
@@ -401,13 +424,12 @@ private:
   CViewsetup setup;
   // Window tools
   CTools tools;
+  // Sections
+  CSelection marker;
   // graphic quality control
   int  __sphere_strip_size;
   int  _draw_mpts, _draw_data;
   int  i_sphere_resolution;
-  //
-  int  __highlight_atom_a, __highlight_atom_b;
-  int  __select_begin, __select_end;
   //
   int font_size_symbol;
   int font_size_panel_label;
@@ -417,15 +439,8 @@ private:
   int u_slider_index;
   int u_radio_index;
   //
-  //uint last_action;
-  uint __highlight_atom;
-  uint __last_highlight_atom;
-  //
-  uint __total_species;
-  //
   uint u_menu_index;
   uint u_submenu_index;
-  uint u_selected_index;
   uint u_unselected_atom;
   uint u_active_menu;
   //
