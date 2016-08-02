@@ -176,8 +176,6 @@ public:
   void set_axis_tilt(real f){ fragment.__axis_tilt=f;};
   void set_backbone_precession(real f){ fragment.__backbone_precession=f;};
   void set_backbone_tilt(real f){ fragment.__backbone_tilt=f;};
-  // deprecated
-  //uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
   //
   ////////////////////////////////////////////////////////////////////////////////////////
   // Evaluation functions
@@ -256,7 +254,6 @@ protected:
   bool is_update_coordinates;
   //
   // Visualization details
-  TVector<real>   v_bond_length;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;

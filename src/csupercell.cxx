@@ -671,12 +671,35 @@ TMatrix<real> CSupercell::get_direct(void){
 
 // Special MD functions
 
+void CSupercell::set_cut_radius(real r){
+  r_cut_radius=r; r_cut_radius_2=r*r;
+}
+
+void CSupercell::set_cut_radius(void){
+  //v_atomic_number_table_gl = v;
+  //real r_cut_radius=0;
+  //std::cout<<" v_atomic_number_table_gl = "<<v_atomic_number_table_gl;
+  for(uint i=0; i<get_atomic_species(); i++){
+    r_cut_radius=maxi(r_cut_radius,atom_rrgb[get_atomic_number_table(i)][0]);
+  }
+  r_cut_radius*=2.0;
+  //supercell.set_cut_radius(r_cut_radius);
+  r_cut_radius_2 = (r_cut_radius*r_cut_radius);
+#ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" Cut Radius = "<<r_cut_radius<<std::endl;
+  std::cout<<" Cut Radius2 = "<<r_cut_radius_2<<std::endl;
+#endif
+  //r_cut_radius=r; r_cut_radius_2=r*r;
+};
+
 // Linked and shell cell configuration functions
 void CSupercell::set_cells(void){
   TVector<int> v1(3);
   int xpcb=-2, ypcb=-2, zpcb=-2;
   v_cell_side = iVScale(v_box_size, (1.0/r_cut_radius));
 #ifdef _SHOW_DEBUG_LINKED_
+  std::cout<<" Cut Radius = "<<r_cut_radius<<std::endl;
+  std::cout<<" LINKED: box = "<<v_box_size;
   std::cout<<" LINKED: Cell = "<<v_cell_side;
 #endif
   // set the necesary neighbor cells

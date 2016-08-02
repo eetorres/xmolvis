@@ -187,6 +187,8 @@ bool Fl_Gl_Mol_View::initialize(void){
     glview.base_view=set_bounding_box(glview.base_view); // deprecated
     is_draw_bbox(is_view_periodic());
     set_atomic_cut_radius();
+    supercell.set_cut_radius(r_cut_radius);
+    supercell.set_cut_radius();
     set_palette(supercell.get_number_of_fragments());
     initialize_atomic_coordinates();
     // End GUI functions
@@ -2395,8 +2397,8 @@ void Fl_Gl_Mol_View::set_atomic_cut_radius(void){
     r_cut_radius=maxi(r_cut_radius,atom_rrgb[supercell.get_atomic_number_table(i)][0]);
   }
   r_cut_radius*=2.0;
-  supercell.set_cut_radius(r_cut_radius);
-  //r_cut_radius_2 = r_cut_radius*r_cut_radius;
+  //supercell.set_cut_radius(r_cut_radius);
+  r_cut_radius_2 = r_cut_radius*r_cut_radius;
 #ifdef _SHOW_DEBUG_LINKED_
   std::cout<<" Cut Radius = "<<r_cut_radius<<std::endl;
 #endif

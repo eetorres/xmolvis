@@ -278,7 +278,8 @@ public:
   TMatrix<uint> m_bond_indices;
   TMatrix<uint> m_bond_indices_pbc;
   // Temporal functions
-  void set_cut_radius(real r){ r_cut_radius=r; r_cut_radius_2=r*r;};
+  void set_cut_radius(real r);
+  void set_cut_radius(void);
 
 private:
 
