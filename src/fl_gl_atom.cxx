@@ -474,7 +474,7 @@ void Fl_Gl_Atom::eval_atomic_bonds(void){
   std::cout<<" ATOM: i_number_of_bonds_pbc="<<supercell.get_number_of_bonds_pbc()<<std::endl;
   std::cout<<" ATOM: m_bond_position_pbc="<<m_bond_position_pbc;
 #endif
-  u_bond_types=supercell.get_bond_types();
+  //u_bond_types=supercell.get_bond_types();
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: max number of bonds "<<max_bonds<<std::endl;
   std::cout<<" ATOM: number of bonds "<<supercell.get_number_of_bonds()<<std::endl;

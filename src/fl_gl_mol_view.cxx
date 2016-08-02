@@ -272,8 +272,8 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
 void Fl_Gl_Mol_View::create_cylinder_dl(void){
   real length;
   // Create the id for the cylinder list
-  v_cylinder_list.resize(u_bond_types);
-  for(uint i=0; i<u_bond_types; i++){
+  v_cylinder_list.resize(supercell.get_bond_types());
+  for(uint i=0; i<supercell.get_bond_types(); i++){
 #ifdef _SHOW_DEBUG_CYLINDERS_
     std::cout<<" bond length: "<<supercell.get_bond_table(i)<<std::endl;
 #endif
@@ -899,6 +899,7 @@ void Fl_Gl_Mol_View::draw(){
     glPushMatrix();
     glLoadIdentity();
     draw_scene();
+    glLightfv(GL_LIGHT0, GL_POSITION, scaled_light_position);
     glPopMatrix();
     glFlush();
   }

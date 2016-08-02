@@ -432,7 +432,10 @@ private:
   real f_atom_bond_delta;
   real f_atom_radius_scale;
   real f_bond_radius_scale;
-  
+  //
+  real r_cut_radius, r_cut_radius_2;
+  //
+  TVector<real> v_axes_position;
   //
   GLfloat  scaled_light_position[4];
   GLdouble menu_pos_cx, menu_pos_cy;

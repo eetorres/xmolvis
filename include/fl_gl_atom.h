@@ -221,27 +221,21 @@ protected:
   int  __cylinder_strip_length;
   int  u_cylinder_resolution;
   //
-  uint u_bond_types;
-  uint __fragment_active;
+  //uint u_bond_types;
   //
+  uint __fragment_active;
   real __axis_precession;
   real __axis_tilt;
   real __backbone_precession;
   real __backbone_tilt;
-  // Visualization details
-  TVector<real> v_axes_position;
   TVector<real> v_axis_position;
-  TVector<real> v_bond_length;
+  // Visualization details
+  TVector<real>   v_bond_length;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
   //
   TVector<real> _vu, _vv, _vw;
-  //
-  uint u_particle_number;
-  real r_cut_radius, r_cut_radius_2;
-  TVector<uint> v_cell_number;
-  TVector<int>  v_neighbor_cell, v_md_pbc;
   //
   TMatrix<real> m_sphere;
   TMatrix<real> m_cylinder;
@@ -250,20 +244,20 @@ protected:
   TMatrix<real> m_cylinder_e1;
   // this may be useful?
   TMatrix<real> m_cylinder_texture1;
-  // Atoms for visualization
+  // Atoms visualized
   TMatrix<real> m_atom_position;
   TMatrix<real> m_atom_rcolor;
-  //
-  TMatrix<real> m_bond_rcolor_0;
-  TMatrix<real> m_bond_rcolor_1;
-  TMatrix<real> m_bond_rcolor_pbc_0;
-  TMatrix<real> m_bond_rcolor_pbc_1;
   // bonds no PBC
   TMatrix<real> m_bond_position;
   TMatrix<real> m_bond_angles;
   // bonds with PBC
   TMatrix<real> m_bond_position_pbc;
   TMatrix<real> m_bond_angles_pbc;
+  //
+  TMatrix<real> m_bond_rcolor_0;
+  TMatrix<real> m_bond_rcolor_1;
+  TMatrix<real> m_bond_rcolor_pbc_0;
+  TMatrix<real> m_bond_rcolor_pbc_1;
   //
   private:
     CTimer gl_atom_clock;
