@@ -470,9 +470,9 @@ void Fl_Gl_Mol_View::draw_bonds(void){
 #ifdef _SHOW_DEBUG_BONDS_
   std::cout<<" GLMOL: ----- internal bonds -----"<<std::endl;
 #endif
-  for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
-    for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
-      for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
+  for(int x=cell.neg_x_cells; x<cell.pos_x_cells+1; x++){ // repetition in x
+    for(int y=cell.neg_y_cells; y<cell.pos_y_cells+1; y++){ // repetition in y
+      for(int z=cell.neg_z_cells; z<cell.pos_z_cells+1; z++){ // repetition in z
         for(uint i=0; i<supercell.get_number_of_bonds(); i++){
           _ang = m_bond_angles[i];
           _xyz = m_bond_position[i];
@@ -501,28 +501,28 @@ void Fl_Gl_Mol_View::draw_bonds(void){
 #ifdef _SHOW_DEBUG_BONDS_
   std::cout<<" GLMOL: ----- periodic bonds -----"<<std::endl;
 #endif
-  for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
-    if( pos_x_cells!=0 ){
-      if( x==neg_x_cells ) xu = -1;
-      else xu = int(x/pos_x_cells);
+  for(int x=cell.neg_x_cells; x<cell.pos_x_cells+1; x++){ // repetition in x
+    if( cell.pos_x_cells!=0 ){
+      if( x==cell.neg_x_cells ) xu = -1;
+      else xu = int(x/cell.pos_x_cells);
     }else xu=2;
     //std::cout<<" xu = "<<xu<<std::endl;
-    for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
-      if( pos_y_cells!=0 ){
-        if( y==neg_y_cells ) yu = -1;
-        else yu = int(y/pos_y_cells);
+    for(int y=cell.neg_y_cells; y<cell.pos_y_cells+1; y++){ // repetition in y
+      if( cell.pos_y_cells!=0 ){
+        if( y==cell.neg_y_cells ) yu = -1;
+        else yu = int(y/cell.pos_y_cells);
       }else yu=2;
       //std::cout<<" yu = "<<yu<<std::endl;
-      for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
-        if( pos_z_cells!=0 ){
-          if( z==neg_z_cells ) zu = -1;
-          else zu = int(z/pos_z_cells);
+      for(int z=cell.neg_z_cells; z<cell.pos_z_cells+1; z++){ // repetition in z
+        if( cell.pos_z_cells!=0 ){
+          if( z==cell.neg_z_cells ) zu = -1;
+          else zu = int(z/cell.pos_z_cells);
         }else zu=2;
         //std::cout<<" zu = "<<zu<<std::endl;
 #ifdef _SHOW_DEBUG_PERIODIC_BONDS_
         std::cout<<" ("<<xu<<","<<yu<<","<<zu<<")"<<std::endl;
 #endif
-        if(!(pos_x_cells==0 && pos_y_cells==0 && pos_z_cells==0)){  // avoid incomplete bonds in the unit cell
+        if(!(cell.pos_x_cells==0 && cell.pos_y_cells==0 && cell.pos_z_cells==0)){  // avoid incomplete bonds in the unit cell
           for(uint i=0; i<supercell.get_number_of_bonds_pbc(); i++){
             if((supercell.get_bond_boundary_pbc(i,0)==0 || (supercell.get_bond_boundary_pbc(i,0)!=xu && xu!=2)) \
             && (supercell.get_bond_boundary_pbc(i,1)==0 || (supercell.get_bond_boundary_pbc(i,1)!=yu && yu!=2)) \
@@ -706,9 +706,9 @@ void Fl_Gl_Mol_View::draw_box(void){
   std::cout<<"p8="<<_p8;
 #endif
   //
-  for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
-    for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
-      for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
+  for(int x=cell.neg_x_cells; x<cell.pos_x_cells+1; x++){ // repetition in x
+    for(int y=cell.neg_y_cells; y<cell.pos_y_cells+1; y++){ // repetition in y
+      for(int z=cell.neg_z_cells; z<cell.pos_z_cells+1; z++){ // repetition in z
         _v1 = _p1+2.0*(x*_vu+y*_vv+z*_vw);
         _v2 = _p2+2.0*(x*_vu+y*_vv+z*_vw);
         _v3 = _p3+2.0*(x*_vu+y*_vv+z*_vw);

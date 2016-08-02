@@ -20,19 +20,19 @@ Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Gl_Window(x,y
 Fl_Gl_Atom::Fl_Gl_Atom(int x,int y,int w,int h,const char *l) : Fl_Box(x,y,w,h,l)
 #endif // HAVE_GL
 {
-  pos_x_cells = 0;
-  pos_y_cells = 0;
-  pos_z_cells = 0;
-  neg_x_cells = 0;
-  neg_y_cells = 0;
-  neg_z_cells = 0;
+  cell.pos_x_cells = 0;
+  cell.pos_y_cells = 0;
+  cell.pos_z_cells = 0;
+  cell.neg_x_cells = 0;
+  cell.neg_y_cells = 0;
+  cell.neg_z_cells = 0;
   param.u_sphere_resolution = 0;
   param.u_cylinder_resolution = 10;
   is_eval_sphere=true;
-  total_cells = 1;
-  x_cells = 1;
-  y_cells = 1;
-  z_cells = 1;
+  cell.total_cells = 1;
+  cell.x_cells = 1;
+  cell.y_cells = 1;
+  cell.z_cells = 1;
 #if !HAVE_GL
   label("OpenGL is required for this demo to operate.");
   align(FL_ALIGN_WRAP | FL_ALIGN_INSIDE);
@@ -187,11 +187,11 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
 
 void Fl_Gl_Atom::set_x_cells(int i){
   if(i>=0){
-    pos_x_cells = i;
-    neg_x_cells = 0;
+    cell.pos_x_cells = i;
+    cell.neg_x_cells = 0;
   }else{
-    pos_x_cells = abs(i);
-    neg_x_cells = i;
+    cell.pos_x_cells = abs(i);
+    cell.neg_x_cells = i;
   }
   set_xyz_cells();
   supercell.set_gsf_modified(true);
@@ -199,11 +199,11 @@ void Fl_Gl_Atom::set_x_cells(int i){
 
 void Fl_Gl_Atom::set_y_cells(int i){
   if(i>=0){
-    pos_y_cells = i;
-    neg_y_cells = 0;
+    cell.pos_y_cells = i;
+    cell.neg_y_cells = 0;
   }else{
-    pos_y_cells = abs(i);
-    neg_y_cells = i;
+    cell.pos_y_cells = abs(i);
+    cell.neg_y_cells = i;
   }
   set_xyz_cells();
   supercell.set_gsf_modified(true);
@@ -211,11 +211,11 @@ void Fl_Gl_Atom::set_y_cells(int i){
 
 void Fl_Gl_Atom::set_z_cells(int i){
   if(i>=0){
-    pos_z_cells = i;
-    neg_z_cells = 0;
+    cell.pos_z_cells = i;
+    cell.neg_z_cells = 0;
   }else{
-    pos_z_cells = abs(i);
-    neg_z_cells = i;
+    cell.pos_z_cells = abs(i);
+    cell.neg_z_cells = i;
   }
   set_xyz_cells();
   supercell.set_gsf_modified(true);
@@ -235,18 +235,18 @@ void Fl_Gl_Atom::set_xyz_cells(void){
   TVector<real> _xyz;
   TVector<real> e(3),p(3);
   uint cont = 0;
-  x_cells = (pos_x_cells-neg_x_cells+1);
-  y_cells = (pos_y_cells-neg_y_cells+1);
-  z_cells = (pos_z_cells-neg_z_cells+1);
-  total_cells = x_cells*y_cells*z_cells;
+  cell.x_cells = (cell.pos_x_cells-cell.neg_x_cells+1);
+  cell.y_cells = (cell.pos_y_cells-cell.neg_y_cells+1);
+  cell.z_cells = (cell.pos_z_cells-cell.neg_z_cells+1);
+  cell.total_cells = cell.x_cells*cell.y_cells*cell.z_cells;
 #ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" total cells = "<<total_cells<<std::endl;
+  std::cout<<" total cells = "<<cell.total_cells<<std::endl;
 #endif
-  m_atom_position.resize(total_cells*get_total_atoms(),3);
+  m_atom_position.resize(cell.total_cells*get_total_atoms(),3);
   if(is_draw_atoms_){
-    for(int x=neg_x_cells; x<pos_x_cells+1; x++){ // repetition in x
-      for(int y=neg_y_cells; y<pos_y_cells+1; y++){ // repetition in y
-        for(int z=neg_z_cells; z<pos_z_cells+1; z++){ // repetition in z
+    for(int x=cell.neg_x_cells; x<cell.pos_x_cells+1; x++){ // repetition in x
+      for(int y=cell.neg_y_cells; y<cell.pos_y_cells+1; y++){ // repetition in y
+        for(int z=cell.neg_z_cells; z<cell.pos_z_cells+1; z++){ // repetition in z
           for(int i=0; i<get_total_atoms(); i++){
             _xyz=get_cartesian(i); //m_atom_coordinates[i];
             _xyz=_xyz+2.0*(x*_vu+y*_vv+z*_vw);
@@ -273,7 +273,7 @@ void Fl_Gl_Atom::save_wysiwyg_as(std::string _p, std::string _f){
   std::cout<<" ATOM: do save_wysiwyg_as (1)"<<std::endl;
   std::cout<<" ATOM: m_atom_position = "<<m_atom_position;
 #endif
-  supercell.save_as_file(_p,_f,is_draw_symbols_,is_draw_numbers_,m_atom_position,x_cells,y_cells,z_cells,total_cells,is_draw_bbox_);
+  supercell.save_as_file(_p,_f,is_draw_symbols_,is_draw_numbers_,m_atom_position,cell.x_cells,cell.y_cells,cell.z_cells,cell.total_cells,is_draw_bbox_);
 }
 
 void Fl_Gl_Atom::save_wysiwyg_as(std::string _f){
@@ -282,7 +282,7 @@ void Fl_Gl_Atom::save_wysiwyg_as(std::string _f){
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" ATOM: do save_wysiwyg_as (2)"<<std::endl;
 #endif
-  supercell.save_as_file(_f,is_draw_symbols_,is_draw_numbers_,m_atom_position,x_cells,y_cells,z_cells,total_cells,is_draw_bbox_);
+  supercell.save_as_file(_f,is_draw_symbols_,is_draw_numbers_,m_atom_position,cell.x_cells,cell.y_cells,cell.z_cells,cell.total_cells,is_draw_bbox_);
 }
 
 void Fl_Gl_Atom::save_wysiwyg_extension(std::string _f){
@@ -304,7 +304,7 @@ void Fl_Gl_Atom::save_wysiwyg_extension(std::string _f){
       _fext = _f + ".dlp";
     break;
   }
-  supercell.save_as_file(_fext,is_draw_symbols_,is_draw_numbers_,m_atom_position,x_cells,y_cells,z_cells,total_cells,is_draw_bbox_);
+  supercell.save_as_file(_fext,is_draw_symbols_,is_draw_numbers_,m_atom_position,cell.x_cells,cell.y_cells,cell.z_cells,cell.total_cells,is_draw_bbox_);
 }
 
 real Fl_Gl_Atom::set_bounding_box(real r){

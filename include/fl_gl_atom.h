@@ -125,6 +125,22 @@ public:
   TVector<real> v_axis_position;
 };
 
+class CCells {
+
+public:
+  // build a class or struct
+  int  pos_x_cells;
+  int  pos_y_cells;
+  int  pos_z_cells;
+  int  neg_x_cells;
+  int  neg_y_cells;
+  int  neg_z_cells;
+  int  total_cells;
+  int  x_cells;
+  int  y_cells;
+  int  z_cells;
+};
+
 class Fl_Gl_Atom: public Fl_Gl_Window, public CViewmol{
 
 public:
@@ -193,18 +209,7 @@ public:
   inline void linearly_interpolate(point*,point*,float,point*);
   inline void normalize_point(point*);
   //
-  int get_total_cells(void){ return total_cells;};
-  // build a class or struct
-  int  pos_x_cells;
-  int  pos_y_cells;
-  int  pos_z_cells;
-  int  neg_x_cells;
-  int  neg_y_cells;
-  int  neg_z_cells;
-  int  total_cells;
-  int  x_cells;
-  int  y_cells;
-  int  z_cells;
+  int get_total_cells(void){ return cell.total_cells;};
   //
   // virtual functions
   virtual void update_data(void);
@@ -223,6 +228,8 @@ protected:
   CGeometry param;
   // Fragment properties
   CProperty fragment;
+  // Cell params
+  CCells cell;
   //
   bool is_first_structure_;
   bool is_initialize_rot;
@@ -242,12 +249,6 @@ protected:
   bool is_update_mask_rcolor;
   bool update_coordinates;
   //
-  //uint __fragment_active;
-  //real __axis_precession;
-  //real __axis_tilt;
-  //real __backbone_precession;
-  //real __backbone_tilt;
-  //TVector<real> v_axis_position;
   // Visualization details
   TVector<real>   v_bond_length;
   TVector<GLuint> v_sphere_list;
