@@ -181,7 +181,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_view_active_fragment(0);
     // atoms are counted from 1 in the scene
     // Beging GUI functions
-    fragment.set_active_index(1);
+    fragment.set_active(1);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
     glview.base_view=set_bounding_box(glview.base_view); // deprecated
@@ -437,7 +437,7 @@ void Fl_Gl_Mol_View::draw_atoms(void){
   TVector<real> _xyz;
   TVector<real> e(3),p(3);
   if(is_draw_atoms_){
-    for(int c=0; c<get_total_cells(); c++){ // repetition in z
+    for(int c=0; c<cell.get_total_cells(); c++){ // repetition in z
       for(int i=0; i<get_total_atoms(); i++){
         if(render_mode==MODE_SELECT){
           ui_rgb color;
@@ -616,13 +616,13 @@ void Fl_Gl_Mol_View::draw_symbols(void){
     //glNormal3f(0,0,1);
     // text position
     glRasterPos3f(_xyz[0],_xyz[1],_xyz[2]);
-      //glRasterPos3f(0,0,0);
-      // check raster position validity
-      glGetBooleanv(GL_CURRENT_RASTER_POSITION_VALID, &boolval);
-      if(boolval == GL_TRUE) {
-          //printf("raster pos valid\n");
-            gl_draw(buff, strlen(buff));
-      }
+    //glRasterPos3f(0,0,0);
+    // check raster position validity
+    glGetBooleanv(GL_CURRENT_RASTER_POSITION_VALID, &boolval);
+    if(boolval == GL_TRUE) {
+      //printf("raster pos valid\n");
+      gl_draw(buff, strlen(buff));
+    }
   }
   glPopMatrix();
 }
@@ -782,9 +782,9 @@ void Fl_Gl_Mol_View::draw_scene(void){
     // the same as above
     if(is_draw_molecular_axis_ && render_mode!=MODE_SELECT){
       glColor3f(0.0,0.0,1.0);  // axis
-      add_axis(fragment.v_axis_position, 5.0, 0.05, fragment.__axis_precession, fragment.__axis_tilt);
+      add_axis(fragment.get_axis_position(), 5.0, 0.05, fragment.get_axis_precession(), fragment.get_axis_tilt());
       glColor3f(1.0,0.0,0.0);  // backbone plane
-      add_axis(fragment.v_axis_position, 5.0, 0.05, fragment.__backbone_precession, fragment.__backbone_tilt);
+      add_axis(fragment.get_axis_position(), 5.0, 0.05, fragment.get_backbone_precession(), fragment.get_backbone_tilt());
     }
   }
   if((is_draw_symbols_ || is_draw_labels_ || is_draw_numbers_) && render_mode!=MODE_SELECT){

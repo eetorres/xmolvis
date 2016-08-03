@@ -187,63 +187,38 @@ void Fl_Gl_Atom::update_atomic_bonds(void){
 }
 
 void Fl_Gl_Atom::set_x_cells(int i){
-  if(i>=0){
-    cell.pos_x_cells = i;
-    cell.neg_x_cells = 0;
-  }else{
-    cell.pos_x_cells = abs(i);
-    cell.neg_x_cells = i;
-  }
+  cell.set_x_cells(i);
   set_xyz_cells();
   supercell.set_gsf_modified(true);
 }
 
 void Fl_Gl_Atom::set_y_cells(int i){
-  if(i>=0){
-    cell.pos_y_cells = i;
-    cell.neg_y_cells = 0;
-  }else{
-    cell.pos_y_cells = abs(i);
-    cell.neg_y_cells = i;
-  }
+  cell.set_y_cells(i);
   set_xyz_cells();
   supercell.set_gsf_modified(true);
 }
 
 void Fl_Gl_Atom::set_z_cells(int i){
-  if(i>=0){
-    cell.pos_z_cells = i;
-    cell.neg_z_cells = 0;
-  }else{
-    cell.pos_z_cells = abs(i);
-    cell.neg_z_cells = i;
-  }
+  cell.set_z_cells(i);
   set_xyz_cells();
   supercell.set_gsf_modified(true);
 }
 
-void Fl_Gl_Atom::set_sphere_resolution(uint u){
-  if(param.u_sphere_resolution != u){
-    param.u_sphere_resolution = u;
-    eval_sphere(param.u_sphere_resolution);
-    param.u_cylinder_resolution=(5*param.u_sphere_resolution+10);
-    eval_cylinder(param.u_cylinder_resolution);
-  }
-}
+
 
 void Fl_Gl_Atom::set_xyz_cells(void){
   TVector<real> _x(3);
   TVector<real> _xyz;
   TVector<real> e(3),p(3);
   uint cont = 0;
-  cell.x_cells = (cell.pos_x_cells-cell.neg_x_cells+1);
-  cell.y_cells = (cell.pos_y_cells-cell.neg_y_cells+1);
-  cell.z_cells = (cell.pos_z_cells-cell.neg_z_cells+1);
-  cell.total_cells = cell.x_cells*cell.y_cells*cell.z_cells;
+  //cell.x_cells = (cell.pos_x_cells-cell.neg_x_cells+1);
+  //cell.y_cells = (cell.pos_y_cells-cell.neg_y_cells+1);
+  //cell.z_cells = (cell.pos_z_cells-cell.neg_z_cells+1);
+  //cell.total_cells = cell.x_cells*cell.y_cells*cell.z_cells;
 #ifdef _ATOM_DEBUG_MESSAGES_
-  std::cout<<" total cells = "<<cell.total_cells<<std::endl;
+  std::cout<<" total cells = "<<cell.get_total_cells()<<std::endl;
 #endif
-  m_atom_position.resize(cell.total_cells*get_total_atoms(),3);
+  m_atom_position.resize(cell.get_total_cells()*get_total_atoms(),3);
   if(is_draw_atoms_){
     for(int x=cell.neg_x_cells; x<cell.pos_x_cells+1; x++){ // repetition in x
       for(int y=cell.neg_y_cells; y<cell.pos_y_cells+1; y++){ // repetition in y
@@ -259,6 +234,8 @@ void Fl_Gl_Atom::set_xyz_cells(void){
     }
   }
 }
+
+
 
 void Fl_Gl_Atom::save_wysiwyg_as(std::string _p, std::string _f){
   // in case the bonds have not been evaluated
@@ -331,6 +308,15 @@ real Fl_Gl_Atom::set_bounding_box(real r){
   return r_view;
 }
 
+void Fl_Gl_Atom::set_sphere_resolution(uint u){
+  if(param.u_sphere_resolution != u){
+    param.u_sphere_resolution = u;
+    eval_sphere(param.u_sphere_resolution);
+    param.u_cylinder_resolution=(5*param.u_sphere_resolution+10);
+    eval_cylinder(param.u_cylinder_resolution);
+  }
+}
+
 void Fl_Gl_Atom::initialize_sphere(real r){
     int s;
     real scale = r;
@@ -354,7 +340,7 @@ void Fl_Gl_Atom::initialize_cylinder(real r,real d){
   TVector<real> t(3);
   glBegin(GL_QUAD_STRIP);
   real scale = 0.2*d;
-  for (int i=0;i<param.__cylinder_strip_length;i++){
+  for (int i=0;i<param.u_cylinder_strip_length;i++){
     t = m_cylinder[i];
     t[2]=0; // -r
     glNormal3f(t[0],t[1],t[2]);
@@ -501,15 +487,15 @@ void Fl_Gl_Atom::set_palette(uint u){
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
   set_palette(supercell.get_number_of_fragments());
   if(_sw)
-    fragment.set_active_index(supercell.get_fragment_table(_u));
+    fragment.set_active(supercell.get_fragment_table(_u));
   else
-    fragment.set_active_index(_u);
+    fragment.set_active(_u);
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total fragments: "<<supercell.get_number_of_fragments()<<std::endl;
 #endif
   set_update_coordinates(true);
   // fragments are counted from 1
-  set_active_fragment(fragment.__fragment_active-1);
+  set_active_fragment(fragment.get_active()-1);
   is_eval_bonds=true;
   is_update_bonds=true;
   //update_bonds_color=true;
@@ -549,7 +535,7 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
   uint _af;
   // atoms are counted from 1 in the scene
   _af= supercell.get_fragment_table(_a);
-  fragment.__fragment_active=_af;
+  fragment.set_active(_af);
   // fragments are counted from 1
   set_active_fragment(_af-1);
   set_update_coordinates(true);
@@ -559,8 +545,8 @@ void Fl_Gl_Atom::set_active_fragment(const uint _a){
 void Fl_Gl_Atom::eval_sphere(uint maxlevel){
     param.u_sphere_rows = 1 << maxlevel;
     int s, cont = 0;
-    param.__sphere_strip_length=20*(param.u_sphere_rows*(param.u_sphere_rows-1)+(param.u_sphere_rows*3));
-    m_sphere.resize(param.__sphere_strip_length,3);
+    param.u_sphere_strip_length=20*(param.u_sphere_rows*(param.u_sphere_rows-1)+(param.u_sphere_rows*3));
+    m_sphere.resize(param.u_sphere_strip_length,3);
     TVector<real> vt(3);
     /* iterate over the 20 sides of the icosahedron */
     for(s = 0; s < 20; s++) {
@@ -607,12 +593,12 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
   m_cylinder_e1.resize(0,3);
   m_cylinder_texture1.resize(0,2);
   m_cylinder.resize(0,3);
-  param.__cylinder_strip_length=0;
+  param.u_cylinder_strip_length=0;
   // check resolution
   if(n < 4){
       n = 4;
   }
-  param.__cylinder_strip_length=n;
+  param.u_cylinder_strip_length=n;
   for (uint i=0;i<=n;i++){
     theta3 = i * C_2PI / n;
     e[0] = cos(theta3);
@@ -625,7 +611,7 @@ void Fl_Gl_Atom::eval_cylinder(uint n){
     m_cylinder_texture1.add_row(t1);
   }
   m_cylinder.add_row(m_cylinder[n-1]);
-  param.__cylinder_strip_length++;
+  param.u_cylinder_strip_length++;
 }
 
 void Fl_Gl_Atom::initialize_transform_matrix(void){

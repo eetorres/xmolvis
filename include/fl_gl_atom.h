@@ -107,10 +107,10 @@ class CGeometry {
 public:
 
   uint u_sphere_resolution;
-  int  u_sphere_rows;
-  int  __sphere_strip_length;
-  int  __cylinder_strip_length;
-  int  u_cylinder_resolution;
+  uint u_sphere_rows;
+  uint u_sphere_strip_length;
+  uint u_cylinder_resolution;
+  uint u_cylinder_strip_length;
 };
 
 class CProperty {
@@ -118,40 +118,101 @@ class CProperty {
 public:
 
   void clear(void){
-    __fragment_active = 1;
-    __axis_precession = 0;
-    __axis_tilt       = 0;
+    u_fragment_active = 1;
+    r_axis_precession = 0;
+    r_axis_tilt       = 0;
   }
-  void set_active_index(const uint u){
-    __fragment_active=u;
+  void set_active(const uint u){
+    u_fragment_active=u;
+  };
+  uint get_active(void){
+    return u_fragment_active;
   };
   void set_axis_precession(const real f){
-    __axis_precession=f;
+    r_axis_precession=f;
+  };
+  real get_axis_precession(void){
+    return r_axis_precession;
   };
   void set_axis_tilt(const real f){
-    __axis_tilt=f;
+    r_axis_tilt=f;
+  };
+  real get_axis_tilt(void){
+    return r_axis_tilt;
   };
   void set_backbone_precession(const real f){
-    __backbone_precession=f;
+    r_backbone_precession=f;
+  };
+  real get_backbone_precession(void){
+    return r_backbone_precession;
   };
   void set_backbone_tilt(const real f){
-    __backbone_tilt=f;
+    r_backbone_tilt=f;
+  };
+  real get_backbone_tilt(void){
+    return r_backbone_tilt;
   };
   void set_axis_position(const TVector<real>& v){
     v_axis_position=v;
   };
+  TVector<real> get_axis_position(void){
+    return v_axis_position;
+  };
 
-  uint __fragment_active;
-  real __axis_precession;
-  real __axis_tilt;
-  real __backbone_precession;
-  real __backbone_tilt;
+  uint u_fragment_active;
+  real r_axis_precession;
+  real r_axis_tilt;
+  real r_backbone_precession;
+  real r_backbone_tilt;
   TVector<real> v_axis_position;
 };
 
 class CCells {
 
 public:
+
+  void set_x_cells(int i)
+  {
+    if(i>=0){
+      pos_x_cells = i;
+      neg_x_cells = 0;
+    }else{
+      pos_x_cells = abs(i);
+      neg_x_cells = i;
+    }
+    set_total_cells();
+  }
+  void set_y_cells(int i)
+  {
+    if(i>=0){
+      pos_y_cells = i;
+      neg_y_cells = 0;
+    }else{
+      pos_y_cells = abs(i);
+      neg_y_cells = i;
+    }
+    set_total_cells();
+  }
+  void set_z_cells(int i)
+  {
+    if(i>=0){
+      pos_z_cells = i;
+      neg_z_cells = 0;
+    }else{
+      pos_z_cells = abs(i);
+      neg_z_cells = i;
+    }
+    set_total_cells();
+  }
+  int set_total_cells(void){
+    x_cells = (pos_x_cells-neg_x_cells+1);
+    y_cells = (pos_y_cells-neg_y_cells+1);
+    z_cells = (pos_z_cells-neg_z_cells+1);
+    total_cells=x_cells*y_cells*z_cells;
+  };
+  int get_total_cells(void){
+    return total_cells;
+  };
   // build a class or struct
   int  pos_x_cells;
   int  pos_y_cells;
@@ -227,8 +288,6 @@ public:
   //
   inline void linearly_interpolate(point*,point*,float,point*);
   inline void normalize_point(point*);
-  //
-  int get_total_cells(void){ return cell.total_cells;};
   //
   // virtual functions
   virtual void update_data(void);
