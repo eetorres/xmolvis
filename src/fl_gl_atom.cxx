@@ -79,9 +79,9 @@ void Fl_Gl_Atom::eval_initial_properties(void){
   m_atom_rcolor = supercell.get_radius_color();
 }
 
-void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
-  fragment.v_axis_position=v;
-}
+//void Fl_Gl_Atom::set_axis_position(const TVector<real>& v){
+//  fragment.v_axis_position=v;
+//}
 
 void Fl_Gl_Atom::update_atomic_coordinates(void){
   is_update_bonds = true;
@@ -124,11 +124,11 @@ void Fl_Gl_Atom::update_data(void){
   update_view();
   if(is_update_coordinates){
     update_atomic_coordinates();
-    set_axis_position(get_fragment_centered_position_cartesian());
-    set_axis_precession(get_axis_precession());
-    set_axis_tilt(get_axis_tilt());
-    set_backbone_precession(get_backbone_precession());
-    set_backbone_tilt(get_backbone_tilt());
+    fragment.set_axis_position(get_fragment_centered_position_cartesian());
+    fragment.set_axis_precession(get_axis_precession());
+    fragment.set_axis_tilt(get_axis_tilt());
+    fragment.set_backbone_precession(get_backbone_precession());
+    fragment.set_backbone_tilt(get_backbone_tilt());
     is_update_coordinates=false;
   }
   Fl::wait(0.1);
@@ -501,9 +501,9 @@ void Fl_Gl_Atom::set_palette(uint u){
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
   set_palette(supercell.get_number_of_fragments());
   if(_sw)
-    set_active_fragment_index(supercell.get_fragment_table(_u));
+    fragment.set_active_index(supercell.get_fragment_table(_u));
   else
-    set_active_fragment_index(_u);
+    fragment.set_active_index(_u);
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total fragments: "<<supercell.get_number_of_fragments()<<std::endl;
 #endif

@@ -419,17 +419,13 @@ public:
 
 private:
 
-  // Gl window parameters
+  // GL parameters
   CGLWindow glview;
   CViewsetup setup;
-  // Window tools
+  // Tools
   CTools tools;
-  // Sections
+  // Selections
   CSelection marker;
-  // graphic quality control
-  int  __sphere_strip_size;
-  int  _draw_mpts, _draw_data;
-  int  i_sphere_resolution;
   //
   int font_size_symbol;
   int font_size_panel_label;
@@ -472,6 +468,7 @@ private:
   std::string sub_legends[6];
   // atomic spheres
   GLuint    sphere_dl;
+  // atomic bonds
   GLuint    cylinder_dl;
   // what is displayed
   bool is_graphics_on, is_draw_world_axes_;
@@ -495,17 +492,12 @@ private:
   bool is_submenu_pie_picked;
   bool is_menu_position;
   bool is_lock_dragging;
-  //
   bool is_mode_atom;
   bool is_mode_fragment;
-  //
   bool is_left_click;
   bool is_right_click;
   //
-  //bool is_update_mask_rcolor;
   bool is_update_position;
-  //
-  //bool update_coordinates;
   bool is_update_bonds_color;
   bool is_update_normal_color;
   bool is_update_dark_mask;
@@ -514,10 +506,8 @@ private:
   bool is_update_selected_atoms;
   //
   bool is_unselected_atom;
-  //
   bool is_handle_atom_;
   bool is_handle_main_;
-  //
   bool is_control_left_on;
   bool is_slider_active[NUMBER_OF_SLIDERS];
   bool is_radio_active[NUMBER_OF_RADIOS];
@@ -560,19 +550,11 @@ private:
   //void draw_pie_disk(GLfloat x, GLfloat y, GLfloat z, GLfloat r, GLint n);
   //void draw_pie_labels(GLfloat cx, GLfloat cy, GLfloat z, GLfloat r, std::string l[], std::string m, GLint nl);
   //
-  // GUI
-  // begin sphere
-  void displace_scale(point*,float,point*);
-  // end sphere
+  // GUI utils
   inline void view_reshape(int width, int height);
   void set_font_size(void);
   void initialize_opengl(void);
   void process_picking(unsigned char pc[3]);
-  // deprecated begin
-  void process_start_picking(void);
-  void process_stop_picking(void);
-  void process_mouse_hits(GLint, GLuint*);
-  // deprecated end
   //
   void create_sphere_dl(void);
   void delete_sphere_dl(void);

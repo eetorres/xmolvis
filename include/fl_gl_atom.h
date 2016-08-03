@@ -122,6 +122,24 @@ public:
     __axis_precession = 0;
     __axis_tilt       = 0;
   }
+  void set_active_index(const uint u){
+    __fragment_active=u;
+  };
+  void set_axis_precession(const real f){
+    __axis_precession=f;
+  };
+  void set_axis_tilt(const real f){
+    __axis_tilt=f;
+  };
+  void set_backbone_precession(const real f){
+    __backbone_precession=f;
+  };
+  void set_backbone_tilt(const real f){
+    __backbone_tilt=f;
+  };
+  void set_axis_position(const TVector<real>& v){
+    v_axis_position=v;
+  };
 
   uint __fragment_active;
   real __axis_precession;
@@ -168,14 +186,11 @@ public:
   void set_xyz_cells(void);
   //
   void set_palette(const uint);
-  void set_fragment_active(uint);
-  void set_active_fragment_index(const uint u){ fragment.__fragment_active=u;};
+  //void set_fragment_active(uint);
+  
+  //
   void set_active_fragment(const uint);
-  void set_axis_position(const TVector<real>&);
-  void set_axis_precession(real f){ fragment.__axis_precession=f;};
-  void set_axis_tilt(real f){ fragment.__axis_tilt=f;};
-  void set_backbone_precession(real f){ fragment.__backbone_precession=f;};
-  void set_backbone_tilt(real f){ fragment.__backbone_tilt=f;};
+  //void set_axis_position(const TVector<real>&);
   //
   ////////////////////////////////////////////////////////////////////////////////////////
   // Evaluation functions
@@ -254,14 +269,11 @@ protected:
   bool is_update_coordinates;
   //
   // Visualization details
+  TMatrix<real> m_sphere;
+  TMatrix<real> m_cylinder;
   TVector<GLuint> v_sphere_list;
   TVector<GLuint> v_cylinder_list;
   TVector<GLuint> v_cylinder_list_pbc;
-  //
-  TVector<real> _vu, _vv, _vw;
-  //
-  TMatrix<real> m_sphere;
-  TMatrix<real> m_cylinder;
   // cylinder
   // this must be removed, still used in "add_stick"
   TMatrix<real> m_cylinder_e1;
@@ -281,6 +293,8 @@ protected:
   TMatrix<real> m_bond_rcolor_1;
   TMatrix<real> m_bond_rcolor_pbc_0;
   TMatrix<real> m_bond_rcolor_pbc_1;
+  //
+  TVector<real> _vu, _vv, _vw;
   //
   private:
     CTimer gl_atom_clock;

@@ -181,7 +181,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_view_active_fragment(0);
     // atoms are counted from 1 in the scene
     // Beging GUI functions
-    set_active_fragment_index(1);
+    fragment.set_active_index(1);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
     glview.base_view=set_bounding_box(glview.base_view); // deprecated
