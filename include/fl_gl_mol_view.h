@@ -5,7 +5,7 @@
 //                                                                      //
 // OpenGL 3D visualization widget to display atomic structures.         //
 //                                                                      //
-// Copyright 2002-2015 by Edmanuel Torres                               //
+// Copyright 2002-2016 by Edmanuel Torres                               //
 // email: eetorres@gmail.com                                            //
 //                                                                      //
 //======================================================================//

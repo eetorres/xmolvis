@@ -3,7 +3,7 @@
 //
 // Define the atomic structure
 //
-// Copyright 2011-2015 by Edmanuel Torres
+// Copyright 2011-2016 by Edmanuel Torres
 // email:   eetorres@gmail.com
 //
 //========================================================================

@@ -9,7 +9,7 @@
 //                                                                      //
 //                                                                      //
 //                                                                      //
-// Copyright 2002-2014 by Edmanuel Torres                               //
+// Copyright 2002-2016 by Edmanuel Torres                               //
 // email: eetorres@gmail.com                                            //
 //                                                                      //
 //======================================================================//

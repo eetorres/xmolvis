@@ -7,8 +7,8 @@
 //  created: Sat Feb  4 12:37:18 MST 2012
 //  updated:
 //
-//  Copyrigth 2002 by Edmanuel Torres
-//                    eetorres@gmail.com
+//  Copyrigth 2002-2016 by Edmanuel Torres
+//                      eetorres@gmail.com
 //--------------------------------------------------------------------
 
 // Insert a declaration for system_time here.

@@ -3,7 +3,7 @@
 //
 // This an utility program to manipulate and generate structure files
 //
-// Copyright 2006-2015 by Edmanuel Torres
+// Copyright 2006-2016 by Edmanuel Torres
 // email:   eetorres@gmail.com
 //
 //========================================================================

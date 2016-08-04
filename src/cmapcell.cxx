@@ -3,10 +3,9 @@
 //
 // Operations and modification to the Suprecell.
 //
-// Copyright 2006-2015 by Edmanuel Torres
+// Copyright 2006-2016 by Edmanuel Torres
 // email:   eetorres@gmail.com
 //
-// Lastest update: 13/07/2015
 //========================================================================
 //  This file is part of xmolview                                       //
 //                                                                      //

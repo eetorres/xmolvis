@@ -4,10 +4,9 @@
 // Class layer to separate core structure manipulations from
 // graphic output and GUI controls.
 //
-// Copyright 2006-2015 by Edmanuel Torres
+// Copyright 2006-2016 by Edmanuel Torres
 // email:   eetorres@gmail.com
 //
-// Lastest update: 10/07/2015
 //========================================================================
 //  This file is part of xmolview                                       //
 //                                                                      //

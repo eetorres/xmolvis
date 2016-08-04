@@ -3,10 +3,9 @@
 //
 // This an utility program to manipulate and genarate structure files
 //
-// Copyright 2011-2015 by Edmanuel Torres
+// Copyright 2011-2016 by Edmanuel Torres
 // email:   eetorres@gmail.com
 //
-// Latest update: 2013
 //========================================================================
 //  This file is part of xmolview                                       //
 //                                                                      //

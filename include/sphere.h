@@ -2,8 +2,6 @@
 // FILE - sphere.h the widget class file
 // for the Fast Light Tool Kit (FLTK) - www.fltk.org
 //
-// Last modification: Sun Dec 18 18:04:34 MST 2011
-//
 //========================================================================
 //  This file is part of xmolview                                       //
 //                                                                      //

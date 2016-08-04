@@ -8,7 +8,6 @@
 // Copyright 2002-2016 by Edmanuel Torres                               //
 // email: eetorres@gmail.com                                            //
 //                                                                      //
-// Lastest update: 01/03/2016                                           //
 //======================================================================//
 //  This file is part of xmolview                                       //
 //                                                                      //
