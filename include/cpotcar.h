@@ -32,7 +32,7 @@
 #include<msmvtl/tmatrix.h>
 #include<msmvtl/tvmath.h>
 #include<atom_symbol.h>
-//#include<const.h>
+
 
 class CPotcar{
 

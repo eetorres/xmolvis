@@ -26,7 +26,6 @@
 #ifndef _POSCAR_H_
 #define _POSCAR_H_
 
-//#include <config.h>
 #include <config_debug.h>
 #include <time.h>
 #include <string.h>

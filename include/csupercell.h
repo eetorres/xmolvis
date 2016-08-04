@@ -94,14 +94,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   void eval_initial_position(void);
   void eval_initial_orientation(void);
-  //void eval_cell_table(void);
   void eval_connections(uint);
-  //bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
-  //bool eval_scaled_fragment(uint,bool,real);      // Create a framgent using scaled distance
-  //bool eval_radial_fragment(uint,bool,real);      // Create a framgent using scaled distance
-  //bool eval_scaled_fragment(uint,real);           // Create single scaled distance fragment
-  //void eval_scaled_fragments(real);               // Create all posible scaled framgent
-  // Begin deprecated
   // Create single vdW fragments
   void eval_vdw_fragment(const uint u){
     gsf.eval_scaled_fragment(u,1.1);
@@ -110,8 +103,6 @@ public:
   void eval_vdw_fragments(void){
     gsf.eval_scaled_fragments(1.1);
   }
-  //void eval_atom_fragments(void);               // Create all atom framgents
-  // End deprecated
   bool eval_merge_fragment(uint,bool);         // Merge two fragments
   //
   bool delete_atom(uint u);                    // Delete an atom
@@ -166,7 +157,13 @@ public:
   //  Get  functions
   /////////////////////////////////////////////////////////////////////////////////
   std::string get_dir(void);
+  std::string get_atomic_label(uint u){
+    return gsf.get_atomic_label(u);
+  }
   std::string get_fragment_atomic_label(uint,uint);
+  std::string get_atomic_symbol(uint u){
+    return gsf.get_atomic_symbol(u);
+  }
   std::string get_fragment_atomic_symbol(uint,uint);
   //
   uint get_number_of_fragments(void);
@@ -294,12 +291,6 @@ private:
   bool __is_periodic;
   bool __is_potmol;
   bool __is_input_fragment;
-  //
-  //uint __input_format;
-  //uint __output_format;
-  //uint __total_atoms;
-  //uint __atomic_species;
-  //uint __active_fragment;
   //
   real r_cut_radius, r_cut_radius_2;
   //

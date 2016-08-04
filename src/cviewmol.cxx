@@ -33,7 +33,7 @@ bool CViewmol::read_files_view(void){
 }
 
 void CViewmol::initialize_view(void){
-  // instialization before the TOPCAR is read
+  // Intialized before the TOPCAR is read
   initialize_map();
   set_view_bounding_box();
 }
@@ -172,14 +172,6 @@ void CViewmol::set_view_position_rpt2(const TVector<real>& _v){
   set_map_position_rpt2(_v);
 }
 
-//uint CViewmol::get_view_total_atoms(void){
-//  return get_map_total_atoms();
-//}
-
-//uint CViewmol::get_view_total_fragments(void){
-//  return supercell.get_fragmol_number_of_fragments();
-//}
-
 uint CViewmol::get_view_active_fragment(void){
   return supercell.get_fragmol_active_fragment();
 }
@@ -230,34 +222,6 @@ uint CViewmol::get_view_file_type(std::string s){
   std::cout<<" unknown file type"<<std::endl;
   return INPUT_FILE_TYPE_UNKNOWN;
 }
-// deprecated
-//real CViewmol::get_view_axis_precession(void){
-//  return get_map_axis_precession();
-//}
-// deprecated
-//real CViewmol::get_view_axis_tilt(void){
-//  return get_map_axis_tilt();
-//}
-// deprecated
-//real CViewmol::get_view_backbone_precession(void){
-//  return get_map_backbone_precession();
-//}
-// deprecated
-//real CViewmol::get_view_backbone_tilt(void){
-//  return get_map_backbone_tilt();
-//}
-// deprecated
-//TVector<std::string> CViewmol::get_view_atomic_labels(void){
-//   return get_map_atomic_labels();
-//}
-// deprecated
-//TVector<std::string> CViewmol::get_view_atomic_symbols(void){
-//   return get_map_atomic_symbols();
-//}
-// deprecated
-//TVector<std::string> CViewmol::get_view_atomic_symbol_table(void){
-//   return supercell.get_fragmol_atomic_symbol_table();
-//}
 
 TVector<uint> CViewmol::get_view_atom_table(void){
   return supercell.get_atom_table();
@@ -267,31 +231,13 @@ TVector<uint> CViewmol::get_view_atomic_composition_table(void){
    return supercell.get_fragmol_atomic_composition_table();
 }
 
-// deprecated
-//TVector<uint> CViewmol::get_view_atomic_number_table(void){
-//   return supercell.get_atomic_number_table();
-//}
-// deprecated
-//TVector<uint> CViewmol::get_view_atomic_numbers(void){
-  //return get_map_atomic_numbers();
-//}
-// deprecated
-//TVector<uint> CViewmol::get_view_fragment_table(void){
-//  return supercell.get_fragmol_fragment_table();
-//}
-
 TVector<real> CViewmol::get_view_axis_angles(void){
   return get_map_axis_angles();
 }
 
 TVector<real> CViewmol::get_view_basis_direct(void){
-  //return get_map_basis_direct();
   return supercell.get_fragmol_basis_direct();
 }
-
-//TVector<real> CViewmol::get_view_position_direct(void){
-//  return get_map_position_direct();
-//}
 
 TVector<real> CViewmol::get_view_position_uvw(void){
   return get_map_position_uvw();
@@ -305,26 +251,6 @@ TVector<real> CViewmol::get_view_position_spheric(void){
   std:: cout<<" spherical = "<<_rpt<<std::endl;
   return _rpt;
 }
-
-//TVector<real> CViewmol::get_view_position_cartesian(void){
-//  return get_map_position_cartesian();
-//}
-
-// deprecated
-//TVector<real> CViewmol::get_view_centered_position_cartesian(void){
-//  return get_map_centered_position_cartesian();
-//}
-// deprecated
-//TMatrix<real> CViewmol::get_view_bounding_box(void){
-  // becausee of the symetry only half is needed for the visualization
-  //return 0.5*m_view_bbox;
-  //return 0.5*supercell.get_uvw_to_xyz();
-//}
-// deprecated
-// This function return the coordinates showed by the rendering
-//TMatrix<real> CViewmol::get_view_cartesian(void){
- //return get_map_cartesian();
-//}
 
 TMatrix<real> CViewmol::get_view_direct(void){
   return get_map_direct();

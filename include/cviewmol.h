@@ -79,39 +79,20 @@ public:
   void set_view_position_rpt1(const TVector<real>&);
   void set_view_position_rpt2(const TVector<real>&);
   //
-  //uint get_view_total_atoms(void);
-  //uint get_view_total_fragments(void);
   uint get_view_active_fragment(void);
   uint get_view_tilt_axis_begin(unsigned int);
   uint get_view_tilt_axis_end(unsigned int);
   uint get_view_file_type(std::string);
   //
-  //real get_view_axis_precession(void);
-  //real get_view_axis_tilt(void);
-  //real get_view_backbone_precession(void);
-  //real get_view_backbone_tilt(void);
-  //
-  //TVector<std::string> get_view_atomic_labels(void);
-  //TVector<std::string> get_view_atomic_symbols(void);
-  //TVector<std::string> get_view_atomic_symbol_table(void);
-  //
   TVector<uint> get_view_atom_table(void);
   TVector<uint> get_view_atomic_composition_table(void);
-  //TVector<uint> get_view_atomic_number_table(void);
-  //TVector<uint> get_view_fragment_table(void);
-  //TVector<uint> get_view_atomic_numbers(void);
   //
   TVector<real> get_view_axis_angles(void);
   TVector<real> get_view_basis_direct(void);
-  //TVector<real> get_position_direct(void);
   TVector<real> get_view_position_uvw(void);
-  //TVector<real> get_view_position_cartesian(void);
   TVector<real> get_view_position_spheric(void);
-  //TVector<real> get_view_centered_position_cartesian(void);
   TVector<real> get_view_axis_cartesian_origin(void);
   //
-  //TMatrix<real> get_view_bounding_box(void);
-  //TMatrix<real> get_view_cartesian(void);
   TMatrix<real> get_view_direct(void);
   // Conditionals
   bool is_view_periodic(void){ return supercell.is_periodic();};

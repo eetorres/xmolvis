@@ -238,10 +238,6 @@ void Fl_Gl_Atom::set_xyz_cells(void){
   TVector<real> _xyz;
   TVector<real> e(3),p(3);
   uint cont = 0;
-  //cell.x_cells = (cell.pos_x_cells-cell.neg_x_cells+1);
-  //cell.y_cells = (cell.pos_y_cells-cell.neg_y_cells+1);
-  //cell.z_cells = (cell.pos_z_cells-cell.neg_z_cells+1);
-  //cell.total_cells = cell.x_cells*cell.y_cells*cell.z_cells;
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" total cells = "<<cell.get_total_cells()<<std::endl;
 #endif
@@ -524,11 +520,10 @@ void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
   std::cout<<" total fragments: "<<supercell.get_number_of_fragments()<<std::endl;
 #endif
   set_update_coordinates(true);
-  // fragments are counted from 1
+  // fragments are counted from 0
 #ifdef _ATOM_FRAGMENT_MESSAGES_
   std::cout<<" set active fragment: "<<fragment.get_active()-1<<std::endl;
 #endif
-  //set_active_fragment(fragment.get_active());
   set_active_fragment(0);
   is_eval_bonds=true;
   is_update_bonds=true;
@@ -571,14 +566,7 @@ void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
 }
 
 void Fl_Gl_Atom::set_active_fragment(const uint u){
-  //uint _af;
-  // fragments are counted from 1
-  // changed to count from 0
-  // in case the fragment table is required
-  //_af= supercell.get_fragment_table(u);
-  //fragment.set_active(_af);
-  // fragments are counted from 1
-  //supercell.set_active_fragment(_af);
+  // fragments are counted from 0
   fragment.set_active(u);
   supercell.set_active_fragment(u);
   set_update_coordinates(true);
@@ -587,13 +575,8 @@ void Fl_Gl_Atom::set_active_fragment(const uint u){
 
 void Fl_Gl_Atom::set_atom_active_fragment(const uint u){
   uint _u;
-  // fragments are counted from 1
-  // changed to count from 0
-  // in case the fragment table is required
+  // fragments are counted from 0
   _u= supercell.get_fragment_table(u);
-  //fragment.set_active(_af);
-  // fragments are counted from 1
-  //supercell.set_active_fragment(_af);
   fragment.set_active(_u);
   supercell.set_active_fragment(_u);
   set_update_coordinates(true);

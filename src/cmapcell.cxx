@@ -36,7 +36,7 @@ CMapcell::CMapcell(){
   __if_precession_map=false;
   __if_translation_last_point=true;
   __if_cartesian_spheric=true;
-  __active_fragment=0;
+  //__active_fragment=0;
   s_scan_directory="scan";
 }
 
@@ -47,7 +47,7 @@ void CMapcell::initialize_map(void){
   supercell.initialize_fragments();
   eval_map_cartesian();
   eval_map_direct();
-  eval_map_properties();
+  //eval_map_properties();
 #ifdef _debugging_messages_
   std::cout<<"MAPMOL: initialize_map [end]"<<std::endl;
 #endif
@@ -85,37 +85,9 @@ void CMapcell::eval_map_direct(void){
   supercell.update_fragmol_direct();
 }
 
-void CMapcell::eval_map_properties(void){
-  TVector<real> _v;
-  TVector<unsigned int> v_l;
-  unsigned int _n, _s, _a;
-  _a = supercell.get_fragmol_total_atoms();
-  v_atomic_labels.resize(_a);
-  v_atomic_symbols.resize(_a);
-  v_atomic_numbers.resize(_a);
-  _n = supercell.get_number_of_fragments();
-#ifdef _debugging_messages
-  std::cout<<"MAPMOL: total atoms: "<<_a<<std::endl;
-#endif
-  for(unsigned int i=0; i<_n; i++){
-    _s = supercell.get_fragment_size(i);
-    v_l = supercell.gsf.get_topology_atoms(i);
-    for(unsigned int j=0;j<_s;j++){
-      v_atomic_labels[v_l[j]] = supercell.get_fragment_atomic_label(i,j);
-      v_atomic_symbols[v_l[j]] = supercell.get_fragment_atomic_symbol(i,j);
-      v_atomic_numbers[v_l[j]] = supercell.get_fragment_atomic_number(i,j);
-    }
-  }
-#ifdef _debugging_messages
-  std::cout<<"MAPMOL: Properties ready"<<std::endl;
-  std::cout<<"MAPMOL: v_atomic_symbols: "<<v_atomic_symbols;
-  std::cout<<"MAPMOL: v_atomic_numbers: "<<v_atomic_numbers;
-#endif
-}
-
 // This function have to be called everytime the axis are changed
 void CMapcell::set_active_fragment(const unsigned int i){
-  __active_fragment=i;
+  //__active_fragment=i;
 #ifdef _debugging_messages_
   std::cout<<"MAPMOL: active fragment ="<<__active_fragment<<std::endl;
 #endif
@@ -335,30 +307,6 @@ real CMapcell::get_backbone_tilt(void){
   return supercell.get_fragmol_backbone_tilt();
 }
 
-TVector<std::string> CMapcell::get_atom_labels(void){
-  return v_atomic_labels;
-}
-
-std::string CMapcell::get_atom_label(uint u){
- return v_atomic_labels[u];
-}
-
-TVector<std::string> CMapcell::get_atomic_symbols(void){
-  return v_atomic_symbols;
-}
-
-std::string CMapcell::get_atomic_symbol(uint u){
-  return v_atomic_symbols[u];
-}
-
-TVector<unsigned int> CMapcell::get_map_atomic_numbers(void){
-  return v_atomic_numbers;
-}
-
-TVector<unsigned int> CMapcell::get_map_atomic_table(void){
-  return v_atomic_table;
-}
-
 TVector<real> CMapcell::get_map_axis_angles(void){
   return supercell.get_fragmol_axis_angles();
 }
@@ -384,17 +332,14 @@ TVector<real> CMapcell::get_fragment_centered_position_cartesian(void){
 }
 
 TVector<real> CMapcell::get_cartesian(uint u){
-  //return m_cartesian;
   return supercell.get_cartesian(u);
 }
 
 TMatrix<real> CMapcell::get_cartesian(void){
-  //return m_cartesian;
   return supercell.get_cartesian();
 }
 
 TMatrix<real> CMapcell::get_map_direct(void){
-  //return m_direct;
   return supercell.get_direct();
 }
 

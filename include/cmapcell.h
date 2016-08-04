@@ -43,8 +43,6 @@ public:
   void eval_linked_list(void);
   void eval_map_cartesian(void);
   void eval_map_direct(void);
-  void eval_map_properties(void);
-  //
   //
   //void initialize_map_translation_1d(void);
   //void initialize_map_translation_2d(void);
@@ -100,9 +98,6 @@ public:
   //
   void set_scan_title(const std::string);
   //
-  //void set_write_xyz_file(const std::string);
-  //void set_write_uvw_file(const std::string);
-  //
   uint get_total_atoms(void);
   //
   TVector<real> get_map_position_uvw1(uint);
@@ -121,12 +116,6 @@ public:
   real get_backbone_precession(void);
   real get_backbone_tilt(void);
   //
-  TVector<std::string> get_atom_labels(void);
-  std::string get_atom_label(uint);
-  TVector<std::string> get_atomic_symbols(void);
-  std::string get_atomic_symbol(uint);
-  TVector<uint> get_map_atomic_numbers(void);
-  TVector<uint> get_map_atomic_table(void);
   TVector<real> get_map_axis_angles(void);
   TVector<real> get_map_basis_direct(void);
   TVector<real> get_position_direct(void);
@@ -137,13 +126,11 @@ public:
   TVector<real> get_map_axis_direct_origin(void);
   TVector<real> get_map_axis_cartesian_origin(void);
   //
-  //TMatrix<real> get_map_bounding_box(void);
   TVector<real> get_cartesian(uint);
   TMatrix<real> get_cartesian(void);
   TMatrix<real> get_map_direct(void);
   //
   // Temporal functions
-  uint get_atomic_number(uint u){ return v_atomic_numbers[u];};
   int get_cell_side(int i){ return supercell.v_cell_side[i];};
   TVector<int> get_cell_side(void){ return supercell.v_cell_side;};
   //
@@ -167,7 +154,6 @@ private:
   bool __if_translation_last_point;
   bool __if_cartesian_spheric;
   //
-  uint __active_fragment;
   uint __translation_map_steps_1d;
   uint __translation_map_steps_2d;
   uint __twist_map_steps;
@@ -176,9 +162,8 @@ private:
   //
   real __twist_map_step, __angle_map_twist1, __angle_map_twist2;
   real __tilt_map_step, __angle_map_tilt1, __angle_map_tilt2;
-  real __precession_map_step, __theta_step;
-  real __angle_map_precession1, __angle_map_precession2;
-  real __angle_theta1, __angle_theta2;
+  real __precession_map_step, __angle_map_precession1, __angle_map_precession2;
+  real __theta_step, __angle_theta1, __angle_theta2;
   real __translation_step_1d, __translation_step_2d;
   real __translation_distance_1d, __translation_distance_2d;
   real __inv_stp_1d, __inv_stp_2d;
@@ -186,20 +171,12 @@ private:
   std::string s_scan_directory;
   std::string __scan_path;
   //
-  TVector<std::string>  v_atomic_labels;
-  TVector<std::string>  v_atomic_symbols;
-  TVector<uint> v_atomic_numbers;
-  TVector<uint> v_atomic_table;
-
   TVector<real> v_position_map_uvw1;
   TVector<real> v_position_map_uvw2;
   TVector<real> v_position_map_uvw3;
   TVector<real> v_position_map_uvw4;
   TVector<real> v_position_map_step_1d;
   TVector<real> v_position_map_step_2d;
-
-  TMatrix<real> m_cartesian;
-  TMatrix<real> m_direct;
   //
   void compute_axis_angles(void);
 };

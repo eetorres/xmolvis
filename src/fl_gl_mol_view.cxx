@@ -586,18 +586,18 @@ void Fl_Gl_Mol_View::draw_symbols(void){
     _xyz=get_cartesian(i); //m_atom_coordinates[i];
     if(is_draw_symbols_ && is_draw_numbers_){
       if(is_mode_atom)
-        sprintf(buff,"%s-%i",get_atomic_symbol(i).c_str(),i+1);
+        sprintf(buff,"%s-%i",supercell.get_atomic_symbol(i).c_str(),i+1);
       else
-        sprintf(buff,"%i-%s",supercell.get_fragment_table(i),get_atomic_symbol(i).c_str());
+        sprintf(buff,"%i-%s",supercell.get_fragment_table(i),supercell.get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_ && is_draw_numbers_){
       if(is_mode_atom)
-        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),i+1);
+        sprintf(buff,"%s-%i",supercell.get_atomic_label(i).c_str(),i+1);
       else
-        sprintf(buff,"%s-%i",get_atom_label(i).c_str(),supercell.get_fragment_table(i));
+        sprintf(buff,"%s-%i",supercell.get_atomic_label(i).c_str(),supercell.get_fragment_table(i));
     }else if(is_draw_symbols_){
-      sprintf(buff,"%s",get_atomic_symbol(i).c_str());
+      sprintf(buff,"%s",supercell.get_atomic_symbol(i).c_str());
     }else if(is_draw_labels_){
-      sprintf(buff,"%s",get_atom_label(i).c_str());
+      sprintf(buff,"%s",supercell.get_atomic_label(i).c_str());
     }else{
       if(is_mode_atom)
         sprintf(buff,"%i",i+1);

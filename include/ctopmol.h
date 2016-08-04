@@ -31,11 +31,6 @@
 #include <msmvtl/tmatrix.h>
 #include <msmvtl/tvmath.h>
 
-//#define _topmol_debugging_messages_
-
-
-//#include<string>
-
 class CTopology{
 
 public:
@@ -59,15 +54,10 @@ public:
     name="topology name";
     type=-1;
     v_atoms.clear();
-    //v_axis_index[0]=0;
     set_index(0,0);
-    //v_axis_index[1]=0;
     set_index(1,0);
-    //v_axis_index[2]=0;
     set_index(2,0);
-    //v_axis_index[3]=0;
     set_index(3,0);
-    //v_axis_index.clear();
   }
 
   void set_index(uint idx, uint val){
@@ -114,8 +104,6 @@ public:
   uint axis_index_origin(void){ return v_axis_index[0];};
   uint axis_index_direction(void){ return v_axis_index[1];};
   TVector<uint> get_axis_index(void){ return v_axis_index;};
-  //int twist_axis_end(void){ return v_axis[2];};
-
 };
 
 class CTopmol {
@@ -161,8 +149,6 @@ public:
   //
   uint get_topology_axis_index_origin(uint);
   uint get_topology_axis_index_direction(uint);
-  //int get_topology_twist_axis_begin(int);
-  //int get_topology_twist_axis_end(int);
   TVector<uint> get_topology_axis(const uint);
   TVector<uint> get_topology_atoms(const uint);
 

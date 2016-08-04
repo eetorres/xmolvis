@@ -26,7 +26,6 @@
 #include <config_debug.h>
 #include <cfile.h>
 
-//#define _DEBUGING_MESSAGES_
 
 CFile::CFile(){
   potcarfile = "POTCAR"; // default potcar file

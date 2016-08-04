@@ -34,7 +34,6 @@
 #include <msmvtl/tvmath.h>
 #include <atom_symbol.h>
 #include <atom_color.h>
-//#include <const.h>
 
 class CPdb{
 

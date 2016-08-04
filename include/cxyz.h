@@ -53,7 +53,7 @@ public:
   void write_file(std::string,std::string);
   //
   void eval_atomic_composition(void);
-  // set functions
+  //
   void set_input_units(uint u){ u_input_file_units=u;}
   void set_file_format(const uint);
   void set_export_format(const uint);
@@ -67,13 +67,10 @@ public:
   void set_cartesian(const TMatrix<real>&);
   void set_atomic_symbols(TVector<std::string> v){ v_atomic_symbols=v;};
   //
-  // get function
-  ///string get_symbols(int);
   uint get_total_species(void);
   uint get_total_atoms(void);
   uint get_format(void);
   uint get_atomic_number(std::string);
-  //uint get_atomic_number(std::string,size_t);
   uint get_atomic_composition(uint);
   real get_cartesian(uint,uint);
   real get_direct(uint,uint);
@@ -83,7 +80,7 @@ public:
   bool is_labels(void){ return __is_labels;};
   bool is_charges(void);
   bool is_fragments(void);
-  //TVector<std::string> get_symbols(void);
+  //
   TVector<std::string> get_atomic_symbols(void);
   TVector<std::string> get_atomic_labels(void);
   TVector<std::string> get_atomic_symbol_table(void);

@@ -60,31 +60,11 @@ bool CSupercell::read_input_file(void){
     std::cout<<" FRAGMOL: input format = "<<gsf.get_input_format()<<std::endl;
 #endif
     //
-    //v_atomic_composition_table=gsf.get_atomic_composition_table();
-    //v_atomic_number_table=gsf.get_atomic_number_table();
-    //v_atomic_symbol_table=gsf.get_atomic_symbol_table();
-    //v_atom_type_table=gsf.get_atom_table();
-    //v_atomic_labels=gsf.get_atomic_labels();
-    //v_atomic_symbols=gsf.get_atomic_symbols();
-    //v_atomic_numbers=gsf.get_atomic_numbers();
-    //v_atom_cell_table.resize(gsf.get_total_atoms());
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    //std::cout<<" FRAGMOL: Composition ="<<v_atomic_composition_table;
-    //std::cout<<" FRAGMOL: Z-Number Table ="<<v_atomic_number_table;
-    //std::cout<<" FRAGMOL: Symbol Table ="<<v_atomic_symbol_table;
-    //std::cout<<" FRAGMOL: Type ="<<v_atom_type_table;
-    //std::cout<<" FRAGMOL: Labels ="<<v_atomic_labels;
-    //std::cout<<" FRAGMOL: Symbols ="<<v_atomic_symbols;
-    //std::cout<<" FRAGMOL: Z-Numbers ="<<v_atomic_numbers;
-#endif
-    //
     m_xyz=gsf.get_xyz();
     m_uvw=gsf.get_uvw();
 #ifdef _FRAGMOL_DATA_MESSAGES_
     //std::cout<<" FRAGMOL: XYZ = "<<m_xyz;
     //std::cout<<" FRAGMOL: UVW = "<<m_uvw;
-    //std::cout<<" FRAGMOL: uvwTxyz U = "<<m_uvw_to_xyz_u;
-    //std::cout<<" FRAGMOL: uvwTxyz  = "<<m_uvw_to_xyz;
 #endif
     return res;
   }
@@ -180,7 +160,7 @@ void CSupercell::set_cartesian(void){
   std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
 #endif
 }
-/*
+
 void CSupercell::update_fragmol_cartesian(void){
   TVector<real> _v;
   TVector<unsigned int> v_l;
@@ -230,7 +210,7 @@ void CSupercell::update_fragmol_direct(void){
   std::cout<<" FRAGMOL: m_direct: "<<m_uvw;
 #endif
 }
-*/
+
 void CSupercell::compute_position_cartesian(void){
   gsf.compute_origin_cartesian();
 }
@@ -255,7 +235,6 @@ void CSupercell::set_radius_color(void){
       _rcolor[3] = atom_rrgb[i_z][3];
       m_radius_color[i]=_rcolor;
   }
-  //m_radius_color=m;
 }
 
 TMatrix<real> CSupercell::get_radius_color(void){
@@ -277,22 +256,18 @@ void CSupercell::set_active_fragment(const uint u){
 }
 
 void CSupercell::set_input_file_type(const uint u){
-  //__input_type=u;
   gsf.set_input_type(u);
 }
 
 void CSupercell::set_input_file_units(const uint u){
-  //__input_type=u;
   gsf.set_input_units(u);
 }
 
 void CSupercell::set_output_file_type(const uint u){
-  //__output_file_type=u;
   gsf.set_output_file_type(u);
 }
 
 void CSupercell::set_output_file_format(const uint u){
-  //__output_format=u;
   gsf.set_output_file_format(u);
 }
 
@@ -506,7 +481,6 @@ uint CSupercell::get_output_file_format(void){
 
 uint CSupercell::get_atomic_composition(uint i){
   return gsf.get_atomic_composition(i);
-  //v_atomic_composition_table[i];
 }
 
 TVector<real> CSupercell::get_cartesian(uint i){
@@ -1013,15 +987,6 @@ void CSupercell::eval_atomic_bonds(void){
       }
     }
   }
-  //m_bond_rcolor_0.resize(i_number_of_bonds,4);
-  //m_bond_rcolor_1.resize(i_number_of_bonds,4);
-  //m_bond_rcolor_pbc_0.resize(i_number_of_bonds_pbc,4);
-  //m_bond_rcolor_pbc_1.resize(i_number_of_bonds_pbc,4);
-  //
-  //m_bond_angles.resize(i_number_of_bonds,2);
-  //m_bond_angles_pbc.resize(i_number_of_bonds_pbc,2);
-  //m_bond_position.resize(i_number_of_bonds,3);
-  //m_bond_position_pbc.resize(i_number_of_bonds_pbc,3);
 #ifdef _SUPERCELL_DEBUG_BONDS_
   std::cout<<" SUPERCELL: i_number_of_bonds="<<i_number_of_bonds<<std::endl;
   std::cout<<" SUPERCELL: i_number_of_bonds_pbc="<<i_number_of_bonds_pbc<<std::endl;
@@ -1030,20 +995,18 @@ void CSupercell::eval_atomic_bonds(void){
   std::cout<<" SUPERCELL: v_bond_table="<<v_bond_table;
   //std::cout<<" SUPERCELL: m_bond_position_pbc="<<m_bond_position_pbc;
 #endif
-  //u_bond_types=v_bond_table.size();
+  //
 #ifdef _SUPERCELL_DEBUG_MESSAGES_
   std::cout<<" SUPERCELL: max number of bonds "<<max_bonds<<std::endl;
   std::cout<<" SUPERCELL: number of bonds "<<i_number_of_bonds<<std::endl;
   std::cout<<" SUPERCELL: number of PBC bonds "<<i_number_of_bonds_pbc<<std::endl;
   std::cout<<" SUPERCELL: eval_atomic_bonds "<<std::endl;
 #endif
-  //update_atomic_bonds();
+  //
 #ifdef _SHOW_TIME_
   gl_atom_clock.stop();
   gl_atom_clock.show();
 #endif
-  // send update color flag
-  //update_bonds_color=true;
 }
 
 // SUPERCELL END
