@@ -2232,6 +2232,9 @@ void Fl_Gl_Mol_View::set_update_active_fragment(void){
   if(is_highlight_fragment_){
     is_update_normal_color=true;
     is_update_mask_rcolor=true;
+    if(is_draw_bonds_){
+      is_update_bonds_color = true;
+    }
   }
 }
 
@@ -2253,7 +2256,9 @@ void Fl_Gl_Mol_View::set_select_end(int i){
 
 void Fl_Gl_Mol_View::set_bond_brightness(real f){
   setup.f_bond_brightness = f;
-  is_update_bonds_color=true;
+  if(is_draw_bonds_){
+    is_update_bonds_color=true;
+  }
 }
 
 void Fl_Gl_Mol_View::set_background_brightness(real f){
@@ -2334,7 +2339,9 @@ void Fl_Gl_Mol_View::is_highlight_fragment(bool b){
   if(is_highlight_fragment_){
     is_update_highlight_fragment=true;
   }
-  is_update_bonds_color=true;
+  if(is_draw_bonds_){
+    is_update_bonds_color=true;
+  }
   is_update_normal_color=true;
   is_update_mask_rcolor=true;
 }
