@@ -1031,6 +1031,7 @@ int Fl_Gl_Mol_View::handle(int event){
     if(!is_mode_atom && (Fl::event_button()==FL_RIGHT_MOUSE) ){
       set_atom_active_fragment(marker.__highlight_atom);
       compute_vdw_fragment(marker.__highlight_atom);
+      set_atom_active_fragment(marker.__highlight_atom);
       set_update_active_fragment();
     }
     redraw();
