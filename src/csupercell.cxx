@@ -137,24 +137,6 @@ void CSupercell::initialize_fragments(void){
 #endif
 }
 
-/*
-void CSupercell::eval_cell_table(void){
-  TVector<uint> v_l;
-  uint _s;
-  for(uint i=0;i<gsf.get_number_of_fragments();i++){
-    _s=gsf.get_fragment_size(i);
-    v_l = gsf.get_topology_atoms(i);
-    for(uint j=0;j<_s;j++){
-      // store the position of the current atom inside the fragment as a table
-      v_atom_cell_table[v_l[j]]=j;
-    }
-  }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGMOL: updated atom cell table: "<<v_atom_cell_table;
-#endif
-}
-*/
-
 void CSupercell::eval_connections(uint u){
   gsf.eval_connections(m_bond_indices,u);
 }
@@ -198,7 +180,7 @@ void CSupercell::set_cartesian(void){
   std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
 #endif
 }
-
+/*
 void CSupercell::update_fragmol_cartesian(void){
   TVector<real> _v;
   TVector<unsigned int> v_l;
@@ -248,7 +230,7 @@ void CSupercell::update_fragmol_direct(void){
   std::cout<<" FRAGMOL: m_direct: "<<m_uvw;
 #endif
 }
-
+*/
 void CSupercell::compute_position_cartesian(void){
   gsf.compute_origin_cartesian();
 }

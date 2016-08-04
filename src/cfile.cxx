@@ -41,11 +41,6 @@ CFile::CFile(){
 }
 
 void CFile::clear(void){
-  //clear_xyz();
-  //clear_poscar();
-  //clear_potcar();
-  //__number_of_fragments=0;
-  //__total_atoms=0;
   b_periodic=false;
   is_potcar=false;
   is_bounding_box=false;
@@ -82,7 +77,6 @@ void CFile::clear_potcar(void){
 
 bool CFile::read_potcar(void){
   clear_potcar();
-  //bool _res;
   is_potcar=file_potcar.read_potcar(s_actual_dir, potcarfile);
   if(is_potcar)
     v_atomic_symbol_table=file_potcar.get_symbols();
@@ -245,18 +239,6 @@ bool CFile::read_poscar(void){
 bool CFile::read_xyz(void){
   bool res;
   clear_xyz();
-  // depreacted code: Wed Jan 18 10:07:27 MST 2012
-  // CXyz is more robust and can manage this situation
-  // this must be done before read the xyz file
-  // in order to know the species in the potcar file
-  //if(is_potcar){ // no necesary any longer
-    //file_xyz.set_file_format(u_input_format);
-    //file_xyz.set_atomic_symbol_table(get_potcar_symbols());
-  //}
-  // read the xyz file
-  // depreacted code: Wed Jan 18 10:07:27 MST 2012
-  // not necessary, CXyz autodetect the format
-  //file_xyz.set_file_format(u_input_file_type);
   file_xyz.set_input_units(u_input_file_units);
   res=file_xyz.read_file(s_actual_dir,inputfile);
   if(res){
@@ -442,7 +424,6 @@ bool CFile::read_dlp(void){
 #ifdef _FILE_DEBUGING_MESSAGES_
     std::cout<<" READ: Reading file of format "<<u_input_format<<"  "<<std::endl;
 #endif
-    ////
     m_file_input=file_dlp.get_xyz_input();
     m_xyz=file_dlp.get_cartesian();
     m_uvw=file_dlp.get_direct();
@@ -627,6 +608,12 @@ void CFile::eval_connections(const TMatrix<uint>& _m, uint nb){
   //std::cout<<" done "<<std::endl;
 }
 
+void CFile::clear_fragments(void){
+  for(unsigned int i=0; i<v_fragments.size(); i++)
+    v_fragments[i].clear();
+  v_fragments.clear();
+}
+
 void CFile::init_fragments(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
@@ -644,12 +631,6 @@ void CFile::init_fragments(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
 #endif
-}
-
-void CFile::clear_fragments(void){
-  for(unsigned int i=0; i<v_fragments.size(); i++)
-    v_fragments[i].clear();
-  v_fragments.clear();
 }
 
 void CFile::cast_fragments(void){
@@ -831,7 +812,6 @@ void CFile::eval_scaled_fragments(real _s){
     // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
     // Use the atom number inside the fragment
     is_new_frag=eval_scaled_fragment(0,false,_s);
-    ////////////////set_map_active_fragment(__active_fragment);
     v_fragments[u_active_fragment].is_initialized(false);
     v_fragments[u_number_of_fragments-1].eval_initial_position();
     v_fragments[u_number_of_fragments-1].eval_initial_orientation();
@@ -840,7 +820,6 @@ void CFile::eval_scaled_fragments(real _s){
   update_cell_table();
   update_cartesian();
   update_direct();
-  //////////////initialize_map();
   //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
 }
 
@@ -852,11 +831,9 @@ bool CFile::eval_scaled_fragment(const uint u, real r){
   bool is_new_frag=true;
   // Use the atom number
   is_new_frag=eval_scaled_fragment(u,true,r);
-  /////////////////////////set_map_active_fragment(__active_fragment);
   update_cell_table();
   update_cartesian();
   update_direct();
-  /////////////////////initialize_map();
   //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
   return is_new_frag;
 }
@@ -879,7 +856,6 @@ void CFile::eval_vdw_fragments(void){
     // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
     // Use the atom number inside the fragment
     new_frag=eval_scaled_fragment(0,false,1.1);
-    ////////////////set_map_active_fragment(__active_fragment);
     v_fragments[u_active_fragment].is_initialized(false);
     v_fragments[u_number_of_fragments-1].eval_initial_position();
     v_fragments[u_number_of_fragments-1].eval_initial_orientation();
@@ -888,7 +864,6 @@ void CFile::eval_vdw_fragments(void){
   update_cell_table();
   update_cartesian();
   update_direct();
-  //////////////initialize_map();
   //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
 #ifdef _FILE_DEBUGING_FRAGMENTS_
   std::cout<<" FILE: end eval_vdw_fragments !!! "<<std::endl;
@@ -899,7 +874,7 @@ void CFile::comp_all_cartesian(void){
   //TMatrix<real> _U = get_uvw_to_xyz_u();
   //TMatrix<real> _T = get_uvw_to_xyz();
   for(uint i=0;i<u_number_of_fragments;i++){
-    comp_cartesian(i);     // this funtion may be declared static
+    comp_cartesian(i);     // this funtion may be declared inline
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" -----------------------------------------"<<std::endl;
     std::cout<<" FRAGMOL: eval cartesian for fragment "<<i<<" [begin]"<<std::endl;
