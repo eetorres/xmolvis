@@ -23,12 +23,7 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-//#include<const.h>
 #include<cpotcar.h>
-
-//#define _information_messages_   1
-//#define _POTCAR_DEBUG_MESSAGES_     1
-//#define _display_data_           1
 
 CPotcar::CPotcar(){
   clear();

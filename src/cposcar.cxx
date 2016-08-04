@@ -23,7 +23,6 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-//#include<const.h>
 #include <config_debug.h>
 #include <cposcar.h>
 
@@ -275,7 +274,9 @@ bool CPoscar::read_file(std::string d, std::string f){
 #endif
     // Read lattice vectors
     for(uint i=2; i<5; i++){
-      std::cout<<std::fixed<<"Line ("<<i<<"]:"<<poscar_head_buffer[i]<<std::endl;
+#ifdef _POSCAR_DEBUG_MESSAGES_
+      std::cout<<std::fixed<<"Line ("<<i<<"):"<<poscar_head_buffer[i]<<std::endl;
+#endif
       // Windows use floats
       sscanf(poscar_head_buffer[i],"%lf %lf %lf",&x,&y,&z);
       ///sscanf(poscar_head_buffer[i],"%Lf %Lf %Lf",&x,&y,&z);

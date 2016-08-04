@@ -94,26 +94,27 @@ public:
   void update_cartesian(void);
   void update_direct(void);
   //
-  void set_input_file(std::string s);
-  void set_output_file_name(std::string s);
-  void set_potcar_file(std::string s);
-  void set_input_dir(std::string s);
+  void set_input_file(std::string);
+  void set_output_file_name(std::string);
+  void set_potcar_file(std::string);
+  void set_input_dir(std::string);
+  std::string get_input_dir(void);
   //
-  void set_input_type(uint u);
-  void set_input_units(uint u);
-  void set_input_format(uint u);
+  void set_input_type(uint);
+  void set_input_units(uint);
+  void set_input_format(uint);
   //
-  void set_output_file_type(uint u);
-  void set_output_file_format(uint u);
-  void set_export_format(uint u);
+  void set_output_file_type(uint);
+  void set_output_file_format(uint);
+  void set_export_format(uint);
   //
   void set_active_fragment(uint u){ u_active_fragment=u;};
   uint get_active_fragment(void){ return u_active_fragment;};
   //
-  void set_bounding_box(bool b);
-  void set_labels(bool b);
-  void set_numbers(bool b);
-  void set_fragments(bool b);
+  void set_bounding_box(bool);
+  void set_labels(bool);
+  void set_numbers(bool);
+  void set_fragments(bool);
   void set_fragment_table(uint u){v_fragment_table.resize(u);};
   void set_fragment_table(uint u, uint v){v_fragment_table[u]=v;};
   void set_fragment_table(TVector<uint> v, uint u);
@@ -249,7 +250,9 @@ public:
   bool get_is_periodic(void){ return b_periodic;}
   //
   TMatrix<real> get_xyz(void){ return m_xyz;}
+  TVector<real> get_xyz(uint u){ return m_xyz[u];}
   TMatrix<real> get_uvw(void){ return m_uvw;}
+  TVector<real> get_uvw(uint u){ return m_uvw[u];}
   TMatrix<real> get_uvw_to_xyz_u(void){ return m_uvw_to_xyz_u;}
   TMatrix<real> get_uvw_to_xyz(void){ return m_uvw_to_xyz;}
   TVector<real> get_uvw_to_xyz(uint u){ return m_uvw_to_xyz[u];}

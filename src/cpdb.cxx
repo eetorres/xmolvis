@@ -23,7 +23,6 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-//#include<const.h>
 #include<cpdb.h>
 #include<ctype.h>
 #include<algorithm>

@@ -23,10 +23,8 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-// #include<const.h>
 #include <config_debug.h>
 #include <ctopmol.h>
-//#define _debugging_messages_
 
 CTopmol::CTopmol(void){
   __filename = "TOPCAR"; // default name

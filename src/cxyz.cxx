@@ -29,9 +29,6 @@
 #include <ctype.h>
 #include <algorithm>
 
-//#define _XYZ_INFO_MESSAGES_
-//#define _XYZ_DEBUG_MESSAGES_
-
 // formats
 // 1 standar xyz (i.e., avogadro)
 // 2 standar including fragments

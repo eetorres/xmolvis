@@ -26,7 +26,6 @@
 #include <config_debug.h>
 #include <cfile.h>
 
-
 CFile::CFile(){
   potcarfile = "POTCAR"; // default potcar file
   s_actual_dir  = "./";     // default directory
@@ -992,6 +991,10 @@ void CFile::set_potcar_file(std::string s){
 
 void CFile::set_input_dir(std::string s){
   s_actual_dir=s;
+}
+
+std::string CFile::get_input_dir(void){
+  return s_actual_dir;
 }
 
 void CFile::set_input_type(uint u){

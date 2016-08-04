@@ -23,14 +23,9 @@
 //  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
-//#include<const.h>
 #include<czmat.h>
 #include<ctype.h>
 #include<algorithm>
-
-//#define _ZMAT_INFO_MESSAGES_
-//#define _ZMAT_DEBUG_MESSAGES_
-//#define _ZMAT_SHOW_DATA_
 
 // formats
 // 1 zmat no fragments

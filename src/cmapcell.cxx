@@ -77,11 +77,11 @@ void CMapcell::eval_linked_list(void){
 }
 
 void CMapcell::eval_map_cartesian(void){
-  supercell.update_fragmol_cartesian();
+  supercell.update_cartesian();
 }
 
 void CMapcell::eval_map_direct(void){
-  supercell.update_fragmol_direct();
+  supercell.update_direct();
 }
 
 // This function have to be called everytime the axis are changed

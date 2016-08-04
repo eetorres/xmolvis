@@ -106,8 +106,8 @@ public:
   //
   bool delete_atom(uint u);                    // Delete an atom
   //
-  void update_fragmol_cartesian(void);
-  void update_fragmol_direct(void);
+  void update_cartesian(void);
+  void update_direct(void);
   //
   void is_fragmol_initialized(bool);
   void apply_pbc(bool);
@@ -115,7 +115,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////////
   // Set functions
   /////////////////////////////////////////////////////////////////////////////////
-  void set_cartesian(void);
+  
   //
   void set_gsf_modified(const bool);
   //
@@ -221,7 +221,8 @@ public:
   TMatrix<real> get_uvw_to_xyz(void);
   TVector<real> get_uvw_to_xyz(uint);
   TMatrix<real> get_unit_uvw_to_xyz(void);
-  TMatrix<real> get_bounding_box(void);
+  // deprecated
+  //TMatrix<real> get_bounding_box(void);
 
   // MD special functions
   // cell list
@@ -286,11 +287,6 @@ public:
 
 private:
 
-  bool __is_direct;
-  bool __is_periodic;
-  bool __is_potmol;
-  bool __is_input_fragment;
-  //
   real r_cut_radius, r_cut_radius_2;
   //
   std::ifstream iposmol;
@@ -300,10 +296,8 @@ private:
   ///
   TVector<real> v_cell_frac, v_box_size, v_box_middle;
   //
-  TMatrix<real> m_xyz;
-  TMatrix<real> m_uvw;
-  //
-  std::string inputfile, output_filename, potmolfile, __sdir;
+  //std::string __sdir;
+  //std::string inputfile, output_filename, potmolfile, __sdir;
   //
 };
 

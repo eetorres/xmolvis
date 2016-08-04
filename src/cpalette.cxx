@@ -31,7 +31,6 @@
 
 #include <cpalette.h>
 
-
 CPalette::CPalette(void){
     _ipalette = 0;
 }
