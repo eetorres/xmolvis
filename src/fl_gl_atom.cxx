@@ -549,19 +549,18 @@ void Fl_Gl_Atom::compute_radial_fragment(const uint _u, const real _r){
   update_fragments(_u,true);
 }
 
-void Fl_Gl_Atom::compute_vdw_fragment(const uint _u){
-  //supercell.eval_scaled_fragment(_u,1.1);
-  update_fragments(_u,true);
-}
-
 void Fl_Gl_Atom::compute_atom_fragments(void){
   // Use fragment number
   update_fragments(1,false);
 }
 
+void Fl_Gl_Atom::compute_vdw_fragment(const uint u){
+  supercell.eval_vdw_fragment(u);
+  update_fragments(1,false);
+}
+
 void Fl_Gl_Atom::compute_vdw_fragments(void){
   // Use fragment number
-  //supercell.eval_scaled_fragments(1.1);
   supercell.eval_vdw_fragments();
   update_fragments(1,false);
 }
@@ -582,6 +581,21 @@ void Fl_Gl_Atom::set_active_fragment(const uint u){
   //supercell.set_active_fragment(_af);
   fragment.set_active(u);
   supercell.set_active_fragment(u);
+  set_update_coordinates(true);
+  update_data(); //<-------------------------
+}
+
+void Fl_Gl_Atom::set_atom_active_fragment(const uint u){
+  uint _u;
+  // fragments are counted from 1
+  // changed to count from 0
+  // in case the fragment table is required
+  _u= supercell.get_fragment_table(u);
+  //fragment.set_active(_af);
+  // fragments are counted from 1
+  //supercell.set_active_fragment(_af);
+  fragment.set_active(_u);
+  supercell.set_active_fragment(_u);
   set_update_coordinates(true);
   update_data(); //<-------------------------
 }

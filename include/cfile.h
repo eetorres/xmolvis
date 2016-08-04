@@ -82,7 +82,8 @@ public:
   void eval_connections(const TMatrix<uint>&,uint);
   void eval_fragments(void);
   bool eval_new_fragment(const TVector<uint>&);
-  bool eval_scaled_fragment(uint,bool,real);
+  bool eval_scaled_fragment(const uint,bool,real);
+  bool eval_scaled_fragment(const uint,real);
   void eval_scaled_fragments(real);
   void eval_vdw_fragments(void);
   void comp_all_cartesian(void);

@@ -181,7 +181,7 @@ bool Fl_Gl_Mol_View::initialize(void){
     set_view_active_fragment(0);
     // atoms are counted from 1 in the scene
     // Beging GUI functions
-    fragment.set_active(1);
+    fragment.set_active(0);
     set_update_active_fragment(); // the same as zero above.
     // set the data to visualize
     glview.base_view=set_bounding_box(glview.base_view); // deprecated
@@ -228,17 +228,17 @@ void Fl_Gl_Mol_View::delete_sphere_dl(void){
 }
 
 void Fl_Gl_Mol_View::create_sphere_dl(void){
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_SPHERE_MESSAGES_
   std::cout<<" create_sphere_dl (0)"<<std::endl;
 #endif
   real radius;
   // delete the lists only if it exists
   delete_sphere_dl();
   //__total_species=supercell.get_atomic_species();  //v_atomic_number_table_gl.size();
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_SPHERE_MESSAGES_
   std::cout<<" total species = "<<supercell.get_atomic_species()<<std::endl;
 #endif
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_SPHERE_MESSAGES_
   std::cout<<" create_sphere_dl (1)"<<std::endl;
 #endif
   // Create the id for each sphere list
@@ -254,7 +254,7 @@ void Fl_Gl_Mol_View::create_sphere_dl(void){
     glEndList();
   }
   //return(sphere_dl);
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_SPHERE_MESSAGES_
   std::cout<<" create_sphere_dl (2)"<<std::endl;
 #endif
 }
@@ -1028,7 +1028,12 @@ int Fl_Gl_Mol_View::handle(int event){
     initialize_transform_matrix();
     render_mode=MODE_RENDER;
     //render_mode=MODE_SELECT;
-    //redraw();
+    if(!is_mode_atom && (Fl::event_button()==FL_RIGHT_MOUSE) ){
+      set_atom_active_fragment(marker.__highlight_atom);
+      compute_vdw_fragment(marker.__highlight_atom);
+      set_update_active_fragment();
+    }
+    redraw();
     return 1;
   case FL_MOUSEWHEEL:
     if(Fl::event_shift()){
@@ -1406,6 +1411,7 @@ void Fl_Gl_Mol_View::process_picking(unsigned char pc[3]){
       if(!is_lock_controls)
         is_draw_controls=false;
       set_highlight_atom(idx);
+      
       if(is_draw_tools_)
         set_selected_atom(idx);
       is_atom_picked=true;
@@ -2077,7 +2083,7 @@ void Fl_Gl_Mol_View::widget_vector_output(GLfloat x1, GLfloat y1, GLfloat y2, GL
 
 //////////////////////////////UTILS///////////////////////////////
 void Fl_Gl_Mol_View::eval_system_properties(void){
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (0)"<<std::endl;
 #endif
   if(is_update_atomic_properties){
@@ -2087,21 +2093,21 @@ void Fl_Gl_Mol_View::eval_system_properties(void){
     if(is_draw_tools_){
       eval_tool_parameters();
     }
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: update atomic positions"<<std::endl;
 #endif
   }
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (1)"<<std::endl;
 #endif
   if(is_update_radius){
     //eval_atomic_radius(); // <-----------
     is_update_radius=false;
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: update radius"<<std::endl;
 #endif
   }
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (2)"<<std::endl;
 #endif
   // Sun Feb 24 16:11:36 MST 2013
@@ -2116,28 +2122,28 @@ void Fl_Gl_Mol_View::eval_system_properties(void){
     }
     create_cylinder_dl();  // <----------
     is_update_bonds = false;
-#ifdef _SHOW_DEBUG_BONDS_
+#ifdef _SHOW_EVAL_BONDS_
     std::cout<<" GLMOL: update bonds"<<std::endl;
 #endif
   }
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (3)"<<std::endl;
 #endif
   if(is_update_mask_rcolor){
     eval_mask_rcolor();
     is_update_mask_rcolor=false;
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: update mask rcolor"<<std::endl;
 #endif
   }
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (4)"<<std::endl;
 #endif
   //if(is_update_mask_rcolor || is_update_radius || is_update_atomic_properties){
     create_sphere_dl();    // <----------
   //}
   //
-#ifdef _GLMOL_DEBUG_MESSAGES_
+#ifdef _GLMOL_EVAL_MESSAGES_
     std::cout<<" GLMOL: eval_system_properties (5)"<<std::endl;
 #endif
 }

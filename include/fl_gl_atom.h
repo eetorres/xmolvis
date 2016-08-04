@@ -248,9 +248,9 @@ public:
   //
   void set_palette(const uint);
   //void set_fragment_active(uint);
-  
   //
   void set_active_fragment(const uint);
+  void set_atom_active_fragment(const uint);
   //void set_axis_position(const TVector<real>&);
   //
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -265,10 +265,10 @@ public:
   // Compute functions
   ////////////////////////////////////////////////////////////////////////////////////////
   void compute_vdw_fragment(uint);
-  void compute_atom_fragment(uint);
-  void compute_radial_fragment(uint,real);
   void compute_vdw_fragments(void);
+  void compute_atom_fragment(uint);
   void compute_atom_fragments(void);
+  void compute_radial_fragment(uint,real);
   void compute_merge_fragments(const uint);
 
   ////////////////////////////////////////////////////////////////////////////////////////

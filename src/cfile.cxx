@@ -779,7 +779,7 @@ bool CFile::eval_new_fragment(const TVector<uint>& _iv){
 // param u: initial selected atom
 // param sw: atom list switch
 // param _s: distance scaling factor
-bool CFile::eval_scaled_fragment(uint _u, bool _sw, real _scale){
+bool CFile::eval_scaled_fragment(const uint _u, bool _sw, real _scale){
   bool res=false;
   TVector<uint> new_fragment_atoms;
   uint atom_seed;
@@ -842,6 +842,23 @@ void CFile::eval_scaled_fragments(real _s){
   update_direct();
   //////////////initialize_map();
   //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+}
+
+bool CFile::eval_scaled_fragment(const uint u, real r){
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+#ifdef _FRAGMOL_DATA_MESSAGES_
+  v_fragments[__active_fragment].show_information();
+#endif
+  bool is_new_frag=true;
+  // Use the atom number
+  is_new_frag=eval_scaled_fragment(u,true,r);
+  /////////////////////////set_map_active_fragment(__active_fragment);
+  update_cell_table();
+  update_cartesian();
+  update_direct();
+  /////////////////////initialize_map();
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+  return is_new_frag;
 }
 
 // auto search for fragments separated by van der Waals radius distances

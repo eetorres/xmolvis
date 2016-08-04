@@ -103,13 +103,11 @@ public:
   //void eval_scaled_fragments(real);               // Create all posible scaled framgent
   // Begin deprecated
   // Create single vdW fragments
-  void eval_vdw_fragments(void){
-    //gsf.eval_vdw_fragments();
-    gsf.eval_scaled_fragments(1.1);
+  void eval_vdw_fragment(const uint u){
+    gsf.eval_scaled_fragment(u,1.1);
   }
-  // Create all vdW fragments
+  // Create all vdW fragmgit ents
   void eval_vdw_fragments(void){
-    //gsf.eval_vdw_fragments();
     gsf.eval_scaled_fragments(1.1);
   }
   //void eval_atom_fragments(void);               // Create all atom framgents

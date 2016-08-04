@@ -27,10 +27,6 @@
 #include <config_debug.h>
 #include <cposcar.h>
 
-//#define _POSCAR_INFO_MESSAGES_  1
-//#define _POSCAR_DEBUG_MESSAGES_    1
-//#define _POSCAR_SHOW_DATA_          1
-
 CPoscar::CPoscar(){
   clear();
 }
