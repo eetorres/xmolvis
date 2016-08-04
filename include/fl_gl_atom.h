@@ -118,7 +118,7 @@ class CProperty {
 public:
 
   void clear(void){
-    u_fragment_active = 1;
+    u_fragment_active = 0;
     r_axis_precession = 0;
     r_axis_tilt       = 0;
   }

@@ -96,14 +96,23 @@ public:
   void eval_initial_orientation(void);
   //void eval_cell_table(void);
   void eval_connections(uint);
-  bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
-  bool eval_scaled_fragment(uint,bool,real);      // Create a framgent using scaled distance
-  bool eval_radial_fragment(uint,bool,real);      // Create a framgent using scaled distance
-  bool eval_scaled_fragment(uint,real);           // Create single scaled distance fragment
-  void eval_scaled_fragments(real);               // Create all posible scaled framgent
+  //bool eval_new_fragment(const TVector<uint>&);               // Create all posible scaled framgent
+  //bool eval_scaled_fragment(uint,bool,real);      // Create a framgent using scaled distance
+  //bool eval_radial_fragment(uint,bool,real);      // Create a framgent using scaled distance
+  //bool eval_scaled_fragment(uint,real);           // Create single scaled distance fragment
+  //void eval_scaled_fragments(real);               // Create all posible scaled framgent
   // Begin deprecated
-  void eval_vdw_fragments(void);               // Create all vdW framgents
-  void eval_atom_fragments(void);               // Create all atom framgents
+  // Create single vdW fragments
+  void eval_vdw_fragments(void){
+    //gsf.eval_vdw_fragments();
+    gsf.eval_scaled_fragments(1.1);
+  }
+  // Create all vdW fragments
+  void eval_vdw_fragments(void){
+    //gsf.eval_vdw_fragments();
+    gsf.eval_scaled_fragments(1.1);
+  }
+  //void eval_atom_fragments(void);               // Create all atom framgents
   // End deprecated
   bool eval_merge_fragment(uint,bool);         // Merge two fragments
   //
@@ -288,11 +297,11 @@ private:
   bool __is_potmol;
   bool __is_input_fragment;
   //
-  uint __input_format;
-  uint __output_format;
-  uint __total_atoms;
-  uint __atomic_species;
-  uint __active_fragment;
+  //uint __input_format;
+  //uint __output_format;
+  //uint __total_atoms;
+  //uint __atomic_species;
+  //uint __active_fragment;
   //
   real r_cut_radius, r_cut_radius_2;
   //

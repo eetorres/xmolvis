@@ -1113,6 +1113,24 @@ int Fl_Gl_Mol_View::handle(int event){
         redraw();
         return 1;
         break;
+      case 102:  // f) fragments
+        if(!Fl::event_ctrl()){
+          if(is_mode_atom){
+            is_mode_atom=false;
+            is_highlight_fragment(true);
+          }else{
+            is_mode_atom=true;
+            is_highlight_fragment(false);
+          }
+        }else{
+          compute_vdw_fragments();
+          set_update_active_fragment();
+          is_mode_atom=false;
+          is_highlight_fragment(true);
+        }
+        redraw();
+        return 1;
+        break;
       case 106:  // j) molecular axis
         is_draw_molecular_axis(!is_draw_molecular_axis_);
         //is_draw_labels(!is_draw_labels_);

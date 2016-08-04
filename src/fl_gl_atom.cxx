@@ -121,17 +121,44 @@ void Fl_Gl_Atom::initialize_atomic_coordinates(void){
 
 // this the function in charge of the scene actualization
 void Fl_Gl_Atom::update_data(void){
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: begin update_data"<<std::endl;
+#endif
   update_view();
   if(is_update_coordinates){
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: update_atomic_coordinates "<<std::endl;
+#endif
     update_atomic_coordinates();
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update "<<std::endl;
+#endif
     fragment.set_axis_position(get_fragment_centered_position_cartesian());
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update 1"<<std::endl;
+#endif
     fragment.set_axis_precession(get_axis_precession());
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update 2"<<std::endl;
+#endif
     fragment.set_axis_tilt(get_axis_tilt());
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update 3"<<std::endl;
+#endif
     fragment.set_backbone_precession(get_backbone_precession());
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update 4"<<std::endl;
+#endif
     fragment.set_backbone_tilt(get_backbone_tilt());
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: set update 5"<<std::endl;
+#endif
     is_update_coordinates=false;
   }
   Fl::wait(0.1);
+#ifdef _ATOM_DEBUG_MESSAGES_
+  std::cout<<" ATOM: end update_data"<<std::endl;
+#endif
 }
 
 void Fl_Gl_Atom::update_atomic_bonds(void){
@@ -485,21 +512,31 @@ void Fl_Gl_Atom::set_palette(uint u){
 }
 
 void Fl_Gl_Atom::update_fragments(uint _u, bool _sw){
+#ifdef _ATOM_FRAGMENT_MESSAGES_
+  std::cout<<" ATOM: begin update_fragments ="<<supercell.get_number_of_fragments()<<std::endl;
+#endif
   set_palette(supercell.get_number_of_fragments());
   if(_sw)
     fragment.set_active(supercell.get_fragment_table(_u));
   else
     fragment.set_active(_u);
-#ifdef _ATOM_DEBUG_MESSAGES_
+#ifdef _ATOM_FRAGMENT_MESSAGES_
   std::cout<<" total fragments: "<<supercell.get_number_of_fragments()<<std::endl;
 #endif
   set_update_coordinates(true);
   // fragments are counted from 1
-  set_active_fragment(fragment.get_active()-1);
+#ifdef _ATOM_FRAGMENT_MESSAGES_
+  std::cout<<" set active fragment: "<<fragment.get_active()-1<<std::endl;
+#endif
+  //set_active_fragment(fragment.get_active());
+  set_active_fragment(0);
   is_eval_bonds=true;
   is_update_bonds=true;
   //update_bonds_color=true;
   update_data();
+#ifdef _ATOM_FRAGMENT_MESSAGES_
+  std::cout<<" ATOM: end update_fragments ="<<supercell.get_number_of_fragments()<<std::endl;
+#endif
 }
 
 void Fl_Gl_Atom::compute_atom_fragment(const uint _u){
@@ -513,6 +550,7 @@ void Fl_Gl_Atom::compute_radial_fragment(const uint _u, const real _r){
 }
 
 void Fl_Gl_Atom::compute_vdw_fragment(const uint _u){
+  //supercell.eval_scaled_fragment(_u,1.1);
   update_fragments(_u,true);
 }
 
@@ -523,6 +561,8 @@ void Fl_Gl_Atom::compute_atom_fragments(void){
 
 void Fl_Gl_Atom::compute_vdw_fragments(void){
   // Use fragment number
+  //supercell.eval_scaled_fragments(1.1);
+  supercell.eval_vdw_fragments();
   update_fragments(1,false);
 }
 
@@ -531,13 +571,17 @@ void Fl_Gl_Atom::compute_merge_fragments(const uint _u){
   update_fragments(_u,true);
 }
 
-void Fl_Gl_Atom::set_active_fragment(const uint _a){
-  uint _af;
-  // atoms are counted from 1 in the scene
-  _af= supercell.get_fragment_table(_a);
-  fragment.set_active(_af);
+void Fl_Gl_Atom::set_active_fragment(const uint u){
+  //uint _af;
   // fragments are counted from 1
-  set_active_fragment(_af-1);
+  // changed to count from 0
+  // in case the fragment table is required
+  //_af= supercell.get_fragment_table(u);
+  //fragment.set_active(_af);
+  // fragments are counted from 1
+  //supercell.set_active_fragment(_af);
+  fragment.set_active(u);
+  supercell.set_active_fragment(u);
   set_update_coordinates(true);
   update_data(); //<-------------------------
 }
@@ -581,7 +625,7 @@ void Fl_Gl_Atom::eval_sphere(uint maxlevel){
     }
 #ifdef _ATOM_DEBUG_MESSAGES_
   std::cout<<" FL_GL_ATOM: sphere rows = "<<param.u_sphere_rows<<std::endl;
-  std::cout<<" FL_GL_ATOM: sphere_strip_length = "<<param.__sphere_strip_length<<std::endl;
+  std::cout<<" FL_GL_ATOM: sphere_strip_length = "<<param.u_sphere_strip_length<<std::endl;
 #endif
 }
 

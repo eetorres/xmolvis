@@ -120,6 +120,9 @@ bool CFile::read_input_file(void){
   }catch(...){
     std::cout<<"Hi";
   }
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
+#endif
 #ifdef _FILE_DEBUGING_MESSAGES_
   if(!res)
     std::cout<<" FILE: Wrong file format"<<std::endl;
@@ -185,6 +188,7 @@ void CFile::save_as_file(std::string _p, std::string _f){
       save_zmt_as(_p,_f,u_output_file_format);
     break;
   }
+
 }
 
 bool CFile::read_poscar(void){
@@ -575,7 +579,7 @@ void CFile::save_dlp_as(std::string _p, std::string _f, uint u){
     file_dlp.set_atomic_symbols(v_atomic_labels);
   }
   if(is_charges){
-	file_dlp.set_charges(v_atomic_charges);
+    file_dlp.set_charges(v_atomic_charges);
   }
   file_dlp.set_atomic_numbers(is_numbers);
   //file_xyz.set_direct(m_uvw);
@@ -626,6 +630,7 @@ void CFile::eval_connections(const TMatrix<uint>& _m, uint nb){
 void CFile::init_fragments(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
+  std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
 #endif
   clear_fragments();
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
@@ -636,10 +641,9 @@ void CFile::init_fragments(void){
   set_fragment_table(get_total_atoms());
   cast_fragments();
   eval_fragments();
-//#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  //std::cout<<" FRAGCAR:  ["<<get_fragmol_number_of_fragments()<<"] fragments loaded"<<st
-//#endif
-
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
+#endif
 }
 
 void CFile::clear_fragments(void){
@@ -685,7 +689,7 @@ void CFile::eval_fragments(void){
         _v = m_xyz[v_l[j]];
         v_fragments[i].set_position_cartesian(j,_v);
       }
-      set_fragment_table(v_l[j],i+1);
+      set_fragment_table(v_l[j],i);
       v_fragments[i].set_atomic_label(j,get_atomic_label(v_l[j]));
       v_fragments[i].set_atomic_symbol(j,get_atomic_symbol(v_l[j]));
       v_fragments[i].set_atomic_number(j,get_atomic_number(v_l[j]));
@@ -721,6 +725,156 @@ void CFile::update_cell_table(void){
   }
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: updated atom cell table: "<<v_atom_cell_table;
+#endif
+}
+
+// Construct a new fragment give a list of atoms
+bool CFile::eval_new_fragment(const TVector<uint>& _iv){
+  bool res=false;
+  TVector<uint> new_topology_atoms, v_l, v_i;;
+  CFragment new_frag;
+  CTopology new_top;
+  TVector<uint> new_fragment_atoms = _iv;
+  // sort the atom list
+  new_fragment_atoms.sort_max();
+  // if the new atom list is smaller than the active fragment, create a new fragment
+  if( (new_fragment_atoms.size() > 0) &&  (new_fragment_atoms.size() < v_fragments[u_active_fragment].size()) ){
+    new_topology_atoms=get_topmol_atoms(new_fragment_atoms,u_active_fragment);
+    // it works now
+    eval_topmol_delete_atoms(new_topology_atoms,u_active_fragment);
+    new_top.v_atoms = new_topology_atoms;
+    new_top.type=2;
+    u_number_of_fragments++;
+    add_topmol_topology(new_top);
+    //
+    new_frag.size(new_topology_atoms.size());
+    // BUG BELOW ???
+    v_fragments[u_active_fragment].move(new_frag,new_fragment_atoms);
+    //new_frag.show_information();
+    v_fragments.push_back(new_frag);
+    //v_fragments[__active_fragment].show_information();
+    // update the fragment table
+    v_l = get_topology_atoms(u_number_of_fragments-1);
+    for(uint j=0;j<v_fragments[u_number_of_fragments-1].size();j++){
+      v_fragment_table[v_l[j]]=u_number_of_fragments-1;
+    }
+    v_i = get_topology_axis(u_number_of_fragments-1);
+    v_fragments[u_number_of_fragments-1].set_axis_index(v_i);
+    // the new fragmented part should be updated
+    // there is a bug when an initially structure ???
+    // is moved and then fragmented ???
+    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
+    res = true;
+  }
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  else{
+    std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
+    std::cout<<" FRAGMOL: !!! No more atoms can be fragmented !!!"<<std::endl;
+  }
+#endif
+  //std::cout<<" ******************************************"<<std::endl;
+  return res;
+}
+
+// param u: initial selected atom
+// param sw: atom list switch
+// param _s: distance scaling factor
+bool CFile::eval_scaled_fragment(uint _u, bool _sw, real _scale){
+  bool res=false;
+  TVector<uint> new_fragment_atoms;
+  uint atom_seed;
+  if(_sw) // the atom number given by the fragment table
+    atom_seed=v_atom_cell_table[_u];
+  else   // the atom number in the fragment
+    atom_seed=_u;
+  // check if the structure is splited due PBC
+  v_fragments[u_active_fragment].eval_scaled_bond_integrity(atom_seed,_scale);
+  // get the linked list of atoms
+  new_fragment_atoms=v_fragments[u_active_fragment].compute_vdw_fragment(atom_seed,_scale);
+  // Create the new fragment
+  res = eval_new_fragment(new_fragment_atoms); //<--------------------------
+  // (1) direct, (0) cartesian
+  if(is_direct()){
+    //compute_fragmol_all_cartesian();
+    comp_cartesian(u_active_fragment);
+    comp_cartesian(u_number_of_fragments-1);
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
+#endif
+  }else{
+    // It is needed when the input structure is given in cartesian coordinates
+    comp_direct(u_active_fragment);
+    comp_direct(u_number_of_fragments-1);
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
+#endif
+  }
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  new_fragment_atoms=get_topology_atoms(u_active_fragment);
+  std::cout<<" FRAGMOL: new active topology atoms = "<<new_fragment_atoms;
+#endif
+  return res;
+}
+
+// auto search for fragments separated by van der Waals radius distances
+void CFile::eval_scaled_fragments(real _s){
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+#ifdef _FRAGMOL_DATA_MESSAGES_
+  v_fragments[u_active_fragment].show_information();
+  std::cout<<" FRAGMOL: number of fragmesnt = "<<u_number_of_fragments<<std::endl;
+#endif
+  bool is_new_frag=true;
+  while(is_new_frag){
+    // the new fragmented part should be updated
+    // there is a bug if the initial structure
+    // is moved and then fragmented
+    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
+    // Use the atom number inside the fragment
+    is_new_frag=eval_scaled_fragment(0,false,_s);
+    ////////////////set_map_active_fragment(__active_fragment);
+    v_fragments[u_active_fragment].is_initialized(false);
+    v_fragments[u_number_of_fragments-1].eval_initial_position();
+    v_fragments[u_number_of_fragments-1].eval_initial_orientation();
+    v_fragments[u_number_of_fragments-1].compute_origin_cartesian();
+  }
+  update_cell_table();
+  update_cartesian();
+  update_direct();
+  //////////////initialize_map();
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+}
+
+// auto search for fragments separated by van der Waals radius distances
+void CFile::eval_vdw_fragments(void){
+#ifdef _FILE_DEBUGING_FRAGMENTS_
+  std::cout<<" FILE: begin eval_vdw_fragments "<<std::endl;
+#endif
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+#ifdef _FRAGMOL_DATA_MESSAGES_
+  v_fragments[u_active_fragment].show_information();
+  std::cout<<" FRAGMOL: number of fragmesnt = "<<u_number_of_fragments<<std::endl;
+#endif
+  bool new_frag=true;
+  while(new_frag){
+    // the new fragmented part should be updated
+    // there is a bug if the initial structure
+    // is moved and then fragmented
+    // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
+    // Use the atom number inside the fragment
+    new_frag=eval_scaled_fragment(0,false,1.1);
+    ////////////////set_map_active_fragment(__active_fragment);
+    v_fragments[u_active_fragment].is_initialized(false);
+    v_fragments[u_number_of_fragments-1].eval_initial_position();
+    v_fragments[u_number_of_fragments-1].eval_initial_orientation();
+    v_fragments[u_number_of_fragments-1].compute_origin_cartesian();
+  }
+  update_cell_table();
+  update_cartesian();
+  update_direct();
+  //////////////initialize_map();
+  //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
+#ifdef _FILE_DEBUGING_FRAGMENTS_
+  std::cout<<" FILE: end eval_vdw_fragments !!! "<<std::endl;
 #endif
 }
 
@@ -780,6 +934,56 @@ void CFile::comp_direct(uint u){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
     std::cout<<" FRAGMOL: eval direct for fragment "<<u<<" [end]"<<std::endl;
     std::cout<<" -----------------------------------------"<<std::endl;
+#endif
+}
+
+void CFile::update_cartesian(void){
+  TVector<real> _v;
+  TVector<unsigned int> v_l;
+  unsigned int _n, _s;
+  _n = get_number_of_fragments();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<"FRAGMOL: TOTAL FRAGMENTS: "<<_n<<std::endl;
+#endif
+  for(unsigned int i=0; i<_n; i++){
+    _s = get_fragment_size(i);
+    v_l = get_topology_atoms(i);
+    for(unsigned int j=0;j<_s;j++){
+      _v = get_fragment_centered_cartesian(i,j);
+      // put each atomic coordinate in the right place inside the matrix
+      m_xyz[v_l[j]]=_v;
+    }
+  }
+#ifdef _FRAGMOL_FORMAT_MESSAGES_
+  std::cout<<" FRAGMOL: Cartesian coordinates ready"<<std::endl;
+#endif
+#ifdef _FRAGMOL_DATA_MESSAGES_
+  std::cout<<" FRAGMOL: centered cartesian: "<<m_xyz;
+#endif
+}
+
+void CFile::update_direct(void){
+  TVector<real> _v;
+  TVector<unsigned int> v_l;
+  unsigned int _n, _s;
+  _n = get_number_of_fragments();
+#ifdef _FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<"FRAGMOL: TOTAL FRAGMENTS: "<<_n<<std::endl;
+#endif
+  for(unsigned int i=0; i<_n; i++){
+    _s = get_fragment_size(i);
+    v_l = get_topology_atoms(i);
+    for(unsigned int j=0;j<_s;j++){
+      _v = get_fragment_direct(i,j);
+      // put each atomic coordinate in the right place inside the matrix
+      m_uvw[v_l[j]]=_v;
+    }
+  }
+#ifdef _FRAGMOL_FORMAT_MESSAGES_
+  std::cout<<" FRAGMOL: Direct coordinates ready"<<std::endl;
+#endif
+#ifdef _FRAGMOL_DATA_MESSAGES_
+  std::cout<<" FRAGMOL: m_direct: "<<m_uvw;
 #endif
 }
 

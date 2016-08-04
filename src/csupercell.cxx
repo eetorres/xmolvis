@@ -40,7 +40,7 @@ CSupercell::~CSupercell(void){
 
 void CSupercell::clear(void){
   __is_potmol=false;
-  __active_fragment=0;
+  gsf.set_active_fragment(0);
   is_linked_cell(true);
 }
 
@@ -163,14 +163,15 @@ void CSupercell::eval_initial_position(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: eval_initial_position"<<std::endl;
 #endif
-  gsf.v_fragments[__active_fragment].eval_initial_position();
+  //gsf.v_fragments[gsf.get_active_fragment()].eval_initial_position();// deprecated
+  gsf.eval_initial_position();
 }
 
 void CSupercell::eval_initial_orientation(void){
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: eval_initial_orientation"<<std::endl;
 #endif
-  gsf.v_fragments[__active_fragment].eval_initial_orientation();
+  gsf.eval_initial_orientation();
 }
 
 void CSupercell::set_cartesian(void){
@@ -249,15 +250,15 @@ void CSupercell::update_fragmol_direct(void){
 }
 
 void CSupercell::compute_position_cartesian(void){
-  gsf.v_fragments[__active_fragment].compute_origin_cartesian();
+  gsf.compute_origin_cartesian();
 }
 
 void CSupercell::is_fragmol_initialized(bool b){
-  gsf.v_fragments[__active_fragment].is_initialized(b);
+  gsf.is_initialized(b);
 }
 
 void CSupercell::apply_pbc(bool b){
-  gsf.v_fragments[__active_fragment].is_pbc(b);
+  gsf.is_pbc(b);
 }
 
 void CSupercell::set_radius_color(void){
@@ -286,10 +287,10 @@ void CSupercell::set_gsf_modified(const bool b){
   gsf.set_modified(b);
 }
 
-void CSupercell::set_active_fragment(const uint i){
-  __active_fragment=i;
+void CSupercell::set_active_fragment(const uint u){
+  gsf.set_active_fragment(u);
 #ifdef _FRAGMOL_DEBUG_MESSAGES_
-  std::cout<<" FRAGMOL: active fragment= "<<__active_fragment<<std::endl;
+  std::cout<<" FRAGMOL: active fragment= "<<gsf.get_active_fragment()<<std::endl;
 #endif
 }
 
@@ -309,7 +310,7 @@ void CSupercell::set_output_file_type(const uint u){
 }
 
 void CSupercell::set_output_file_format(const uint u){
-  __output_format=u;
+  //__output_format=u;
   gsf.set_output_file_format(u);
 }
 
@@ -323,36 +324,36 @@ void CSupercell::set_export_format(const uint u){
 
 void CSupercell::set_fragment_axis(const TVector<uint>& _v){
   is_fragmol_initialized(false);
-  gsf.v_fragments[__active_fragment].set_axis_index(_v);
+  gsf.set_axis_index(_v);
 }
 
 void CSupercell::set_fragment_axis(const uint idx, const uint val){
   is_fragmol_initialized(false);
-  gsf.v_fragments[__active_fragment].set_axis_index(idx,gsf.get_atom_table(val));
+  gsf.set_axis_index(idx,val);
 }
 
 void CSupercell::set_fragment_twist(const real r){
-  gsf.v_fragments[__active_fragment].set_axis_twist(r);
+  gsf.set_axis_twist(r);
 }
 
 void CSupercell::set_fragmol_fragment_precession(const real r){
-  gsf.v_fragments[__active_fragment].set_axis_precession(r);
+  gsf.set_axis_precession(r);
 }
 
 void CSupercell::set_fragmol_fragment_tilt(const real r){
-  gsf.v_fragments[__active_fragment].set_axis_tilt(r);
+  gsf.set_axis_tilt(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_u(const real r){
-  gsf.v_fragments[__active_fragment].set_origin_u(r);
+  gsf.set_origin_u(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_v(const real r){
-  gsf.v_fragments[__active_fragment].set_origin_v(r);
+  gsf.set_origin_v(r);
 }
 
 void CSupercell::set_fragmol_fragment_position_w(const real r){
-  gsf.v_fragments[__active_fragment].set_origin_w(r);
+  gsf.set_origin_w(r);
 }
 
 void CSupercell::set_input_file(std::string s){
@@ -383,19 +384,19 @@ void CSupercell::set_fragment_cartesian(const uint i, const TMatrix<real>& _m){
 }
 
 real CSupercell::get_fragmol_backbone_tilt(void){
-  return gsf.v_fragments[__active_fragment].get_backbone_tilt();
+  return gsf.get_backbone_tilt();
 }
 
 real CSupercell::get_fragmol_backbone_precession(void){
-  return gsf.v_fragments[__active_fragment].get_backbone_precession();
+  return gsf.get_backbone_precession();
 }
 
 real CSupercell::get_fragmol_axis_tilt(void){
-  return gsf.v_fragments[__active_fragment].get_axis_tilt();
+  return gsf.get_axis_tilt();
 }
 
 real CSupercell::get_fragmol_axis_precession(void){
-  return gsf.v_fragments[__active_fragment].get_axis_precession();
+  return gsf.get_axis_precession();
 }
 
 bool CSupercell::is_direct(void){
@@ -415,7 +416,7 @@ bool CSupercell::is_potmol(void){
 }
 
 bool CSupercell::is_fragmol_initialized(void){
-  return gsf.v_fragments[__active_fragment].is_initialized();
+  return gsf.is_initialized();
 }
 
 std::string CSupercell::get_dir(void){
@@ -435,7 +436,7 @@ uint CSupercell::get_number_of_fragments(void){
 }
 
 uint CSupercell::get_fragmol_active_fragment(void){
-  return __active_fragment;
+  return gsf.get_active_fragment();
 }
 
 uint CSupercell::get_fragment_size(uint i){
@@ -447,27 +448,27 @@ uint CSupercell::get_fragment_atomic_number(uint i,uint j){
 }
 
 TVector<real> CSupercell::get_fragmol_axis_angles(void){
-  return gsf.v_fragments[__active_fragment].get_axis_angles();
+  return gsf.get_axis_angles();
 }
 
 TVector<real> CSupercell::get_fragmol_basis_direct(void){
-  return gsf.v_fragments[__active_fragment].get_basis_direct();
+  return gsf.get_basis_direct();
 }
 
 TVector<real> CSupercell::get_position_direct(void){
-  return gsf.v_fragments[__active_fragment].get_origin_direct();
+  return gsf.get_origin_direct();
 }
 
 TVector<real> CSupercell::get_fragmol_position_uvw(void){
-  return gsf.v_fragments[__active_fragment].get_origin_uvw();
+  return gsf.get_origin_uvw();
 }
 
 TVector<real> CSupercell::get_position_cartesian(void){
-  return gsf.v_fragments[__active_fragment].get_origin_cartesian();
+  return gsf.get_origin_cartesian();
 }
 
 TVector<real> CSupercell::get_fragment_centered_position_cartesian(void){
-  return gsf.v_fragments[__active_fragment].get_centered_origin_cartesian();
+  return gsf.get_centered_origin_cartesian();
 }
 
 TVector<real> CSupercell::get_fragment_direct(uint i,uint j){

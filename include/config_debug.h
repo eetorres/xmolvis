@@ -42,6 +42,7 @@
 // cfile.cxx
 //////////////////////////////////
 //#define _FILE_DEBUGING_MESSAGES_
+//#define _FILE_DEBUGING_FRAGMENTS_
 
 //////////////////////////////////
 // fl_gl_mol_view.cxx
@@ -68,6 +69,7 @@
 /////////////////////////////////
 //#define _ATOM_DEBUG_MESSAGES_
 //#define _ATOM_DEBUG_BONDS_
+//#define _ATOM_FRAGMENT_MESSAGES_
 
 
 //////////////////////////////////
@@ -142,7 +144,7 @@
 //////////////////////////////////
 // cpalette.cxx
 //////////////////////////////////
-//#define _SHOW_MESSAGE_
+//#define _PALETTE_SHOW_MESSAGE_
 
 #endif
 

@@ -575,7 +575,6 @@ void CFragment::eval_radial_integrity(uint _o, real _r){
 #endif
 }
 
-
 // split fragment using the atom u as the seed for the new vdW fragment
 TVector<uint> CFragment::compute_vdw_fragment(uint u, real _s){
   uint __length=__size, atom_seed;

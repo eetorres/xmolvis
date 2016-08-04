@@ -76,16 +76,22 @@ public:
   void save_dlp_as(std::string,std::string,uint);
   void save_zmt_as(std::string,std::string,uint);
   //
-  void eval_connections(const TMatrix<uint>&,uint);
   void init_fragments(void);
   void clear_fragments(void);
   void cast_fragments(void);
+  void eval_connections(const TMatrix<uint>&,uint);
   void eval_fragments(void);
+  bool eval_new_fragment(const TVector<uint>&);
+  bool eval_scaled_fragment(uint,bool,real);
+  void eval_scaled_fragments(real);
+  void eval_vdw_fragments(void);
   void comp_all_cartesian(void);
   void comp_cartesian(uint);
   void comp_all_direct(void);
-  void update_cell_table(void);
   void comp_direct(uint);
+  void update_cell_table(void);
+  void update_cartesian(void);
+  void update_direct(void);
   //
   void set_input_file(std::string s);
   void set_output_file_name(std::string s);
@@ -100,7 +106,8 @@ public:
   void set_output_file_format(uint u);
   void set_export_format(uint u);
   //
-  void set_fragment_table(TVector<uint> v,uint u);
+  void set_active_fragment(uint u){ u_active_fragment=u;};
+  uint get_active_fragment(void){ return u_active_fragment;};
   //
   void set_bounding_box(bool b);
   void set_labels(bool b);
@@ -108,6 +115,7 @@ public:
   void set_fragments(bool b);
   void set_fragment_table(uint u){v_fragment_table.resize(u);};
   void set_fragment_table(uint u, uint v){v_fragment_table[u]=v;};
+  void set_fragment_table(TVector<uint> v, uint u);
   void set_modified(bool b);
   void set_is_periodic(bool b){ b_periodic=b;}
   //
@@ -149,6 +157,88 @@ public:
   //
   uint get_atomic_number(uint u){ return v_atomic_numbers[u];}
   uint get_atom_cell_table(uint u){ return v_atom_cell_table[u];}
+  // fragment tools
+  void eval_initial_position(void){
+    v_fragments[u_active_fragment].eval_initial_position();
+  }
+  void eval_initial_orientation(void){
+    v_fragments[u_active_fragment].eval_initial_orientation();
+  }
+  void compute_origin_cartesian(void){
+    v_fragments[u_active_fragment].compute_origin_cartesian();
+  }
+  void is_initialized(bool b){
+    v_fragments[u_active_fragment].is_initialized(b);
+  }
+  void is_pbc(bool b){
+    v_fragments[u_active_fragment].is_pbc(b);
+  }
+  void set_axis_index(const TVector<uint>& _v){
+    v_fragments[u_active_fragment].set_axis_index(_v);
+  }
+  void set_axis_index(const uint u1, const uint u2){
+    v_fragments[u_active_fragment].set_axis_index(u1,get_atom_cell_table(u2));
+  }
+  void set_axis_twist(real r){
+    v_fragments[u_active_fragment].set_axis_twist(r);
+  }
+  void set_axis_precession(real r){
+    v_fragments[u_active_fragment].set_axis_precession(r);
+  }
+  void set_axis_tilt(real r){
+    v_fragments[u_active_fragment].set_axis_tilt(r);
+  }
+  void set_origin_u(real r){
+    v_fragments[u_active_fragment].set_origin_u(r);
+  }
+  void set_origin_v(real r){
+    v_fragments[u_active_fragment].set_origin_v(r);
+  }
+  void set_origin_w(real r){
+    v_fragments[u_active_fragment].set_origin_w(r);
+  }
+  real get_backbone_tilt(void){
+    return v_fragments[u_active_fragment].get_backbone_tilt();
+  }
+  real get_backbone_precession(void){
+    return v_fragments[u_active_fragment].get_backbone_precession();
+  }
+  real get_axis_tilt(void){
+    return v_fragments[u_active_fragment].get_axis_tilt();
+  }
+  real get_axis_precession(void){
+    return v_fragments[u_active_fragment].get_axis_precession();
+  }
+  bool is_initialized(void){
+    return v_fragments[u_active_fragment].is_initialized();
+  }
+  TVector<real> get_axis_angles(){
+    return v_fragments[u_active_fragment].get_axis_angles();
+  }
+  TVector<real> get_basis_direct(){
+    return v_fragments[u_active_fragment].get_basis_direct();
+  }
+  TVector<real> get_origin_direct(){
+    return v_fragments[u_active_fragment].get_origin_direct();
+  }
+  TVector<real> get_origin_uvw(){
+    return v_fragments[u_active_fragment].get_origin_uvw();
+  }
+  TVector<real> get_origin_cartesian(){
+    return v_fragments[u_active_fragment].get_origin_cartesian();
+  }
+  TVector<real> get_centered_origin_cartesian(void){
+    return v_fragments[u_active_fragment].get_centered_origin_cartesian();
+  }
+  TVector<real> get_fragment_centered_cartesian(uint i,uint j){
+    return v_fragments[i].get_centered_cartesian(j);
+  }
+  TVector<real> get_fragment_direct(uint i,uint j){
+    return v_fragments[i].get_direct(j);
+  }
+  TVector<real> get_fragment_cartesian(uint i,uint j){
+    return v_fragments[i].get_cartesian(j);
+  }
   //
   void is_direct(bool b){ b_direct=b;}
   bool is_direct(void){ return b_direct;}
@@ -187,6 +277,7 @@ private:
   uint u_output_file_format;
   uint u_export_format;
   uint u_total_atoms;
+  uint u_active_fragment;
   uint u_total_fragments;
   uint u_atomic_species;
   uint u_number_of_fragments;

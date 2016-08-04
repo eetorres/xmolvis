@@ -31,7 +31,7 @@
 
 #include <cpalette.h>
 
-//#define _SHOW_MESSAGE_ 1
+//#define _PALETTE_SHOW_MESSAGE_ 1
 
 CPalette::CPalette(void){
     _ipalette = 0;
@@ -71,7 +71,7 @@ void CPalette::update_palette_real(void){
   set(zmax);
   _color_palette.resize(_lvls+1);
   m_color_palette.resize(_lvls+1,3);
-#ifdef _SHOW_MESSAGE_
+#ifdef _PALETTE_SHOW_MESSAGE_
   printf("_lvls = %i\n",_lvls);
   //printf("dz = %f\n",dz);
 #endif
@@ -93,7 +93,7 @@ void CPalette::update_palette_index(void){
   _index_palette.clear();
   set(zmax);
   _index_palette.resize(_lvls+1);
-#ifdef _SHOW_MESSAGE_
+#ifdef _PALETTE_SHOW_MESSAGE_
   printf("_lvls = %i\n",_lvls);
   printf("dz = %f\n",dz);
 #endif
