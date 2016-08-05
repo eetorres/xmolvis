@@ -22,7 +22,7 @@
 //////////////////////////////////
 // cfragmol.cxx
 //////////////////////////////////
-//#define _FRAGMOL_DEBUG_MESSAGES_
+
 //#define _FRAGMOL_DATA_MESSAGES_
 
 
@@ -41,6 +41,7 @@
 //////////////////////////////////
 // cfile.cxx
 //////////////////////////////////
+//#define _FILE_FRAGMOL_DEBUG_MESSAGES_
 //#define _FILE_DEBUGING_MESSAGES_
 //#define _FILE_DEBUGING_FRAGMENTS_
 

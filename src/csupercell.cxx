@@ -350,28 +350,27 @@ TVector<real> CSupercell::get_position_cartesian(void){
 TVector<real> CSupercell::get_fragment_centered_position_cartesian(void){
   return gsf.get_centered_origin_cartesian();
 }
-
+// deprecated
 TVector<real> CSupercell::get_fragment_direct(uint i,uint j){
   return gsf.v_fragments[i].get_direct(j);
 }
-
+// deprecated
 TVector<real> CSupercell::get_fragment_cartesian(uint i,uint j){
   return gsf.v_fragments[i].get_cartesian(j);
-  //return v_fragments[i].get_centered_cartesian(j);
 }
-
+// deprecated
 TVector<real> CSupercell::get_fragment_centered_cartesian(uint i,uint j){
   return gsf.v_fragments[i].get_centered_cartesian(j);
 }
-
+// deprecated
 TMatrix<real> CSupercell::get_fragment_direct(uint i){
   return gsf.v_fragments[i].get_direct();
 }
-
+// deprecated
 TMatrix<real> CSupercell::get_fragment_cartesian(uint i){
   return gsf.v_fragments[i].get_cartesian();
 }
-
+// deprecated
 TMatrix<real> CSupercell::get_fragment_centered_cartesian(uint i){
   return gsf.v_fragments[i].get_centered_cartesian();
 }

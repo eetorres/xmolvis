@@ -221,37 +221,39 @@ public:
   TMatrix<real> get_uvw_to_xyz(void);
   TVector<real> get_uvw_to_xyz(uint);
   TMatrix<real> get_unit_uvw_to_xyz(void);
-  // deprecated
-  //TMatrix<real> get_bounding_box(void);
-
+  //
   // MD special functions
   // cell list
-  int  i_neighbor_cells;
-  bool b_linked_cell;
-  uint u_cell_number;
   bool is_linked_cell(void){ return b_linked_cell;};
   void is_linked_cell(bool b){ b_linked_cell=b;};
+
+  void set_inv_bbox(void);
+  void set_radius_color(void);
   void set_cells(void);
   void set_inverse_cell(void);
   void set_cell_list(void);
   void eval_linked_list(void);
+  void set_bbox(const TVector<real>& v){ v_bbox = v;};
+  void set_box_size(const TVector<real>& v){ v_box_size = 2.0*v;};
+  void set_cut_radius(real r);
+  void set_cut_radius(void);
+
   int  get_cell_list(int i){ return v_cell_list[i];};
   int  get_cell_head(int i){ return v_cell_head[i];};
   int  get_neighbor_cells(void){ return i_neighbor_cells;};
+
   uint get_cell_number(void){ return u_cell_number;};
-  void set_bbox(const TVector<real>& v){ v_bbox = v;};
+
   real get_bbox(uint u){ return v_bbox[u];};
+  real get_radius_color(uint u1, uint u2){ return m_radius_color[u1][u2];};
+
   TVector<real> get_bbox(void){ return v_bbox;};
   TVector<real> get_radius_color(uint u){ return m_radius_color[u];};
-  real get_radius_color(uint u1, uint u2){ return m_radius_color[u1][u2];};
-  void set_box_size(const TVector<real>& v){ v_box_size = 2.0*v;};
   TVector<real> get_box_size(void){ return v_box_size;};
   TVector<real> get_cell_frac(void){ return v_cell_frac;};
   TVector<int>  get_neighbor_cells_xyz(uint u){ return neighbor_cells_xyz[u];};
-  TMatrix<real> get_inv_bbox(void){ return m_inv_bbox;};
 
-  void set_inv_bbox(void);
-  void set_radius_color(void);
+  TMatrix<real> get_inv_bbox(void){ return m_inv_bbox;};
   TMatrix<real> get_radius_color(void);
   // Temporal public variables
   TVector<real> v_bbox;
@@ -259,45 +261,39 @@ public:
   TMatrix<real> m_inv_bbox;
   TMatrix<int>  neighbor_cells_xyz;
   // bond functions
+  int  get_bond_boundary_pbc(uint u1, uint u2){ return m_bond_boundary_pbc[u1][u2];};
   uint get_number_of_bonds(void){ return i_number_of_bonds;};
   uint get_number_of_bonds_pbc(void){ return i_number_of_bonds_pbc;};
   uint get_bond_number(uint u){ return v_bond_number[u];};
   uint get_bond_number_pbc(uint u){ return v_bond_number_pbc[u];};
   uint get_bond_index(const real f){ return (uint)(f/f_atom_bond_delta);};
-  int  get_bond_boundary_pbc(uint u1, uint u2){ return m_bond_boundary_pbc[u1][u2];};
   uint get_bond_indices(uint u1, uint u2){ return m_bond_indices[u1][u2];};
   uint get_bond_indices_pbc(uint u1, uint u2){ return m_bond_indices_pbc[u1][u2];};
   uint get_bond_table(uint u){ return v_bond_table[u];};
   uint get_bond_types(void){ return v_bond_table.size();};
   inline uint check_bond(uint);
-  // bond variables
-  real f_atom_bond_delta;
-  TVector<uint> v_bond_table;
-  uint i_number_of_bonds;
-  uint i_number_of_bonds_pbc;
-  TVector<uint> v_bond_number;
-  TVector<uint> v_bond_number_pbc;
-  TMatrix<int>  m_bond_boundary_pbc;
-  TMatrix<real> m_radius_color;
-  TMatrix<uint> m_bond_indices;
-  TMatrix<uint> m_bond_indices_pbc;
+
   // Temporal functions
-  void set_cut_radius(real r);
-  void set_cut_radius(void);
 
 private:
 
+  int  i_neighbor_cells;
+  bool b_linked_cell;
+  uint u_cell_number;
+  // bond variables
   real r_cut_radius, r_cut_radius_2;
+  real f_atom_bond_delta;
+  uint i_number_of_bonds;
+  uint i_number_of_bonds_pbc;
+  TMatrix<int>  m_bond_boundary_pbc;
+  TVector<uint> v_bond_table;
+  TVector<uint> v_bond_number;
+  TVector<uint> v_bond_number_pbc;
+  TMatrix<real> m_radius_color;
+  TMatrix<uint> m_bond_indices;
+  TMatrix<uint> m_bond_indices_pbc;
   //
-  std::ifstream iposmol;
-  std::ifstream itopmol;
-  std::ofstream oposmol;
-  std::ofstream otopmol;
-  ///
   TVector<real> v_cell_frac, v_box_size, v_box_middle;
-  //
-  //std::string __sdir;
-  //std::string inputfile, output_filename, potmolfile, __sdir;
   //
 };
 

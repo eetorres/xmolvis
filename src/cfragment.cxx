@@ -495,7 +495,6 @@ void CFragment::eval_radial_integrity(uint _o, real _r){
   for(uint k=0;k<__size;k++){
     _p=v_i[k];
     _u1 = m_uvw[_p];
-    //_r1 = atom_rrgb[v_atomic_number[_p]][0];
 #ifdef _FRAGMENT_DEBUG_INTEGRITY_
     std::cout<<" FRAGMENT: atomic number="<<v_atomic_number;
 #endif
@@ -579,9 +578,7 @@ TVector<uint> CFragment::compute_vdw_fragment(uint u, real _s){
   uint __length=__size, atom_seed;
   uint _p, _c, _f;
   real _r1, _r2, _rr, _norm;
-  //bool _is_pbc=false;
   TVector<real> _v3, _u1, _u2, _u3;
-  //TVector<uint> v_i(__size);
   // New fragment atom list
   TVector<uint> v_i;
   TVector<uint> v_l(__size);
@@ -590,12 +587,7 @@ TVector<uint> CFragment::compute_vdw_fragment(uint u, real _s){
   std::cout<<" FRAGMENT: create_new_fragment for "<<u<<std::endl;
 #endif
   atom_seed=u;
-  //eval_integrity(atom_seed);
   v_i.push_back(atom_seed);
-  // atom_seed=get_axis_origin_index();
-  // v_i[0]=atom_seed;
-  //v_i[0]=u;
-  //m_uvw = m_cartesian*m_unit_xyzTuvw;
 #ifdef _FRAGMENT_DEBUG_DATA_
   //std::cout<<" FRAGMENT: initial list="<<v_i;
   std::cout<<" FRAGMENT: m_uvw="<<m_uvw;
@@ -610,7 +602,6 @@ TVector<uint> CFragment::compute_vdw_fragment(uint u, real _s){
   std::cout<<" atom list="<<v_l;
 #endif
   _c=0;
-  //for(uint k=0;k<__size;k++){
   for(uint k=0;k<v_i.size();k++){
     _p=v_i[k];
 #ifdef _FRAGMENT_DEBUG_NEW_FRAGMENT_data_
@@ -630,7 +621,6 @@ TVector<uint> CFragment::compute_vdw_fragment(uint u, real _s){
       std::cout<<std::endl<<" FRAGMENT: check "<<_f<<" - ";
 #endif
       if( (_f!=_p) && (_f!=atom_seed) ){
-        //_is_pbc=false;
         _u2 = m_uvw[_f];
         _r2 = atom_rrgb[v_atomic_number[_f]][0];
         _u3 = _u2-_u1;
@@ -1191,8 +1181,8 @@ real CFragment::pbc(const real r){
 void CFragment::show_information(void){
   std::cout<<" FRAGMENT: ================================================================ "<<std::endl;
   std::cout<<" FRAGMENT: v_atomic_number="<<v_atomic_number;
-  std::cout<<" FRAGMENT: v_atomic_label="<<v_atomic_label;
   std::cout<<" FRAGMENT: v_atomic_symbol="<<v_atomic_symbol;
+  std::cout<<" FRAGMENT: v_atomic_label="<<v_atomic_label;
   std::cout<<" FRAGMENT: v_axis_index="<<v_axis_index;
   std::cout<<" FRAGMENT: v_axis_angle="<<v_axis_angle;
   std::cout<<" FRAGMENT: v_initial_axis_angle="<<v_initial_axis_angle;

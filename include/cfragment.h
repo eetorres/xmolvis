@@ -51,8 +51,6 @@ public:
   void is_pbc(bool);
   //
   void eval_integrity(void);
-  // Deprecated
-  //void eval_integrity(uint,real);
   void eval_scaled_bond_integrity(uint,real);
   void eval_radial_integrity(uint,real);
   void eval_initial_position(void);
@@ -87,7 +85,7 @@ public:
   void set_atomic_label(const TVector<std::string>&);
   void set_atomic_symbol(const TVector<std::string>&);
   void set_atomic_number(const TVector<uint>&);
-
+  //
   void set_direct(uint,const TVector<real>&);
   void set_cartesian(uint,const TVector<real>&);
   void set_position_direct(uint,const TVector<real>&);

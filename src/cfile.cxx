@@ -186,7 +186,7 @@ void CFile::save_as_file(std::string _p, std::string _f){
 bool CFile::read_poscar(void){
   TVector<uint> v_n;
   TVector<std::string> v_s;
-  uint _c=0; // _s=0;
+  uint _c=0;
   bool res;
   clear_poscar();
   res=file_poscar.read_file(s_actual_dir,inputfile);
@@ -248,7 +248,6 @@ bool CFile::read_xyz(void){
     v_fragment_table=file_xyz.get_fragment_table();
     v_atom_table=file_xyz.get_atom_table();
     v_atomic_symbols=file_xyz.get_atomic_symbols();
-    //v_atomic_labels=v_atomic_symbols;
     v_atomic_labels=file_xyz.get_atomic_labels();
     v_atomic_numbers=file_xyz.get_atomic_numbers();
 #ifdef _FILE_DEBUGING_MESSAGES_
@@ -265,9 +264,6 @@ bool CFile::read_xyz(void){
     }else{
       is_charges=false;
     }
-    //if(file_xyz.is_fragments()){
-    //v_fragment_table=file_xyz.get_fragment_table();
-    //}
     b_periodic=file_xyz.is_periodic();
     //// adding format autodetection
     u_input_format=file_xyz.get_format();
@@ -745,7 +741,7 @@ bool CFile::eval_new_fragment(const TVector<uint>& _iv){
     // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
     res = true;
   }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
   else{
     std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
     std::cout<<" FRAGMOL: !!! No more atoms can be fragmented !!!"<<std::endl;
@@ -770,28 +766,34 @@ bool CFile::eval_scaled_fragment(const uint _u, bool _sw, real _scale){
   v_fragments[u_active_fragment].eval_scaled_bond_integrity(atom_seed,_scale);
   // get the linked list of atoms
   new_fragment_atoms=v_fragments[u_active_fragment].compute_vdw_fragment(atom_seed,_scale);
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+  std::cout<<" current fragment size: "<<v_fragments[u_active_fragment].size()<<std::endl;
+  std::cout<<" new fragment size: "<<new_fragment_atoms.size()<<std::endl;
+#endif
   // Create the new fragment
   res = eval_new_fragment(new_fragment_atoms); //<--------------------------
   // (1) direct, (0) cartesian
-  if(is_direct()){
-    //compute_fragmol_all_cartesian();
-    comp_cartesian(u_active_fragment);
-    comp_cartesian(u_number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
+  if(res){
+    if(is_direct()){
+      //compute_fragmol_all_cartesian();
+      comp_cartesian(u_active_fragment);
+      comp_cartesian(u_number_of_fragments-1);
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+      std::cout<<" FRAGMOL: the cartesian were computed"<<std::endl;
 #endif
-  }else{
-    // It is needed when the input structure is given in cartesian coordinates
-    comp_direct(u_active_fragment);
-    comp_direct(u_number_of_fragments-1);
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-    std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
+    }else{
+      // It is needed when the input structure is given in cartesian coordinates
+      comp_direct(u_active_fragment);
+      comp_direct(u_number_of_fragments-1);
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+      std::cout<<" FRAGMOL: the direct were computed"<<std::endl;
+#endif
+    }
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+    new_fragment_atoms=get_topology_atoms(u_active_fragment);
+    std::cout<<" FRAGMOL: new active topology atoms = "<<new_fragment_atoms;
 #endif
   }
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
-  new_fragment_atoms=get_topology_atoms(u_active_fragment);
-  std::cout<<" FRAGMOL: new active topology atoms = "<<new_fragment_atoms;
-#endif
   return res;
 }
 
@@ -802,6 +804,7 @@ void CFile::eval_scaled_fragments(real _s){
   v_fragments[u_active_fragment].show_information();
   std::cout<<" FRAGMOL: number of fragmesnt = "<<u_number_of_fragments<<std::endl;
 #endif
+  bool is_update=false;
   bool is_new_frag=true;
   while(is_new_frag){
     // the new fragmented part should be updated
@@ -810,14 +813,19 @@ void CFile::eval_scaled_fragments(real _s){
     // see water case:/home/etorres/src/utils/xmol/test/xyz/WaterWater
     // Use the atom number inside the fragment
     is_new_frag=eval_scaled_fragment(0,false,_s);
-    v_fragments[u_active_fragment].is_initialized(false);
-    v_fragments[u_number_of_fragments-1].eval_initial_position();
-    v_fragments[u_number_of_fragments-1].eval_initial_orientation();
-    v_fragments[u_number_of_fragments-1].compute_origin_cartesian();
+    if(is_new_frag){
+      v_fragments[u_active_fragment].is_initialized(false);
+      v_fragments[u_number_of_fragments-1].eval_initial_position();
+      v_fragments[u_number_of_fragments-1].eval_initial_orientation();
+      v_fragments[u_number_of_fragments-1].compute_origin_cartesian();
+      is_update=true;
+    }
   }
-  update_cell_table();
-  update_cartesian();
-  update_direct();
+  if(is_update){
+    update_cell_table();
+    update_cartesian();
+    update_direct();
+  }
   //std::cout<<" FRAGMOL: m_cartesian: "<<m_xyz;
 }
 
