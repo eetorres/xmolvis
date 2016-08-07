@@ -724,7 +724,7 @@ void fl_xmol_view::open_file() {
   //
     ffmt=0;
     save_as_file_button->deactivate();
-    std::cout<<" dir name: "<<dir_name<<std::endl;
+    //std::cout<<" dir name: "<<dir_name<<std::endl;
     Fl_File_Chooser * p;
     p = new Fl_File_Chooser(dir_name,"*",0,"Open file");
     p->directory(dir_name);
@@ -802,7 +802,7 @@ void fl_xmol_view::open_file(const char *f,const char *d) {
   //
     ffmt=0;
     save_as_file_button->deactivate();
-    std::cout<<" dir name: "<<dir_name<<std::endl;
+    //std::cout<<" dir name: "<<dir_name<<std::endl;
     Fl_File_Chooser * p;
     p = new Fl_File_Chooser(d,"*",0,"Open file");
     p->directory(d);

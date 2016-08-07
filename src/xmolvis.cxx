@@ -58,8 +58,8 @@ int main(int argc, char* argv[]){
   if ( argc > 1){
     str_file = argv[1];
     fl_filename_absolute(chr_dir_file,sizeof(chr_dir_file),str_file.c_str());
-    std::cout<<" file :"<<str_file<<std::endl;
-    std::cout<<" directory :"<<chr_dir_file<<std::endl;
+    //std::cout<<" file :"<<str_file<<std::endl;
+    //std::cout<<" directory :"<<chr_dir_file<<std::endl;
     mv->open_directory(chr_dir_file);
     //fl_filename_relative(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
     //mv->open_file(file_name.c_str(),full_dir_file);
