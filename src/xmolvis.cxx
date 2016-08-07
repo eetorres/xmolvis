@@ -28,7 +28,7 @@
 //  GNU General Public License for more details.                        //
 //                                                                      //
 //  You should have received a copy of the GNU General Public License   //
-//  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.     //
+//  along with xmolvis.  If not, see <http://www.gnu.org/licenses/>.     //
 //======================================================================//
 
 #include<fl_xmol_view.h>
@@ -46,19 +46,24 @@ std::string getexepath()
 
 int main(int argc, char* argv[]){
 #if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
-  std::string dir_file = getexepath();
+  std::string str_file;
+  std::string str_dir;
+  char chr_file[PATH_MAX];
+  char chr_dir_file[PATH_MAX];
 #endif
   fl_xmol_view * mv = new fl_xmol_view();
 #if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
-  //fl_filename_absolute(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
-  //fl_filename_relative(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
-  std::cout<<" directory :"<<dir_file<<std::endl;
-  mv->open_directory(dir_file.c_str());
-  //if ( argc > 1){
-    //file_name = argv[1];
-    //std::cout<<" file :"<<file_name<<std::endl;
+  str_dir = getexepath();
+  //mv->open_directory(str_dir.c_str());
+  if ( argc > 1){
+    str_file = argv[1];
+    fl_filename_absolute(chr_dir_file,sizeof(chr_dir_file),str_file.c_str());
+    std::cout<<" file :"<<str_file<<std::endl;
+    std::cout<<" directory :"<<chr_dir_file<<std::endl;
+    mv->open_directory(chr_dir_file);
+    //fl_filename_relative(full_dir_file, sizeof(full_dir_file), dir_file.c_str());
     //mv->open_file(file_name.c_str(),full_dir_file);
-  //}
+  }
 #endif
   mv->show();
   //mv->show_view();

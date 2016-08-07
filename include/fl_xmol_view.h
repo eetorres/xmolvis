@@ -3,6 +3,7 @@
 #ifndef fl_xmol_view_h
 #define fl_xmol_view_h
 #include <FL/Fl.H>
+#include <config_debug.h>
 #include <version.h>
 #include <fl_gl_mol_view.h>
 #include <FL/Fl_Double_Window.H>

@@ -372,14 +372,14 @@ void fl_xmol_view::cb_5(Fl_Button* o, void* v) {
 
 fl_xmol_view::fl_xmol_view() {
   //
-    //int ans=0;
+    int ans=0;
     char chpt[1024];
     
     p_user=getenv("USER");
   #ifdef __FL_MOL_VIEW__
     printf("%s\n",p_user);
   #endif
-    sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+    sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
   #ifdef __FL_MOL_VIEW__
     printf("%s\n",str_cmd);
   #endif
@@ -390,8 +390,10 @@ fl_xmol_view::fl_xmol_view() {
       strcpy(dir_name,chpt);
       infile.close();
     }else{
-      sprintf(str_cmd,"mkdir -p /home/%s/.xmolview/",p_user);
-      //ans = system(str_cmd);
+      sprintf(str_cmd,"mkdir -p /home/%s/.xmolvis/",p_user);
+  #if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
+      ans = system(str_cmd);
+  #endif
       sprintf(str_cmd,"/home/%s",p_user);
       strcpy(dir_name,str_cmd);
     }
@@ -707,7 +709,15 @@ fl_xmol_view::fl_xmol_view() {
 void fl_xmol_view::open_directory(const char *d) {
   //
     strcpy(dir_name,d);
+    Fl_File_Chooser * p;
+    p = new Fl_File_Chooser(dir_name,"*",0,"Open file");
+    p->value(dir_name);
+    strcpy(dir_name,(char*)p->directory());
+  #ifdef __FL_MOL_VIEW__
+    std::cout<<" p->directory: "<<(char*)p->directory()<<std::endl;
     std::cout<<" dir name: "<<dir_name<<std::endl;
+    std::cout<<" p->value: "<<(char*)p->value()<<std::endl;
+  #endif
 }
 
 void fl_xmol_view::open_file() {
@@ -776,7 +786,7 @@ void fl_xmol_view::open_file() {
         load_file_button->deactivate();
       }
       //fragment_button->deactivate();
-      sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+      sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
   #ifdef __FL_MOL_VIEW__
       printf("%s\n",str_cmd);
   #endif
@@ -855,7 +865,7 @@ void fl_xmol_view::open_file(const char *f,const char *d) {
         load_file_button->deactivate();
       }
       //fragment_button->deactivate();
-      sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+      sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
   #ifdef __FL_MOL_VIEW__
       printf("%s\n",str_cmd);
   #endif
@@ -933,7 +943,7 @@ void fl_xmol_view::initialise_select(const char *p, const char *d) {
         load_file_button->deactivate();
       }
       //fragment_button->deactivate();
-      sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+      sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
   #ifdef __FL_MOL_VIEW__
       printf("%s\n",str_cmd);
   #endif
@@ -1026,14 +1036,14 @@ void fl_xmol_view::load_file() {
       std::cout<<" VIEW: load structure"<<std::endl;
   #endif
       // setting up the visualization mode
-      res = mol3d->initialize();                                                 //
+      res = mol3d->initialize();                                                    //
       ///////////////////////////////////////////////////////////////
       if(res){
   #ifdef __FL_MOL_VIEW__
         std::cout<<" VIEW: setting up the visualization"<<std::endl;
   #endif
         // this code will be moved to show the data in a new window
-        //_m = mol3d->get_view_bounding_box();                                     //
+        //_m = mol3d->get_view_bounding_box();                                      //
         ///load_lattice_vectors(2*_m);                                              //
         //_n=  mol3d->get_view_total_fragments();
         //number_of_fragments->value(_n);

@@ -5,6 +5,9 @@ code_name {../src/fl_xmol_view.cxx}
 decl {//\#define __FL_MOL_VIEW__} {private local
 }
 
+decl {\#include <config_debug.h>} {public local
+}
+
 decl {\#include <version.h>} {public local
 }
 
@@ -16,8 +19,8 @@ class help_xmol {} {
   } {
     Fl_Window help_win {
       label {About XMolView} open
-      xywh {968 810 455 160} type Double
-      code3 {o->resizable(NULL);} modal visible
+      xywh {968 866 455 160} type Double hide
+      code3 {o->resizable(NULL);} modal
     } {
       Fl_Box {} {
         label {xmolvis is open source and released under GNU General Public License (GPLv3) or later. For support contact:
@@ -115,14 +118,14 @@ class fl_xmol_view {open
   Function {fl_xmol_view()} {open
   } {
     code {//
-  //int ans=0;
+  int ans=0;
   char chpt[1024];
   
   p_user=getenv("USER");
 \#ifdef __FL_MOL_VIEW__
   printf("%s\\n",p_user);
 \#endif
-  sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+  sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
 \#ifdef __FL_MOL_VIEW__
   printf("%s\\n",str_cmd);
 \#endif
@@ -133,8 +136,10 @@ class fl_xmol_view {open
     strcpy(dir_name,chpt);
     infile.close();
   }else{
-    sprintf(str_cmd,"mkdir -p /home/%s/.xmolview/",p_user);
-    //ans = system(str_cmd);
+    sprintf(str_cmd,"mkdir -p /home/%s/.xmolvis/",p_user);
+\#if defined (BUILD_FOR_LINUX) || defined (BUILD_FOR_MACOS)
+    ans = system(str_cmd);
+\#endif
     sprintf(str_cmd,"/home/%s",p_user);
     strcpy(dir_name,str_cmd);
   }
@@ -142,7 +147,7 @@ class fl_xmol_view {open
   update_coordinates=false;} {}
     Fl_Window main_window {
       label {Molecular eXplorer Visualizer (XMolVis)} open
-      xywh {688 68 945 675} type Double color 8 selection_color 8 labelsize 12 labelcolor 7 align 80 resizable visible
+      xywh {688 124 945 675} type Double color 8 selection_color 8 labelsize 12 labelcolor 7 align 80 resizable visible
     } {
       Fl_Group {} {open
         xywh {-5 -1 955 678} box FLAT_BOX color 8 selection_color 8 labelsize 12
@@ -154,7 +159,7 @@ class fl_xmol_view {open
   //std::cout<<" Action: "<<a<<std::endl;
   
   //
-  //position_panel->deactivate();} selected
+  //position_panel->deactivate();}
           xywh {205 1 742 674} box BORDER_BOX color 0 selection_color 0 labelsize 12 labelcolor 15 resizable
           class Fl_Gl_Mol_View
         }
@@ -444,7 +449,16 @@ exit(0);}
   } {
     code {//
   strcpy(dir_name,d);
-  std::cout<<" dir name: "<<dir_name<<std::endl;} {}
+  Fl_File_Chooser * p;
+  p = new Fl_File_Chooser(dir_name,"*",0,"Open file");
+  p->value(dir_name);
+  strcpy(dir_name,(char*)p->directory());
+\#ifdef __FL_MOL_VIEW__
+  std::cout<<" p->directory: "<<(char*)p->directory()<<std::endl;
+  std::cout<<" dir name: "<<dir_name<<std::endl;
+  std::cout<<" p->value: "<<(char*)p->value()<<std::endl;
+\#endif} {selected
+    }
   }
   Function {open_file()} {open
   } {
@@ -513,7 +527,7 @@ exit(0);}
       load_file_button->deactivate();
     }
     //fragment_button->deactivate();
-    sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+    sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
 \#ifdef __FL_MOL_VIEW__
     printf("%s\\n",str_cmd);
 \#endif
@@ -592,7 +606,7 @@ exit(0);}
       load_file_button->deactivate();
     }
     //fragment_button->deactivate();
-    sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+    sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
 \#ifdef __FL_MOL_VIEW__
     printf("%s\\n",str_cmd);
 \#endif
@@ -669,7 +683,7 @@ exit(0);}
       load_file_button->deactivate();
     }
     //fragment_button->deactivate();
-    sprintf(str_cmd,"/home/%s/.xmolview/string.def",p_user);
+    sprintf(str_cmd,"/home/%s/.xmolvis/string.def",p_user);
 \#ifdef __FL_MOL_VIEW__
     printf("%s\\n",str_cmd);
 \#endif
@@ -760,14 +774,14 @@ exit(0);}
     std::cout<<" VIEW: load structure"<<std::endl;
 \#endif
     // setting up the visualization mode
-    res = mol3d->initialize();                                                 //
+    res = mol3d->initialize();                                                    //
     ///////////////////////////////////////////////////////////////
     if(res){
 \#ifdef __FL_MOL_VIEW__
       std::cout<<" VIEW: setting up the visualization"<<std::endl;
 \#endif
       // this code will be moved to show the data in a new window
-      //_m = mol3d->get_view_bounding_box();                                     //
+      //_m = mol3d->get_view_bounding_box();                                      //
       ///load_lattice_vectors(2*_m);                                              //
       //_n=  mol3d->get_view_total_fragments();
       //number_of_fragments->value(_n);
