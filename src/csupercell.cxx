@@ -46,7 +46,7 @@ bool CSupercell::read_input_file(void){
   bool res=false;
   clear();
   // check if a POTCAR is available
-  gsf.read_potcar();
+  //gsf.read_potcar();
   // Read the input structure file
   res = gsf.read_input_file();
   if(res){

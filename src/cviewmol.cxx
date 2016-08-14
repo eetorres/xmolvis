@@ -27,7 +27,7 @@
 #include<cviewmol.h>
 
 bool CViewmol::read_files_view(void){
-  supercell.gsf.read_topmol();
+  //supercell.gsf.read_topmol();
   return supercell.read_input_file();
 }
 

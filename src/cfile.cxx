@@ -85,6 +85,10 @@ bool CFile::read_potcar(void){
 bool CFile::read_input_file(void){
   bool res=false;
   clear();
+  // check if a POTCAR is available
+  read_potcar();
+  // check if a toplogy is available
+  read_topmol();
 #ifdef _DEBUGING_MESSAGES_
   std::cout<<" FILE: Read input file type "<<u_input_file_type<<"  "<<std::endl;
 #endif
@@ -609,20 +613,45 @@ void CFile::clear_fragments(void){
 }
 
 void CFile::init_fragments(void){
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: initialize fragments"<<std::endl;
   std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
 #endif
   clear_fragments();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
   std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
 #endif
-  set_topmol_single_topology(get_total_atoms());
+  if(!if_topmol()){
+    if(u_input_format==2 || u_input_format==4){
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+      std::cout<<" FRAGCAR: Topology based on the fragment numbers"<<std::endl;
+#endif
+      set_topmol_multi_topology(v_fragment_table);
+    }else{
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+      std::cout<<" FRAGCAR: !!! No topology definition to use !!!"<<std::endl;
+      std::cout<<" FRAGCAR: Build a single fragment system"<<std::endl;
+#endif
+      set_topmol_single_topology(get_total_atoms());
+    }
+  }else if(get_total_atoms() > get_total_topology_atoms()){
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+    std::cout<<" FRAGCAR: !!! Fragments not for all atoms !!!"<<std::endl;
+    std::cout<<" FRAGCAR: Build a fragment with remaining atoms"<<std::endl;
+#endif
+    set_complete_topology(get_total_atoms());
+  }
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
+  else{
+    std::cout<<" FRAGCAR: !!! All atoms in fragments !!!"<<std::endl;
+  }
+#endif
+  //set_topmol_single_topology(get_total_atoms());
   set_fragment_table(get_total_atoms());
   cast_fragments();
   eval_fragments();
-#ifdef _FRAGMOL_DEBUG_MESSAGES_
+#ifdef _FILE_FRAGMOL_DEBUG_MESSAGES_
   std::cout<<" FRAGMOL: fragment table "<<v_fragment_table;
 #endif
 }

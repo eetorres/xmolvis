@@ -28,7 +28,7 @@
 
 CTopmol::CTopmol(void){
   __filename = "TOPCAR"; // default name
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"CTopmol " <<__filename<<std::endl;
 #endif
   __if_topmol = false;
@@ -40,7 +40,7 @@ CTopmol::~CTopmol(void){
 
 bool CTopmol::read_topmol(void){
   bool res;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"read_topmol " <<__filename<<std::endl;
 #endif
   res=read_topmol(__dir, __filename);
@@ -71,7 +71,7 @@ bool CTopmol::read_topmol(std::string d, std::string f){
   topmol.open(topmol_file.c_str());
   if(!topmol.is_open()){
     __if_topmol = false;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     std::cout<<"WARNING: The topology file: "<<topmol_file<<std::endl;
     std::cout<<"         !!!...was not found...!!!  :(\n"<<std::endl;
 #endif
@@ -79,7 +79,7 @@ bool CTopmol::read_topmol(std::string d, std::string f){
     return false;
   }else{
     __if_topmol = true;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     printf("The topology was successful opened :)\n");
 #endif
     _ch = topmol.peek();
@@ -102,7 +102,7 @@ bool CTopmol::read_topmol(std::string d, std::string f){
       get_next(topmol);
       //
       topmol>>_t;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
       std::cout<<"Topology type: "<<_t<<std::endl;
 #endif
       //
@@ -133,7 +133,7 @@ bool CTopmol::read_topmol(std::string d, std::string f){
       __new_topology.type=_t;
       v_topology_list.push_back(__new_topology);
     }
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     display_topology_summary();
 #endif
     topmol.close();
@@ -153,7 +153,7 @@ bool CTopmol::get_next(std::ifstream& _s){
 }
 
 bool CTopmol::save_topmol(void){
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<" save_topmol() "<<__filename<<std::endl;
 #endif
   return save_topmol(__dir, __filename);
@@ -165,7 +165,7 @@ bool CTopmol::save_topmol(std::string d, std::string f){
   uint _s;
   set_topmol_filename(d,f);
   //
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<" save_topmol(d,f) "<<f<<std::endl;
 #endif
   std::string topmol_file = __dir+"/"+__filename;
@@ -173,13 +173,13 @@ bool CTopmol::save_topmol(std::string d, std::string f){
   topmol.open(topmol_file.c_str());
   if(!topmol.is_open()){
     __if_topmol = false;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     std::cout<<"WARNING: The TOPCAR: "<<topmol_file<<std::endl;
     std::cout<<"         !!!...was not created...!!!  :(\n"<<std::endl;
 #endif
     return false;
   }else{
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     std::cout<<"The TOPCAR was successful created :)"<<std::endl;
     std::cout<<__dir<<std::endl;
     std::cout<<__filename<<std::endl;
@@ -187,7 +187,7 @@ bool CTopmol::save_topmol(std::string d, std::string f){
     topmol<<"# Edit this files if you know what you are doing"<<std::endl;
     topmol<<"# Number of Topologies:"<<std::endl;
     topmol<<__number_of_topologies<<std::endl;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     std::cout<<"Number of Topologies: "<<__number_of_topologies<<std::endl;
 #endif
     uint _data;
@@ -195,7 +195,7 @@ bool CTopmol::save_topmol(std::string d, std::string f){
       //
       topmol<<"# Topology type:"<<std::endl;
       topmol<<v_topology_list[i].type<<std::endl;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
       std::cout<<"Topology type: "<<v_topology_list[i].type<<std::endl;
 #endif
       _data = v_topology_list[i].size();
@@ -221,7 +221,7 @@ bool CTopmol::save_topmol(std::string d, std::string f){
       }
     }
     topmol<<"# end of topologies"<<std::endl;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
     display_topology_summary();
 #endif
     topmol.close();
@@ -256,7 +256,7 @@ void CTopmol::set_topmol_multi_topology(TVector<uint>& v){
     __new_topology.type=2;
     v_topology_list.push_back(__new_topology);
   }
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<" TOPCAR: topology names found:  "<<v_topology_names;
 #endif
 }
@@ -298,7 +298,7 @@ void CTopmol::set_default_topology(uint u, bool b){
   __new_topology.type=2;
   v_topology_list.push_back(__new_topology);
   __number_of_topologies++;
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   display_topology_summary();
 #endif
 }
@@ -330,7 +330,7 @@ void CTopmol::add_topmol_topology(CTopology& t){
 
 void CTopmol::set_topology(uint comp_begin, uint comp_end, uint axis_begin, uint axis_end, std::string name){
   //
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"fragment name: "<<name<<std::endl;
   std::cout<<"first atom: "<<comp_begin<<std::endl;
   std::cout<<"last atom: "<<comp_end<<std::endl;
@@ -351,7 +351,7 @@ void CTopmol::set_topology(uint comp_begin, uint comp_end, uint axis_begin, uint
 }
 
 void CTopmol::topmol_filename(std::string s){
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"topmol_filename "<<s<<std::endl;
 #endif
   if(strstr(s.c_str(),"POSCAR")!=0 || strstr(s.c_str(),"CONTCAR")!=0 || strstr(s.c_str(),"vasp")!=0){
@@ -361,7 +361,7 @@ void CTopmol::topmol_filename(std::string s){
     __filename = s.substr(0,pos);
     __filename += ".top";
   }
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"topmol_filename "<<__filename<<std::endl;
 #endif
 }
@@ -373,7 +373,7 @@ void CTopmol::topmol_dir(std::string s){
 void CTopmol::set_topmol_filename(std::string _p, std::string _f){
   topmol_dir(_p);
   topmol_filename(_f);
-#ifdef _debugging_messages_
+#ifdef _TOPMOL_DEBUG_MESSAGES_
   std::cout<<"set_topmol_filename " <<__filename<<std::endl;
 #endif
 }
