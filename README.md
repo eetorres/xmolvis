@@ -1,13 +1,13 @@
 # xmolvis
 Fast visualization for molecular dynamics and ab-initio simulations.
 
-This project is a fork of XMolView to update and optimize the code.
+This project is a fork of **xmolview** to update and optimize the code.
 
-To compile XMolVis follow the instructions as in the XMolView project:
+To compile **xmolvis** follow the instructions as in the **xmolview** project:
 
 https://github.com/eetorres/xmolview
 
-The xmolvis uses directly keyboard commands.
+The **xmolvis** uses directly keyboard commands.
 
 Try the folowing 1 key commands:
 
