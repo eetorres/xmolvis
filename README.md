@@ -11,15 +11,15 @@ The **xmolvis** uses directly keyboard commands.
 
 Try the folowing 1 key commands:
 
-1. v
-2. s
-3. f
-4. t
-5. k
-5. b
+1. v (volume)
+2. s (atomic symbols)
+3. f (fragments)
+4. t (tools)
+5. k (control panel)
+5. b (bonds)
 
 Try the folowing 2 keys commands:
 
-1. Ctrl + f
+1. Ctrl + f (compute fragments)
 
 Soon more documentation and instructions will be available.
