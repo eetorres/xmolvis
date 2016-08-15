@@ -9,7 +9,7 @@ https://github.com/eetorres/xmolview
 
 The **xmolvis** uses directly keyboard commands.
 
-Try the folowing 1 key commands:
+Open an structure file and try the folowing 1 key commands:
 
 1. v (volume)
 2. s (atomic symbols)
