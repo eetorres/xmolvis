@@ -69,6 +69,8 @@ Fl_Gl_Mol_View::Fl_Gl_Mol_View(int x,int y,int w,int h,const char *l) : Fl_Box(x
   tb.tb_angle    = 0.0;
   // Atoms and bonds appareance
   f_atom_radius_scale        = 0.5;
+  f_ball_radius1_scale        = 0.5;
+  f_ball_radius2_scale        = 0.25;
   f_bond_radius_scale        = 1.0;
   f_atom_bond_delta          = 0.1;
   //
@@ -2299,12 +2301,20 @@ void Fl_Gl_Mol_View::set_select_brightness(real f){
 }
 
 void Fl_Gl_Mol_View::set_atom_radius_scale(real f){
-  if(f >= 0.0 && f<=1.0)
-    f_atom_radius_scale = f;
-  else if(f>1.0)
-    f_atom_radius_scale = 1.0;
-  else
-    f_atom_radius_scale = 0.0;
+  float f_radius_scale;
+  if(f >= 0.0 && f<=1.0){
+    f_radius_scale = f;
+  }else if(f>1.0){
+    f_radius_scale = 1.0;
+  }else{
+    f_radius_scale = 0.0;
+  }
+  f_atom_radius_scale = f_radius_scale;
+  if(is_draw_bonds_){
+    f_ball_radius2_scale = f_radius_scale;
+  }else{
+    f_ball_radius1_scale = f_radius_scale;
+  }
   //std::cout<<" f_atom_radius_scale = "<<f_atom_radius_scale<<std::endl;
   is_update_radius=true;
 }
@@ -2378,11 +2388,11 @@ void Fl_Gl_Mol_View::is_draw_bonds(bool b){
   if(is_draw_bonds_){
     is_update_bonds_color=true;
     is_update_mask_rcolor=true;
-    if(f_atom_radius_scale > 0.40)
-      set_atom_radius_scale(0.25);
+    //if(f_atom_radius_scale > 0.40)
+      set_atom_radius_scale(f_ball_radius2_scale);
     set_active_slider(1);
   }else{
-    set_atom_radius_scale(0.50);
+    set_atom_radius_scale(f_ball_radius1_scale);
     set_active_slider(0);
   }
   set_active_radio(1,is_draw_bonds_);

@@ -45,6 +45,7 @@ void CXyz::clear(void){
   __export_format=0;
   __file_format=0;
   //__is_selected_dynamics=false;
+  __is_extended=false;
   __is_direct=false;
   __is_periodic=false;
   __is_symbol=true;
@@ -111,9 +112,12 @@ bool CXyz::get_xyz_format(void){
       res1 = std::sscanf((const char*)text_line.c_str(),"%i %*s",&k);
       __total_atoms=k;
       //__head_lines++;
+      __is_extended=false;
       if(res1==0)
         return false;
     }else if(res1==2){
+      __is_extended=true;
+      __is_periodic = true;
       // This code may be moved to "read_file"
       res3 = std::sscanf((const char*)text_line.c_str(),"%*s %f %*s %i",&alat,&k);
       if( res3 == 2){
@@ -125,9 +129,9 @@ bool CXyz::get_xyz_format(void){
       std::cout<<"CXYZ: res1: "<<res1<<" res3: "<<res3<<std::endl;
 #endif
       std::getline(xyz,text_line);
-      __is_periodic = true;
       res3 = std::sscanf((const char*)text_line.c_str(),"%f %f %f %f %f %f %f %f %f",&xx,&xy,&xz,&yx,&yy,&yz,&zx,&zy,&zz);
-      scl_uvwTxyz[0][0] = xx;
+// deprecated //
+/*      scl_uvwTxyz[0][0] = xx;
       scl_uvwTxyz[0][1] = xy;
       scl_uvwTxyz[0][2] = xz;
       scl_uvwTxyz[1][0] = yx;
@@ -142,25 +146,24 @@ bool CXyz::get_xyz_format(void){
         unit_uvwTxyz[i]=scl_uvwTxyz[i]/scl_uvwTxyz[i].magnitude();
       }
 #ifdef _XYZ_DEBUG_MESSAGES_
-    std::cout<<"CXYZ: res1: "<<res1<<" res3: "<<res3<<std::endl;
-#endif
-#ifdef _XYZ_DEBUG_MESSAGES_
-          std::cout<<"scl_uvwTxyz="<<scl_uvwTxyz;
-          std::cout<<"unit_uvwTxyz="<<unit_uvwTxyz;
-          std::cout<<"uvwTxyz="<<uvwTxyz;
-          std::cout<<"v_xyz="<<v_xyz;
+      std::cout<<"CXYZ: res1: "<<res1<<" res3: "<<res3<<std::endl;
+      std::cout<<"scl_uvwTxyz="<<scl_uvwTxyz;
+      std::cout<<"unit_uvwTxyz="<<unit_uvwTxyz;
+      std::cout<<"uvwTxyz="<<uvwTxyz;
+      std::cout<<"v_xyz="<<v_xyz;
 #endif
       __head_lines++;
 #ifdef _XYZ_DEBUG_MESSAGES_
       std::cout<<"CXYZ: alat = "<<alat<<std::endl;
-#endif
+#endif*/
+// deprecated //
     }
 #ifdef _XYZ_DEBUG_MESSAGES_
     std::cout<<"CXYZ: res1: "<<res1<<std::endl;
     std::cout<<"CXYZ: search for the initial atom parameters"<<std::endl;
 #endif
     //std::getline(xyz,text_line);
-    // Search for the intial coordinates
+    // Search for the initial coordinates
     while(res2 < 4 && !xyz.eof()){
 #ifdef _XYZ_DEBUG_MESSAGES_
       std::cout<<"CXYZ: start"<<std::endl;
@@ -287,7 +290,11 @@ bool CXyz::get_xyz_format(void){
 bool CXyz::read_file(std::string d, std::string f){
   std::string atomic_symbol;
   real data, frag;
-  uint unum;
+  uint unum, k;
+  int res1=-1, res3=-1;
+  float xx, xy, xz, yx, yy, yz, zx, zy, zz;
+  float alat;
+  std::string text_line;
   TVector<real> v1, v2, v3;
   __filename = d+"/"+f;
   std::ifstream xyz;
@@ -318,8 +325,50 @@ bool CXyz::read_file(std::string d, std::string f){
     //}
     //while(xyz.peek()=='\n')
       //xyz.ignore(0,'\n');
-    for(uint i=0; i<__head_lines; i++){
+    for(uint i=0; i<__head_lines-1; i++){
       xyz.ignore(1024,'\n');
+    }
+    if(__is_extended){
+      // This code may be moved to "read_file"
+      text_line.clear();
+      std::getline(xyz,text_line,'\n');
+      res3 = std::sscanf((const char*)text_line.c_str(),"%*s %f %*s %i",&alat,&k);
+      if( res3 == 2){
+        __total_atoms=k;
+      }else{
+        res3 = std::sscanf((const char*)text_line.c_str(),"%*s %f",&alat);
+      }
+#ifdef _XYZ_DEBUG_MESSAGES_
+      std::cout<<"CXYZ: res1: "<<res1<<" res3: "<<res3<<std::endl;
+#endif
+      std::getline(xyz,text_line);
+      __is_periodic = true;
+      res3 = std::sscanf((const char*)text_line.c_str(),"%f %f %f %f %f %f %f %f %f",&xx,&xy,&xz,&yx,&yy,&yz,&zx,&zy,&zz);
+      scl_uvwTxyz[0][0] = xx;
+      scl_uvwTxyz[0][1] = xy;
+      scl_uvwTxyz[0][2] = xz;
+      scl_uvwTxyz[1][0] = yx;
+      scl_uvwTxyz[1][1] = yy;
+      scl_uvwTxyz[1][2] = yz;
+      scl_uvwTxyz[2][0] = zx;
+      scl_uvwTxyz[2][1] = zy;
+      scl_uvwTxyz[2][2] = zz;
+      uvwTxyz=alat*scl_uvwTxyz;
+      for(uint i=0; i<3; i++){
+        v_xyz[i]=alat*scl_uvwTxyz[i].magnitude();
+        unit_uvwTxyz[i]=scl_uvwTxyz[i]/scl_uvwTxyz[i].magnitude();
+      }
+#ifdef _XYZ_DEBUG_MESSAGES_
+      std::cout<<"CXYZ: res1: "<<res1<<" res3: "<<res3<<std::endl;
+      std::cout<<"scl_uvwTxyz="<<scl_uvwTxyz;
+      std::cout<<"unit_uvwTxyz="<<unit_uvwTxyz;
+      std::cout<<"uvwTxyz="<<uvwTxyz;
+      std::cout<<"v_xyz="<<v_xyz;
+      std::cout<<"CXYZ: alat = "<<alat<<std::endl;
+#endif
+    }else{
+      res1 = std::sscanf((const char*)text_line.c_str(),"%i %*s",&k);
+      __total_atoms=k;
     }
     //xyz.ignore(0,'\n');
     //xyz.ignore(0,'\n');

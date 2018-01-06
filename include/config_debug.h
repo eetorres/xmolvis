@@ -122,8 +122,8 @@
 //////////////////////////////////
 // cxyz.cxx
 //////////////////////////////////
-//#define _XYZ_INFO_MESSAGES_
-//#define _XYZ_DEBUG_MESSAGES_
+#define _XYZ_INFO_MESSAGES_
+#define _XYZ_DEBUG_MESSAGES_
 //#define _XYZ_DEBUG_DATA_
 //#define _XYZ_DEBUG_COMPOSITION_
 

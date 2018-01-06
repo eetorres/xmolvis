@@ -113,6 +113,7 @@ protected:
   std::string __filename, __system_title;
   std::string __config_filename;
   //
+  bool __is_extended;
   bool __is_direct;
   bool __is_periodic;
   bool __is_symbol;

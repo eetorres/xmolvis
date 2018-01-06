@@ -442,6 +442,8 @@ private:
   //
   real f_atom_bond_delta;
   real f_atom_radius_scale;
+  real f_ball_radius1_scale;
+  real f_ball_radius2_scale;
   real f_bond_radius_scale;
   //
   real r_cut_radius, r_cut_radius_2;
